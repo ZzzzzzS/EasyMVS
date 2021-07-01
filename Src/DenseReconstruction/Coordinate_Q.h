@@ -2,6 +2,7 @@
 #include "BasicData.h"
 #include "Coordinate_X.h"
 #include "Coordinate_P.h"
+#include "CoordinateConvertParams.h"
 
 class Coordinate_Q :
 	public BasicData
@@ -15,7 +16,12 @@ public:
 
 	BasicData a;
 public:
-	bool convertFrom_P(BasicData);
-	bool convertFrom_X(BasicData);
+	Coordinate_Q(CoordinateConvertParams* ConstantParameter);
+
+	bool convertQFrom_P(BasicData);
+	bool convertQFrom_X(BasicData);
+
+private:
+	CoordinateConvertParams* ConstantParameter;
 };
 
