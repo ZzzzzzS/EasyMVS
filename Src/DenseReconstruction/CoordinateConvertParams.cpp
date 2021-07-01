@@ -31,8 +31,7 @@ bool CoordinateConvertParams::load_Min(std::string &filename)
 		T_r2l.at<float>(i, 3) = stereoT.at<float>(i, 0);
 	T_r2l.at<float>(3, 3) = 1.0;
 
-	cv::Mat Min_l_t;
-	cv::Mat Min_r_t;
+	
 	cv::invert(Min_l, Min_l_t);
 	cv::invert(Min_r, Min_r_t);
 
@@ -77,10 +76,45 @@ bool CoordinateConvertParams::load_Min(std::string &filename)
 
 bool CoordinateConvertParams::calibrate_e()
 {
-	cv::Mat Min_l_t;
-	cv::Mat Min_r_t;
+	cv::Mat T_Min_r;
+	cv::Mat T_Min_l_t;
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			T_Min_r.at<float>(i, j) = Min_r.at<float>(i, j);
+	for (int i = 0; i < 3; i++)
+	{
+		T_Min_r.at<float>(i, 3) = 0;
+		T_Min_r.at<float>(3, i) = 0;
+	}
+	T_Min_r.at<float>(3, 3) = 1.0;
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			T_Min_l_t.at<float>(i, j) = Min_l_t.at<float>(i, j);
+	for (int i = 0; i < 3; i++)
+	{
+		T_Min_l_t.at<float>(i, 3) = 0;
+		T_Min_l_t.at<float>(3, i) = 0;
+	}
+	T_Min_l_t.at<float>(3, 3) = 1.0;
+
 	cv::Mat MTM;
-	MTM = 
+	MTM = T_Min_r * T_r2l*T_Min_l_t;
+
+	e11 = MTM.at<float>(0,0);
+	e12 = MTM.at<float>(0, 1);
+	e13 = MTM.at<float>(0, 2);
+	e14 = MTM.at<float>(0, 3);
+	e21 = MTM.at<float>(1, 0);
+	e22 = MTM.at<float>(1, 1);
+	e23 = MTM.at<float>(1, 2);
+	e24 = MTM.at<float>(1, 3);
+	e31 = MTM.at<float>(2, 0);
+	e32 = MTM.at<float>(2, 1);
+	e33 = MTM.at<float>(2, 2);
+	e34 = MTM.at<float>(2, 3);
+
 	return false;
 }
 
