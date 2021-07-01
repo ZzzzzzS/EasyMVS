@@ -2,40 +2,85 @@
 
 bool CoordinateConvertParams::load_Min(std::string &filename)
 {
-	cv::Mat camK(3, 3, CV_32FC1);
-	cv::Mat	camDistCoeffs(1, 5, CV_32FC1);
+	//cv::Mat Min_l(3, 3, CV_32FC1);
+	//cv::Mat Min_r(3, 3, CV_32FC1);
+
 	cv::Mat	stereoR(3, 3, CV_32FC1);
 	cv::Mat	stereoT(3, 1, CV_32FC1);
-	cv::Mat T_c2p(4, 4, CV_32FC1, cv::Scalar(0.0));
+	//cv::Mat T_r2l(4, 4, CV_32FC1, cv::Scalar(0.0));
 
 	cv::FileStorage fs;
 	if (filename.empty())
 		return false;
 	fs.open(filename, cv::FileStorage::READ);
-	fs["camIntrinsics"] >> camK;
-	fs["camDistCoeffs"] >> camDistCoeffs;
+	fs["camIntrinsics"] >> Min_l;
+	fs["camDistCoeffs"] >> Min_l;
 	fs["stereoR"] >> stereoR;
 	fs["stereoT"] >> stereoT;
 	fs.release();
 
-	camK.convertTo(camK, CV_32FC1);//将cv::Mat中只有的8bit,16bit 的uchar 转换成32float
-	camDistCoeffs.convertTo(camDistCoeffs, CV_32FC1);
+	Min_l.convertTo(Min_l, CV_32FC1);//将cv::Mat中只有的8bit,16bit 的uchar 转换成32float
+	Min_r.convertTo(Min_r, CV_32FC1);
 	stereoR.convertTo(stereoR, CV_32FC1);
 	stereoT.convertTo(stereoT, CV_32FC1);
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
-			T_c2p.at<float>(i, j) = stereoR.at<float>(i, j);
+			T_r2l.at<float>(i, j) = stereoR.at<float>(i, j);
 	for (int i = 0; i < 3; i++)
-		T_c2p.at<float>(i, 3) = stereoT.at<float>(i, 0);
-	T_c2p.at<float>(3, 3) = 1.0;
+		T_r2l.at<float>(i, 3) = stereoT.at<float>(i, 0);
+	T_r2l.at<float>(3, 3) = 1.0;
 
+	cv::Mat Min_l_t;
+	cv::Mat Min_r_t;
+	cv::invert(Min_l, Min_l_t);
+	cv::invert(Min_r, Min_r_t);
+
+	kx_r = Min_r.at<float>(0, 0);
+	ky_r = Min_r.at<float>(1, 1);
+	ks_r = Min_r.at<float>(0, 1);
+	u0_r = Min_r.at<float>(0,2);
+	v0_r = Min_r.at<float>(1, 2);
+
+	kx_l = Min_l.at<float>(0, 0);
+	ky_l = Min_l.at<float>(1, 1);
+	ks_l = Min_l.at<float>(0, 1);
+	u0_l = Min_l.at<float>(0, 2);
+	v0_l = Min_l.at<float>(1, 2);
+
+	hu_r = Min_r_t.at<float>(0, 0);
+	hv_r = Min_r_t.at<float>(1, 1);
+	hs_r = Min_r_t.at<float>(0, 1);
+	X0_r = Min_r_t.at<float>(0, 2);
+	Y0_r = Min_r_t.at<float>(1, 2);
+
+	hu_l = Min_l_t.at<float>(0, 0);
+	hv_l = Min_l_t.at<float>(1, 1);
+	hs_l = Min_l_t.at<float>(0, 1);
+	X0_l = Min_l_t.at<float>(0, 2);
+	Y0_l = Min_l_t.at<float>(1, 2);
+
+	nx = T_r2l.at<float>(0, 0);
+	ny = T_r2l.at<float>(1, 0);
+	nz = T_r2l.at<float>(2, 0);
+	ox = T_r2l.at<float>(0, 1);
+	oy = T_r2l.at<float>(1, 1);
+	oz = T_r2l.at<float>(2, 1);
+	ax = T_r2l.at<float>(0, 2);
+	ay = T_r2l.at<float>(1, 2);
+	az = T_r2l.at<float>(2, 2);
+	tx = T_r2l.at<float>(0, 3);
+	ty = T_r2l.at<float>(1, 3);
+	tz = T_r2l.at<float>(2, 3);
 	return false;
 }
 
 bool CoordinateConvertParams::calibrate_e()
 {
-	
+	cv::Mat Min_l_t;
+	cv::Mat Min_r_t;
+	cv::Mat MTM;
+	MTM = 
 	return false;
 }
 

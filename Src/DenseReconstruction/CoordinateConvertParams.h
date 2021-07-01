@@ -14,6 +14,12 @@ public:
 		calibrate_A();
 		calibrate_B();
 	}
+	//内参矩阵
+	cv::Mat Min_l = cv::Mat(3, 3, CV_32FC1);
+	cv::Mat Min_r = cv::Mat(3, 3, CV_32FC1);
+
+	cv::Mat T_r2l = cv::Mat(4, 4, CV_32FC1, cv::Scalar(0.0));
+
 	//内参
 	float kx_r = 0;
 	float ky_r = 0;
