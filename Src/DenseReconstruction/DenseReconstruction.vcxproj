@@ -89,6 +89,7 @@
     <QtRcc Include="DenseReconstruction.qrc" />
     <QtUic Include="DenseReconstruction.ui" />
     <QtMoc Include="DenseReconstruction.h" />
+    <ClCompile Include="BasicData.cpp" />
     <ClCompile Include="CoordinateConvertParams.cpp" />
     <ClCompile Include="Coordinate_P.cpp" />
     <ClCompile Include="Coordinate_Q.cpp" />
