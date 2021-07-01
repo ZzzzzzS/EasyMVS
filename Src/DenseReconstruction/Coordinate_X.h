@@ -19,8 +19,8 @@ public:
 	
 	Coordinate_X(CoordinateConvertParams* ConstantParameter);
 
-	bool convertFrom_Q(BasicData& Q);
-	bool convertFrom_P(BasicData& P);
+	bool convertXFrom_Q(BasicData& Q);
+	bool convertXFrom_P(BasicData& P);
 
 private:
 	CoordinateConvertParams* ConstantParameter;

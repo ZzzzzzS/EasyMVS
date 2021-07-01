@@ -105,6 +105,14 @@ public:
 	float B8 = 0;
 	float B9 = 0;
 	float B10 = 0;
+	float B11 = 0;
+	float B12 = 0;
+	float B13 = 0;
+	float B14 = 0;
+	float B15 = 0;
+	float B16 = 0;
+	float B17 = 0;
+	float B18 = 0;
 
 	//C1~C16
 	float C1 = 0;
