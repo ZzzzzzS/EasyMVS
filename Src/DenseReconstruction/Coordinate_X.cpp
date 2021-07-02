@@ -42,14 +42,14 @@ bool Coordinate_X::convertXFrom_P(BasicData& P)
 			+ (Para->A16);
 
 		float x2_Interval2 =
-			(Para->B11*i.p1*i.p2*i.p3)
-			+ (Para->B12*i.p1*i.p2)
-			+ (Para->B13*i.p1*i.p3)
-			+ (Para->B14*i.p2*i.p3)
-			+ (Para->B15*i.p1)
-			+ (Para->B16*i.p2)
-			+ (Para->B17*i.p3)
-			+ (Para->B18);
+			(Para->B1*i.p1*i.p2*i.p3)
+			+ (Para->B2*i.p1*i.p2)
+			+ (Para->B3*i.p1*i.p3)
+			+ (Para->B4*i.p2*i.p3)
+			+ (Para->B5*i.p1)
+			+ (Para->B6*i.p2)
+			+ (Para->B7*i.p3)
+			+ (Para->B8);
 
 		float x2_Interval3 = (Para->B9) + (Para->B10*i.p3);
 
@@ -58,14 +58,14 @@ bool Coordinate_X::convertXFrom_P(BasicData& P)
 
 		//calculate x3**************************************************
 		float x3_Interval1 = 
-			(Para->B11*i.p1*i.p2*i.p3) 
-			+ (Para->B12*i.p1*i.p2) 
-			+ (Para->B13*i.p1*i.p3) 
-			+ (Para->B14*i.p2*i.p3) 
-			+ (Para->B15*i.p1) 
-			+ (Para->B16*i.p2) 
-			+ (Para->B17*i.p3) 
-			+ (Para->B18);
+			(Para->B1*i.p1*i.p2*i.p3) 
+			+ (Para->B2*i.p1*i.p2) 
+			+ (Para->B3*i.p1*i.p3) 
+			+ (Para->B4*i.p2*i.p3) 
+			+ (Para->B5*i.p1) 
+			+ (Para->B6*i.p2) 
+			+ (Para->B7*i.p3) 
+			+ (Para->B8);
 		
 		float x3_Interval2 = (Para->B9) + (Para->B10*i.p3);
 

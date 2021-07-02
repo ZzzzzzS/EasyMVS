@@ -1,19 +1,13 @@
 ﻿#pragma once
 #include <vector>
 #include <opencv.hpp>
-class BasicData
-{
-public:
-	BasicData();
-	std::vector<BasicPoint> Points;
-};
 
 struct BasicPoint
 {
 	union
 	{
 		float data[4] = { 0 };
-		struct 
+		struct
 		{
 			float u_L;
 			float v_L;
@@ -35,12 +29,18 @@ struct BasicPoint
 		};
 		struct
 		{
+			float x1;
+			float x2;
+			float x3;
+		};
+		struct
+		{
 			float p1;
 			float p2;
 			float p3;
 		};
 	};
-	
+
 	uchar R_L = 0;
 	uchar G_L = 0;
 	uchar B_L = 0;
@@ -50,3 +50,11 @@ struct BasicPoint
 
 	float Error_a;
 };
+
+class BasicData
+{
+public:
+	BasicData();
+	std::vector<BasicPoint> Points;
+};
+

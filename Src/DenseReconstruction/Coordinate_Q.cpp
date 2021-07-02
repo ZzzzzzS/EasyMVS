@@ -10,7 +10,7 @@ bool Coordinate_Q::convertQFrom_P(BasicData P)
 	{
 		CoordinateConvertParams *param = ConstantParameter;
 		BasicPoint Q_point = i;
-		Q_point.u_L = i.p1;
+		Q_point.u_L = i.p2;
 		Q_point.v_L = param->C7*i.p1*i.p2+param->C8*i.p2+i.p1;
 		Q_point.u_R	= i.p3;
 		Q_point.v_R = param->C13*i.p1*i.p2*i.p3 + param->C14*i.p2*i.p3 + param->C15*i.p1*i.p2 + param->C2*i.p1*i.p3 + param->C11*i.p1 + param->C16*i.p2 + param->C3*i.p3 + param->C12;

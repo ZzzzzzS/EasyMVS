@@ -5,33 +5,45 @@ bool CoordinateConvertParams::load_Min(std::string &filename)
 	//cv::Mat Min_l(3, 3, CV_32FC1);
 	//cv::Mat Min_r(3, 3, CV_32FC1);
 
-	cv::Mat	stereoR(3, 3, CV_32FC1);
-	cv::Mat	stereoT(3, 1, CV_32FC1);
-	//cv::Mat T_r2l(4, 4, CV_32FC1, cv::Scalar(0.0));
+	////cv::Mat	stereoR(3, 3, CV_32FC1);
+	////cv::Mat	stereoT(3, 1, CV_32FC1);
+	//////cv::Mat T_r2l(4, 4, CV_32FC1, cv::Scalar(0.0));
 
-	cv::FileStorage fs;
-	if (filename.empty())
-		return false;
-	fs.open(filename, cv::FileStorage::READ);
-	fs["camIntrinsics"] >> Min_l;
-	fs["camDistCoeffs"] >> Min_l;
-	fs["stereoR"] >> stereoR;
-	fs["stereoT"] >> stereoT;
-	fs.release();
+	////cv::FileStorage fs;
+	////if (filename.empty())
+	////	return false;
+	////fs.open(filename, cv::FileStorage::READ);
+	////fs["camIntrinsics"] >> Min_l;
+	////fs["camDistCoeffs"] >> Min_r;
+	////fs["stereoR"] >> stereoR;
+	////fs["stereoT"] >> stereoT;
+	////fs.release();
 
-	Min_l.convertTo(Min_l, CV_32FC1);//将cv::Mat中只有的8bit,16bit 的uchar 转换成32float
-	Min_r.convertTo(Min_r, CV_32FC1);
-	stereoR.convertTo(stereoR, CV_32FC1);
-	stereoT.convertTo(stereoT, CV_32FC1);
+	////Min_l.convertTo(Min_l, CV_32FC1);//将cv::Mat中只有的8bit,16bit 的uchar 转换成32float
+	////Min_r.convertTo(Min_r, CV_32FC1);
+	////stereoR.convertTo(stereoR, CV_32FC1);
+	////stereoT.convertTo(stereoT, CV_32FC1);
 
-	for (int i = 0; i < 3; i++)
-		for (int j = 0; j < 3; j++)
-			T_r2l.at<float>(i, j) = stereoR.at<float>(i, j);
-	for (int i = 0; i < 3; i++)
-		T_r2l.at<float>(i, 3) = stereoT.at<float>(i, 0);
-	T_r2l.at<float>(3, 3) = 1.0;
+	////for (int i = 0; i < 3; i++)
+	////	for (int j = 0; j < 3; j++)
+	////		T_r2l.at<float>(i, j) = stereoR.at<float>(i, j);
+	////for (int i = 0; i < 3; i++)
+	////	T_r2l.at<float>(i, 3) = stereoT.at<float>(i, 0);
+	////T_r2l.at<float>(3, 3) = 1.0;
 
-	
+	Min_l = (cv::Mat_<float>(3, 3) <<
+		7000, 0,960,
+		0, 7000, 600,
+		0, 0, 1);
+		Min_r = (cv::Mat_<float>(3, 3) <<
+			7000, 0, 960,
+			0, 7000, 600,
+			0, 0, 1);
+		T_r2l = (cv::Mat_<float>(4, 4) <<
+			1, 0, 0, 150,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1);
 	cv::invert(Min_l, Min_l_t);
 	cv::invert(Min_r, Min_r_t);
 
@@ -76,8 +88,8 @@ bool CoordinateConvertParams::load_Min(std::string &filename)
 
 bool CoordinateConvertParams::calibrate_e()
 {
-	cv::Mat T_Min_r;
-	cv::Mat T_Min_l_t;
+	cv::Mat T_Min_r =cv::Mat(4,4,CV_32FC1);
+	cv::Mat T_Min_l_t = cv::Mat(4, 4, CV_32FC1);
 
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
@@ -99,7 +111,7 @@ bool CoordinateConvertParams::calibrate_e()
 	}
 	T_Min_l_t.at<float>(3, 3) = 1.0;
 
-	cv::Mat MTM;
+	cv::Mat MTM = cv::Mat(4, 4, CV_32FC1);
 	MTM = T_Min_r * T_r2l*T_Min_l_t;
 
 	e11 = MTM.at<float>(0,0);
@@ -186,11 +198,13 @@ bool CoordinateConvertParams::calibrate_C()
 	C24 = ky_r * oy + v0_r * oz;
 	C25 = ky_r * ay + v0_r * az;
 	C26 = ky_r * ty + v0_r * tz;
-	C27 = (-1)*ks_l + ky_l;
-	C28 = v0_l - u0_l;
-	C29 = C7 * kx_l;
-	C30 = C7 * ks_l;
-	C31 = C7 * u0_l;
+
+	C27 = (-1)*C8*kx_l;
+	C28 = (-1)*C8*ks_l + ky_l;
+	C29 = v0_l - C8*u0_l;
+	C30 = C7 * kx_l;
+	C31 = C7 * ks_l;
+	C32 = C7 * u0_l+1;
 
 	return false;
 }

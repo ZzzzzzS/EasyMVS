@@ -5,9 +5,8 @@
 class CoordinateConvertParams
 {
 public:
-	CoordinateConvertParams()
+	CoordinateConvertParams(std::string path)
 	{
-		std::string path = ".//params//param.xml";
 		load_Min(path);
 		calibrate_e();
 		calibrate_C();
@@ -146,6 +145,7 @@ public:
 	float C29 = 0;
 	float C30 = 0;
 	float C31 = 0;
+	float C32 = 0;
 
 private:
 	bool load_Min(std::string &filename);
