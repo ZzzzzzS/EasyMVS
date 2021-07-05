@@ -18,7 +18,7 @@ void DenseReconstruction::pushButton_test()
 	BasicPoint point;
 	point.p1 = 600;
 	point.p2 = 500;
-	point.p3 = 450;
+	point.p3 = 470;
 	p1.Points.push_back(point);
 	q1.convertQFrom_P(p1);
 	x1.convertXFrom_P(p1);

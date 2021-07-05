@@ -13,9 +13,10 @@ bool Coordinate_Q::convertQFrom_P(BasicData P)
 		Q_point.u_L = i.p2;
 		Q_point.v_L = param->C7*i.p1*i.p2+param->C8*i.p2+i.p1;
 		Q_point.u_R	= i.p3;
-		Q_point.v_R = param->C13*i.p1*i.p2*i.p3 + param->C14*i.p2*i.p3 + param->C15*i.p1*i.p2 + param->C2*i.p1*i.p3 + param->C11*i.p1 + param->C16*i.p2 + param->C3*i.p3 + param->C12;
-		Q_point.v_R /= param->C17 * i.p1*i.p2 + param->C5*i.p1 + param->C18*i.p2 + param->C6;
-
+		//Q_point.v_R = param->C13*i.p1*i.p2*i.p3 + param->C14*i.p2*i.p3 + param->C15*i.p1*i.p2 + param->C2*i.p1*i.p3 + param->C11*i.p1 + param->C16*i.p2 + param->C3*i.p3 + param->C12;
+		//Q_point.v_R /= param->C17 * i.p1*i.p2 + param->C5*i.p1 + param->C18*i.p2 + param->C6;
+		Q_point.v_R = param->C1*i.p2*i.p3 + param->C2*i.p3*Q_point.v_L + param->C3*i.p3+ param->C10*i.p2 + param->C11*Q_point.v_L + param->C12;
+		Q_point.v_R /= param->C4*i.p2 + param->C5*i.q2 + param->C6;
 		this->Points.push_back(Q_point);
 	}
 	return false;
