@@ -75,6 +75,7 @@ public:
 	float e33 = 0;
 	float e34 = 0;
 
+	float e34_min = 1000;
 	//A1~A16
 	float A1 = 0;
 	float A2 = 0;
@@ -146,7 +147,16 @@ public:
 	float C30 = 0;
 	float C31 = 0;
 	float C32 = 0;
-
+	float C33 = 0;
+	float C34 = 0;
+	float C35 = 0;
+	float C36 = 0;
+	float C37 = 0;
+	float C38 = 0;
+	float C39 = 0;
+	float C40 = 0;
+	float C41 = 0;
+	float C42 = 0;
 private:
 	bool load_Min(std::string &filename);
 	bool calibrate_e();

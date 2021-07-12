@@ -6,6 +6,8 @@ Coordinate_P::Coordinate_P(CoordinateConvertParams * ConstantParameter)
 
 bool Coordinate_P::convertPFrom_Q(BasicData Q)
 {
+	this->Points.clear();
+
 	for (auto i : Q.Points)
 	{
 		BasicPoint P_point = i;
@@ -21,6 +23,8 @@ bool Coordinate_P::convertPFrom_Q(BasicData Q)
 
 bool Coordinate_P::convertPFrom_X(BasicData X)
 {
+	this->Points.clear();
+
 	for (auto i : X.Points)
 	{
 		CoordinateConvertParams *param = ConstantParameter;

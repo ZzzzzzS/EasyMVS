@@ -40,8 +40,8 @@ bool CoordinateConvertParams::load_Min(std::string &filename)
 			0, 7000, 600,
 			0, 0, 1);
 		T_r2l = (cv::Mat_<float>(4, 4) <<
-			0.866, -0.5, 0, 150,
-			0.5, 0.866, 0, 0,
+			1, 0, 0, 100,
+			0, 1, 0, 0,
 			0, 0, 1, 10,
 			0, 0, 0, 1);
 	cv::invert(Min_l, Min_l_t);
@@ -132,142 +132,96 @@ bool CoordinateConvertParams::calibrate_e()
 
 bool CoordinateConvertParams::calibrate_A()
 {
-	if (e34 == 0)
-	{
-		A1 = e14 * e32 - e12 * e34;
-		A2 = e14 * e33 - e13 * e34;
-		A3 = e14 * e32 * C7 - e12 * e34*C7;
-		A4 = e14 * e32*C8 - e12 * e34*C8 - e11 * e34 + e14 * e31;
-		A5 = 0;
-		A6 = 0;
-		A7 = 0;
-		A8 = 0;
-		A9 = hs_l * C7;
-		A10 = hu_l + hs_l * C8;
-		A11 = hs_l;
-		A12 = X0_l;
-		A13 = hv_l * C7;
-		A14 = hv_l * C8;
-		A15 = hv_l;
-		A16 = Y0_l;
-	}
-	else
-	{
-		A1 = e14 * e32 - e12 * e34;
-		A2 = e14 * e33 - e13 * e34;
-		A3 = e14 * e32 * C7 - e12 * e34*C7;
-		A4 = e14 * e32*C8 - e12 * e34*C8 - e11 * e34 + e14 * e31;
-		A5 = (-1)*((e32*C7) / e34);
-		A6 = (-1)*((e32*C8 + e31) / e34);
-		A7 = (-1)*(e32 / e34);
-		A8 = (-1)*(e33 / e34);
-		A9 = hs_l * C7;
-		A10 = hu_l + hs_l * C8;
-		A11 = hs_l;
-		A12 = X0_l;
-		A13 = hv_l * C7;
-		A14 = hv_l * C8;
-		A15 = hv_l;
-		A16 = Y0_l;
-	}
+	A1 = (-1)*C7*hs_l*e34;
+	A2 = C7 * hs_l*e14;
+	A3 = (-1)*e34*hs_l;
+	A4 = (-1)*hu_l*e34  - C8 * hs_l*e34;
+	
+	A5 = e14 * hs_l;
+	A6 = hu_l * e14 + C8 * e14*hs_l;
+	A7 = (-1)*X0_l * e34;
+	A8 = e14*X0_l;
+	
+	A9 = (-1) * C7*hv_l*e34;
+	A10 = C7 * hv_l*e14;
+	A11 = (-1) *hv_l*e34;
+	A12 = (-1) * C8*hv_l*e34;
+	A13 = hv_l *e14;
+	A14 =  C8*hv_l *e14;
+	A15 = (-1) *Y0_l*e34;
+	A16 = Y0_l*e14;
+
 
 	return false;
 }
 
 bool CoordinateConvertParams::calibrate_B()
 {
-	B1 = (-1)*(e34*e34*A5);
-	B2 = A1 + e14 * e34*A5;
-	B3 = (-1)*(e34*e34*A7);
-	B4 = (-1)*(e34*e34*A6);
-	B5 = e14 * e34*A7 + A3;
-	B6 = e14 * e34*A6 + A2;
-	B7 = (-1)*(e34*e34*A8);
-	B8 = e14 * e34*A8 + A4;
-	B9 = e14 * e34;
-	B10 = (-1)*e34*e34;
+	B1 = e32 *C7;
+	B2 = (-1)*C7*e12;
+	B3 =e31+C8*e32;
+	B4 =(-1)*e11-C8*e12;
+	//B5 = (-1)*e14 * e32 + A3;
+	//B6 = (-1)*e14 * e32*C8 + e31+ A2;
+	//B7 = e34*e34;
+	//B8 = (-1)*e14 * e33+ A4;
+	//B9 = e14 * e34;
+	//B10 = (-1)*e34*e34;
 
 	return false;
 }
 
 bool CoordinateConvertParams::calibrate_C()
 {
-	if (e34 == 0)
-	{
-		C1 = e34 * e21 - e24 * e31;
-		C2 = e34 * e22 - e24 * e32;
-		C3 = e34 * e23 - e24 * e33;
-		C4 = e34 * e11 - e14 * e31;
-		C5 = e34 * e12 - e14 * e32;
-		C6 = e34 * e13 - e14 * e33;
-		C7 = (e11*e22*e34 - e11 * e24*e32 + e12 * e24*e31 - e12 * e21*e34 - e14 * e22*e31 + e14 * e21*e32) /
-			(e12*e24*e33 - e12 * e23*e34 + e13 * e22*e34 - e13 * e24*e32 + e14 * e23*e32 - e14 * e22*e33);
-		C8 = (e11*e23*e34 - e11 * e24*e33 + e13 * e24*e31 - e13 * e21*e34 - e14 * e21*e33 + e14 * e23*e31) /
-			(e12*e24*e33 - e12 * e23*e34 + e13 * e22*e34 - e13 * e24*e32 + e14 * e23*e32 - e14 * e22*e33);
-		C9 = 0;//
-		C10 =0;
-		C11 = 0;
-		C12 = 0;
-		C13 = C2 * C7;
-		C14 = C1 + C2 * C8;
-		C15 = C7 * C11;
-		C16 = C10 + C8 * C11;
-		C17 = C5 * C7;
-		C18 = C4 + C5 * C8;
-		C19 = kx_r * nx + ks_r * ny + u0_r * nz;
-		C20 = kx_r * ox + ks_r * oy + u0_r * oz;
-		C21 = kx_r * ax + ks_r * ay + u0_r * az;
-		C22 = kx_r * tx + ks_r * ty + u0_r * tz;
-		C23 = ky_r * ny + v0_r * nz;
-		C24 = ky_r * oy + v0_r * oz;
-		C25 = ky_r * ay + v0_r * az;
-		C26 = ky_r * ty + v0_r * tz;
 
-		C27 = (-1)*C8*kx_l;
-		C28 = (-1)*C8*ks_l + ky_l;
-		C29 = v0_l - C8 * u0_l;
-		C30 = C7 * kx_l;
-		C31 = C7 * ks_l;
-		C32 = C7 * u0_l + 1;
-	}
-	else
-	{
-		C1 = e34 * e21 - e24 * e31;
-		C2 = e34 * e22 - e24 * e32;
-		C3 = e34 * e23 - e24 * e33;
-		C4 = e34 * e11 - e14 * e31;
-		C5 = e34 * e12 - e14 * e32;
-		C6 = e34 * e13 - e14 * e33;
-		C7 = (e11*e22*e34 - e11 * e24*e32 + e12 * e24*e31 - e12 * e21*e34 - e14 * e22*e31 + e14 * e21*e32) /
-			(e12*e24*e33 - e12 * e23*e34 + e13 * e22*e34 - e13 * e24*e32 + e14 * e23*e32 - e14 * e22*e33);
-		C8 = (e11*e23*e34 - e11 * e24*e33 + e13 * e24*e31 - e13 * e21*e34 - e14 * e21*e33 + e14 * e23*e31) /
-			(e12*e24*e33 - e12 * e23*e34 + e13 * e22*e34 - e13 * e24*e32 + e14 * e23*e32 - e14 * e22*e33);
-		C9 = 0;//
-		C10 = (C4*e24 - C1 * e14) / e34;
-		C11 = (C5*e24 - C2 * e14) / e34;
-		C12 = (C6*e24 - C3 * e14) / e34;
-		C13 = C2 * C7;
-		C14 = C1 + C2 * C8;
-		C15 = C7 * C11;
-		C16 = C10 + C8 * C11;
-		C17 = C5 * C7;
-		C18 = C4 + C5 * C8;
-		C19 = kx_r * nx + ks_r * ny + u0_r * nz;
-		C20 = kx_r * ox + ks_r * oy + u0_r * oz;
-		C21 = kx_r * ax + ks_r * ay + u0_r * az;
-		C22 = kx_r * tx + ks_r * ty + u0_r * tz;
-		C23 = ky_r * ny + v0_r * nz;
-		C24 = ky_r * oy + v0_r * oz;
-		C25 = ky_r * ay + v0_r * az;
-		C26 = ky_r * ty + v0_r * tz;
+	C1 = e34 * e21 - e24 * e31;
+	C2 = e34 * e22 - e24 * e32;
+	C3 = e34 * e23 - e24 * e33;
+	C4 = e34 * e11 - e14 * e31;
+	C5 = e34 * e12 - e14 * e32;
+	C6 = e34 * e13 - e14 * e33;
+	C7 = (e11*e22*e34 - e11 * e24*e32 + e12 * e24*e31 - e12 * e21*e34 - e14 * e22*e31 + e14 * e21*e32) /
+		(e12*e24*e33 - e12 * e23*e34 + e13 * e22*e34 - e13 * e24*e32 + e14 * e23*e32 - e14 * e22*e33);
+	C8 = (e11*e23*e34 - e11 * e24*e33 + e13 * e24*e31 - e13 * e21*e34 + e14 * e21*e33 - e14 * e23*e31) /
+		(e12*e24*e33 - e12 * e23*e34 + e13 * e22*e34 - e13 * e24*e32 + e14 * e23*e32 - e14 * e22*e33);
+	C9 = 0;//
+	C10 = (C4*e24 - C1 * e14) / e34;
+	C11 = (C5*e24 - C2 * e14) / e34;
+	C12 = (C6*e24 - C3 * e14) / e34;
+	C13 = C2 * C7;
+	C14 = C1 + C2 * C8;
+	C15 = C7 * C11;
+	C16 = C10 + C8 * C11;
+	C17 = C5 * C7;
+	C18 = C4 + C5 * C8;
+	C19 = kx_r * nx + ks_r * ny + u0_r * nz;
+	C20 = kx_r * ox + ks_r * oy + u0_r * oz;
+	C21 = kx_r * ax + ks_r * ay + u0_r * az;
+	C22 = kx_r * tx + ks_r * ty + u0_r * tz;
+	C23 = ky_r * ny + v0_r * nz;
+	C24 = ky_r * oy + v0_r * oz;
+	C25 = ky_r * ay + v0_r * az;
+	C26 = ky_r * ty + v0_r * tz;
 
-		C27 = (-1)*C8*kx_l;
-		C28 = (-1)*C8*ks_l + ky_l;
-		C29 = v0_l - C8 * u0_l;
-		C30 = C7 * kx_l;
-		C31 = C7 * ks_l;
-		C32 = C7 * u0_l + 1;
-	}
+	C27 = (-1)*C8*kx_l;
+	C28 = (-1)*C8*ks_l + ky_l;
+	C29 = v0_l - C8 * u0_l;
+	C30 = C7 * kx_l;
+	C31 = C7 * ks_l;
+	C32 = C7 * u0_l + 1;
+
+	C33 =e11*e32*e34 - e14*e31*e32;
+	C34 = e12*e32*e34-e14*e32*e32;
+	C35 = e13*e32*e34-2*e14*e32*e33+e12*e33*e34;
+	C36 = e11*e33*e34-e14*e31*e33;
+	C37 =e13*e33*e34-e14*e33*e33;
+	C38 =e11*e22*e34-e14*e22*e31-e12*e21*e34+e12*e24*e31;
+	C39 =e12*e24*e32-e14*e22*e32;
+	C40 =e12*e23*e34+e13*e24*e32-e14*e23*e32-e14*e22*e33;
+	C41 = e11 * e23*e34 - e14 * e23*e31 - e13 * e21*e34 + e13 * e24*e31;
+	C42 = e13 * e24*e33 - e14 * e23*e33 -  e23*e34 + e24*e33;
+
+
 
 	return false;
 }

@@ -15,60 +15,66 @@ bool Coordinate_X::convertXFrom_P(BasicData& P)
 
 		//calculate x1 with three parts*********************************************
 		float x1_Interval1 = 
-			(Para->A9*i.p1*i.p2)
-			+ (Para->A10*i.p2)
-			+ (Para->A11*i.p1)
-			+ (Para->A12);
+			(Para->A1*i.p1*i.p2*i.p3)
+			+ (Para->A2*i.p1*i.p2)
+			+ (Para->A3*i.p1*i.p3)
+			+ (Para->A4*i.p2*i.p3)
+			+ (Para->A5*i.p1)
+			+ (Para->A6*i.p2)
+			+ (Para->A7*i.p3)
+			+ (Para->A8);
 
 		float x1_Interval2 = 
 			(Para->B1*i.p1*i.p2*i.p3)
 			+ (Para->B2*i.p1*i.p2)
-			+ (Para->B3*i.p1*i.p3)
-			+ (Para->B4*i.p2*i.p3)
-			+ (Para->B5*i.p1)
-			+ (Para->B6*i.p2)
-			+ (Para->B7*i.p3)
-			+ (Para->B8);
+			+ (Para->B3*i.p2*i.p3)
+			+ (Para->e32*i.p1*i.p3)
+			+ (Para->e33*i.p3)
+			+ (Para->B4*i.p2)
+			- (Para->e12*i.p1)
+			- (Para->e13);
 
-		float x1_Interval3 = (Para->B9) + (Para->B10*i.p3);
 
-		x1 = x1_Interval1 * x1_Interval2 / x1_Interval3; //combine three parts
+		x1 = x1_Interval1 / x1_Interval2 ; //combine three parts
 		
 		//calculate x2*************************************************
-		float x2_Interval1 = 
-			(Para->A13*i.p1*i.p2)
+		float x2_Interval1 =
+			(Para->A9*i.p1*i.p2*i.p3)
+			+ (Para->A10*i.p1*i.p2)
+			+ (Para->A11*i.p1*i.p3)
+			+ (Para->A12*i.p2*i.p3)
+			+ (Para->A13*i.p1)
 			+ (Para->A14*i.p2)
-			+ (Para->A15*i.p1)
+			+ (Para->A15*i.p3)
 			+ (Para->A16);
 
 		float x2_Interval2 =
 			(Para->B1*i.p1*i.p2*i.p3)
 			+ (Para->B2*i.p1*i.p2)
-			+ (Para->B3*i.p1*i.p3)
-			+ (Para->B4*i.p2*i.p3)
-			+ (Para->B5*i.p1)
-			+ (Para->B6*i.p2)
-			+ (Para->B7*i.p3)
-			+ (Para->B8);
+			+ (Para->B3*i.p2*i.p3)
+			+ (Para->e32*i.p1*i.p3)
+			+ (Para->e33*i.p3)
+			+ (Para->B4*i.p2)
+			- (Para->e12*i.p1)
+			- (Para->e13);
 
-		float x2_Interval3 = (Para->B9) + (Para->B10*i.p3);
-
-		x2 = x2_Interval1 * x2_Interval2 / x2_Interval3;
+		x2 = x2_Interval1 / x2_Interval2 ;
 
 
 		//calculate x3**************************************************
-		float x3_Interval1 = 
-			(Para->B1*i.p1*i.p2*i.p3) 
-			+ (Para->B2*i.p1*i.p2) 
-			+ (Para->B3*i.p1*i.p3) 
-			+ (Para->B4*i.p2*i.p3) 
-			+ (Para->B5*i.p1) 
-			+ (Para->B6*i.p2) 
-			+ (Para->B7*i.p3) 
-			+ (Para->B8);
+		float x3_Interval1 =
+			(Para->e14)
+			- (Para->e34*i.p3);
 		
-		float x3_Interval2 = (Para->B9) + (Para->B10*i.p3);
-
+		float x3_Interval2 =
+			(Para->B1*i.p1*i.p2*i.p3)
+			+ (Para->B2*i.p1*i.p2)
+			+ (Para->B3*i.p2*i.p3)
+			+ (Para->e32*i.p1*i.p3)
+			+ (Para->e33*i.p3)
+			+ (Para->B4*i.p2)
+			- (Para->e12*i.p1)
+			- (Para->e13);
 
 		x3 = x3_Interval1 / x3_Interval2;
 
@@ -107,7 +113,7 @@ bool Coordinate_X::convertXFrom_Q(BasicData& Q)
 
 
 		//***********************calculate x2
-		float x2_Interval1 = ((Para->hv_l*i.q1) + (Para->Y0_l))*((Para->e14) - (Para->e34*i.q3));
+		float x2_Interval1 = ((Para->hv_l*i.q2) + (Para->Y0_l))*((Para->e14) - (Para->e34*i.q3));
 
 		float x2_Interval2 = 
 			(Para->e31*i.q1*i.q3) 
