@@ -39,6 +39,7 @@ if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif(WIN32)
 
-
 add_subdirectory(src)
 add_subdirectory(app)
+
+include(doc/CMakeLists.txt)

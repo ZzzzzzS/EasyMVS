@@ -12,3 +12,5 @@ _deps
 include/
 lib/
 bin/
+doc/doxygen/
+doc/Doxyfile
