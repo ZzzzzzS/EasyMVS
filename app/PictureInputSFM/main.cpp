@@ -10,9 +10,5 @@
 int main()
 {
 	std::cout << cv::getBuildInformation();
-
-	MVSObject test;
-	std::cout << test.getTestString();
-
 	return 0;
 }

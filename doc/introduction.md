@@ -30,6 +30,7 @@ Sophus 李群与李代数
 
 qt 5.15 数据框架
 
+nlohmann-json 数据读写支持
 
 # 模块功能：
 

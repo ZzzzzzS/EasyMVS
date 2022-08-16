@@ -1,22 +1,18 @@
 #include <iostream>
+#include <MVSConfig.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/persistence.hpp>
 
-
-/**
- * @brief 
- * 
- */
 class MVSObject
 {
 public:
-	MVSObject()
-	{
-	}
+	MVSObject();
+	virtual ~MVSObject(){}
 
-	~MVSObject()
-	{
-	}
+	virtual bool save(Json& fs) = 0;
+	virtual bool load(Json& fn) = 0;
 	
-	std::string getTestString();
+	
 private:
 
 };

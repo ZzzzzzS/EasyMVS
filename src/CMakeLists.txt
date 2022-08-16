@@ -6,5 +6,3 @@ add_subdirectory(DenseReconstruction)
 add_subdirectory(FeatureExtraction)
 add_subdirectory(PoseReconstruction)
 add_subdirectory(PostFilter)
-
-

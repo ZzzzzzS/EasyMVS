@@ -1,12 +1,5 @@
 #include "MVSObject.h"
 
-
-/**
- * @brief test
- * 
- * @return std::string 
- */
-std::string MVSObject::getTestString()
+MVSObject::MVSObject()
 {
-	return "Hello EasyMVS!";
 }
