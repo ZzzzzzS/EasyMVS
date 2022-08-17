@@ -14,13 +14,13 @@ std::string CameraObject::getCameraName()
 	return this->CameraName;
 }
 
-bool CameraObject::save(Json& fs)
+bool CameraObject::save(JsonNode& fs)
 {
 	//TODO: add read images
 	return false;
 }
 
-bool CameraObject::load(Json& fn)
+bool CameraObject::load(JsonNode& fn)
 {
 	//TODO: add save images
 	return false;
@@ -42,7 +42,7 @@ PinholeCamera::~PinholeCamera()
 {
 }
 
-bool PinholeCamera::undisort(const cv::Mat& src, cv::Mat& dst)
+bool PinholeCamera::undistort(const cv::Mat& src, cv::Mat& dst)
 {
 	return false;
 }

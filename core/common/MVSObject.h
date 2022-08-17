@@ -29,7 +29,7 @@ public:
  * @return true save successfully
  * @return false save failed
  */
-	virtual bool save(Json& fs) = 0;
+	virtual bool save(JsonNode& fs) = 0;
 
 /**
  * @brief load data from file
@@ -38,7 +38,7 @@ public:
  * @return true load successfully
  * @return false load failed
  */
-	virtual bool load(Json& fs) = 0;
+	virtual bool load(JsonNode& fs) = 0;
 	
 	
 private:
