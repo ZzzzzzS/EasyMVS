@@ -26,7 +26,7 @@ public:
 /**
  * @brief Construct a new MapPointObject object
  * 
- * @param ID 
+ * @param ID MapPoint ID
  */
 	MapPointObject(int ID);
 
@@ -44,15 +44,87 @@ public:
  */
 	int getFrameID();
 
+/**
+ * @brief Get the Observed Times
+ * 
+ * @return int the times of observation
+ */
+	int getObservedTimes();
+
+/**
+ * @brief add one observation
+ * 
+ * @param Frame the frame of observation
+ * @param KeyPointID the keypoint id of observation in the frame
+ * @return true add succeed
+ * @return false add failed
+ */
+	bool addObservation(std::shared_ptr<FrameObject> Frame,int KeyPointID);
+
+	/**
+	 * @brief remove one observation
+	 * 
+	 * @param Frame the frame of observation
+	 * @return true remove succeed
+	 * @return false remove failed
+	 */
+	bool removeObservation(std::shared_ptr<FrameObject> Frame);
+
+	/**
+	 * @brief update the observation info
+	 * 
+	 * @param Frame the pointer of oervation frame
+	 * @param KeyPointID the keypoint id of observation in the frame
+	 * @return true update succeed
+	 * @return false update failed, may be the observation is not exist, or input is invalid
+	 */
+	bool updateObservation(std::shared_ptr<FrameObject> Frame,int KeyPointID);
+
+	/**
+	 * @brief Get the All Observation object
+	 * 
+	 * @param Frames vector of pointers of frame 
+	 * @return true get succeed
+	 * @return false get failed
+	 */
+	bool getAllObservation(std::vector<std::shared_ptr<FrameObject>>& Frames);
+
+/**
+ * @brief Set the Map Point Quality object
+ * 
+ * @param quality the mappoint quality from 0 to 1
+ * @return true set succeed
+ * @return false set faled
+ */
+	bool setMapPointQuality(double quality);
+
+	/**
+	 * @brief Get the Map Point Quality object
+	 * 
+	 * @return double the map point quality from 0 to 1
+	 */
+	double getMapPointQuality();
+	
 public:
+/**
+ * @brief the discriptor of map point related 2D key point
+ */
 	cv::Mat KeyPointDescriptor;
-	Eigen::Vector4d KeyPoint;
+
+	/**
+	 * @brief the global coordinate of the map point
+	 */
+	Eigen::Vector4d Position;
+
+	/**
+	 * @brief the observation direction of the map point
+	 * 
+	 */
 	Eigen::Vector3d Normal;
-	double quality;
+	
 
 private:
 	const int ID;
-	using ObservedFrameInfo = std::tuple<std::weak_ptr<FrameObject>, int>;
-	std::map<int, ObservedFrameInfo> ObservedFrame;
-
+	std::map<std::weak_ptr<FrameObject>,int> ObservedFrame;
+	double quality;
 };

@@ -29,12 +29,12 @@ bool FrameObject::getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose)
     return false;
 }
 
-bool FrameObject::setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d Pose)
+bool FrameObject::setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose)
 {
     return false;
 }
 
-bool FrameObject::addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d Pose)
+bool FrameObject::addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose)
 {
     return false;
 }

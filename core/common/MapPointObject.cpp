@@ -18,3 +18,38 @@ int MapPointObject::getFrameID()
 {
 	return this->ID;
 }
+
+int MapPointObject::getObservedTimes()
+{
+	return 0;
+}
+
+bool MapPointObject::addObservation(std::shared_ptr<FrameObject> Frame, int KeyPointID)
+{
+	return false;
+}
+
+bool MapPointObject::removeObservation(std::shared_ptr<FrameObject> Frame)
+{
+	return false;
+}
+
+bool MapPointObject::updateObservation(std::shared_ptr<FrameObject> Frame, int KeyPointID)
+{
+	return false;
+}
+
+bool MapPointObject::getAllObservation(std::vector<std::shared_ptr<FrameObject>>& Frames)
+{
+	return false;
+}
+
+bool MapPointObject::setMapPointQuality(double quality)
+{
+	return false;
+}
+
+double MapPointObject::getMapPointQuality()
+{
+	return 0.0;
+}

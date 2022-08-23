@@ -137,7 +137,16 @@ public:
 	bool updateDistCoeff(const cv::Mat1d& DistCoeff);
 
 protected:
+/**
+ * @brief Camera Intrinsic Matrix
+ * 
+ */
 	cv::Mat1d CameraMatrix;
+
+	/**
+	 * @brief Camera Distortion Parameters
+	 * 
+	 */
 	cv::Mat1d DistCoeff;
 };
 

@@ -10,7 +10,8 @@ set(SOURCE_FILES CameraObject.cpp
                 FrameObject.cpp
                 MapPointObject.cpp
                 MVSObject.cpp
-                WorkFlowObject.cpp)
+                WorkFlowObject.cpp
+                GlobalMapObject.cpp)
 
 set(HEADER_FILES CameraObject.h
                 ConfigurationObject.h
@@ -21,7 +22,7 @@ set(HEADER_FILES CameraObject.h
                 MVSObject.h
                 WorkFlowObject.h
 				MVSConfig.h
-)
+                GlobalMapObject.h)
 
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${HEADER_FILES})

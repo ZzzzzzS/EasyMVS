@@ -77,7 +77,7 @@ public:
 	 * @return true 
 	 * @return false 
 	 */
-	bool setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d Pose);
+	bool setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose);
 	
 	/**
 	 * @brief 
@@ -87,7 +87,18 @@ public:
 	 * @return true 
 	 * @return false 
 	 */
-	bool addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d Pose);
+	bool addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose);
+
+
+	/**
+	 * @brief 
+	 * 
+	 * @param Frame 
+	 * @param Pose 
+	 * @return true 
+	 * @return false 
+	 */
+	bool updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose);
 
 	/**
 	 * @brief 
@@ -113,25 +124,124 @@ public:
 	 * @return FrameObject::Ptr 
 	 */
 	FrameObject::Ptr getRelatedFrame(int FrameID);
+
+	/**
+	 * @brief Get the All Related Frames object
+	 * 
+	 * @param Frames 
+	 * @return true has related frames
+	 * @return false do NOT have related frames
+	 */
 	bool getAllRelatedFrames(std::vector<FrameObject::Ptr>& Frames);
 
-	bool addMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate);
-	bool removeMapPoint(int KeyPointID);
-	bool removeAllMapPoints();
-	bool getMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>& MapPoint, Eigen::Vector4d& LocalCoordinate);
-	//TODO: 差更新点
 
+/**
+ * @brief add frame observed map point
+ * 
+ * @param KeyPointID map point related key point ID
+ * @param MapPoint Pointer of map point
+ * @param LocalCoordinate map point coordinate in the current camera frame
+ * @return true add successfully
+ * @return false add failed
+ */
+	bool addMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate);
+
+	/**
+	 * @brief remove map point from frame
+	 * 
+	 * @param KeyPointID the map point related keypoint ID 
+	 * @return true remove successfully
+	 * @return false remove failed
+	 */
+	bool removeMapPoint(int KeyPointID);
+
+	/**
+	 * @brief remove all map points
+	 * 
+	 * @return true remove successfully
+	 * @return false remove failed
+	 */
+	bool removeAllMapPoints();
+
+	/**
+	 * @brief Get the Map Point object
+	 * 
+	 * @param KeyPointID input key point ID
+	 * @param MapPoint output map point pointer
+	 * @param LocalCoordinate output map point coordinate in local frame
+	 * @return true get successfully
+	 * @return false get failed
+	 */
+	bool getMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>& MapPoint, Eigen::Vector4d& LocalCoordinate);
+
+	/**
+	 * @brief update the map point
+	 * 
+	 * @param KeyPointID input key point ID
+	 * @param MapPoint input map point pointer
+	 * @param LocalCoordinate input mappoint coordinate
+	 * @return true update successfully
+	 * @return false update failed, may because input error, and may also because of the map point dose NOT exsit in the frame
+	 */
+	bool updateMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate);
+
+/**
+ * @brief load frame from file
+ * 
+ * @param fs 
+ * @return true load successed 
+ * @return false load failed
+ */
 	bool load(JsonNode& fs) override;
+
+	/**
+	 * @brief save frame to file
+	 * 
+	 * @param fs 
+	 * @return true save successed
+	 * @return false save failed
+	 */
 	bool save(JsonNode& fs) override;
 
 public:
+/**
+ * @brief the RGB image in the current frame
+ * the current frame may NOT contain RGB frame, 
+ * if the frame is created by projectors, the RGB image is empty.
+ */
 	cv::Mat RGBMat;
+
+	/**
+	 * @brief the depth map in the current frame
+	 * the current frame may contain depth map when it is created,
+	 * if the frame is created by RGBD cameras,
+	 * the original depth map will be stored here when frame is created.
+	 */
 	cv::Mat XYZMat;
+
+	/**
+	 * @brief vector of KeyPoints
+	 * 
+	 */
 	std::vector<cv::KeyPoint> KeyPoints;
+
+	/**
+	 * @brief KeyPoints descriptors, the storeage details is the same as it in OpenCV
+	 * the details can be seen in OpenCV documents.
+	 */
 	cv::Mat KeyPointsDescriptors;
+
+	/**
+	 * @brief the Bag of Words descriptor of the current frame.
+	 */
 	DBoW2::BowVector BoWDescriptors;
+
+
+/**
+ * @brief the global pose of current frame
+ * 
+ */
 	Sophus::SE3d GlobalPose;
-	Sophus::SE3d LocalPose;
 
 
 private:
@@ -189,7 +299,16 @@ public:
 	 */
 	~PinholeFrameObject();
 
+/**
+ * @brief Camera intrinsic matrix
+ * 
+ */
 	cv::Mat1d CameraMatrix;
+
+	/**
+	 * @brief camera distortion parameters
+	 * 
+	 */
 	cv::Mat1d DistCoeff;
 private:
 
