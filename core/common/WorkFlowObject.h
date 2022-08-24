@@ -1,7 +1,10 @@
+#pragma once
 #include "MVSObject.h"
 #include "MVSConfig.h"
+#include "DataFlowObject.h"
 #include <QObject>
 #include <opencv2/opencv.hpp>
+#include <queue>
 
 
 /**
@@ -67,7 +70,17 @@ public:
 	 */
 	virtual bool saveParameter(JsonNode& fs) = 0;
 	
+public:
+	using DataQueue=std::queue<DataFlowObject::Ptr>;
+
 signals:
+/**
+ * @brief the current work load of the workflow is finished, 
+ * and the processeed data pointer is stored in the queue, 
+ * the workflow can be assigned to new work load with **trigger()** methiod
+ * 
+ */
+	void Finished(DataQueue);
 /**
  * @brief the current work load of the workflow is finished, the workflow can be assigned to new work load with **trigger()** methiod
  * 
@@ -109,6 +122,7 @@ public slots:
  * 
  */
 	virtual void Trigger() = 0;
+	virtual void Trigger(DataQueue data) = 0;
 	
 
 public:
@@ -119,7 +133,6 @@ public:
 	using Ptr = std::shared_ptr<WorkFlowObject>;
 	
 protected:
-	std::string m_flowName;
 	bool m_isInit = false;
 };
 

@@ -19,6 +19,22 @@ public:
      * 
      */
     virtual ~DataFlowObject() {}
+
+public:
+/**
+ * @brief the shared pointer type of DataFlowObject
+ * 
+ */
+    using Ptr=std::shared_ptr<DataFlowObject>;
+
+    /**
+     * @brief create shared pointer of DataFlowObject,
+     * do NOT use this method directly, use the Create() method in derived class.
+     * 
+     * @return DataFlowObject::Ptr 
+     */
+    //static DataFlowObject::Ptr Create();
+
 private:
     /* data */
 };

@@ -46,6 +46,10 @@ bool Photographer::clear()
 	return false;
 }
 
+void Photographer::Trigger(Photographer::DataQueue data)
+{
+}
+
 void Photographer::Trigger()
 {
 	

@@ -102,6 +102,14 @@ public slots:
  * 
  */
 	void Trigger() override;
+
+	/**
+	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+	 * 
+	 * @param data input data
+	 */
+	
+	void Trigger(Photographer::DataQueue data);
 	
 private:
 	using CameraGroup = std::tuple<CameraObject::Ptr, Sophus::SE3d>;
