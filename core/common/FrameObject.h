@@ -80,55 +80,57 @@ public:
 	bool setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose);
 	
 	/**
-	 * @brief 
+	 * @brief add related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
 	 * 
-	 * @param Frame 
-	 * @param Pose 
-	 * @return true 
-	 * @return false 
+	 * @param Frame the shared pointer of another camera frame
+	 * @param Pose the extrinsic matrix between two cameras
+	 * @return true add successfully
+	 * @return false add failed, the frame is already in the related camera frame list,
+	 * or the input parameter is invalid.
 	 */
 	bool addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose);
 
 
 	/**
-	 * @brief 
+	 * @brief update the related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
 	 * 
-	 * @param Frame 
-	 * @param Pose 
-	 * @return true 
-	 * @return false 
+	 * @param Frame the shared pointer of another camera frame
+	 * @param Pose the new extrinsic matrix between two cameras
+	 * @return true update successfully
+	 * @return false update failed, the frame is not in the related camera frame list,
+	 * or the input parameter is invalid.
 	 */
 	bool updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose);
 
 	/**
-	 * @brief 
+	 * @brief remove the related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
 	 * 
-	 * @param FrameID 
-	 * @return true 
-	 * @return false 
+	 * @param FrameID the ID of the frame to be removed
+	 * @return true remove successfully
+	 * @return false remove failed, the frame is not in the related camera frame list.
 	 */
 	bool removeRelatedFrame(int FrameID);
 
 	/**
-	 * @brief 
+	 * @brief remove all of the related camera frame of current frame.
 	 * 
-	 * @return true 
-	 * @return false 
+	 * @return true remove successfully
+	 * @return false remove failed, the current frame has no related camera frame.
 	 */
 	bool removeAllRelatedFrames();
 
 	/**
 	 * @brief Get the Related Frame object
 	 * 
-	 * @param FrameID 
-	 * @return FrameObject::Ptr 
+	 * @param FrameID frame ID
+	 * @return FrameObject::Ptr the shared pointer of the frame
 	 */
 	FrameObject::Ptr getRelatedFrame(int FrameID);
 
 	/**
 	 * @brief Get the All Related Frames object
 	 * 
-	 * @param Frames 
+	 * @param Frames array of the shared pointer of the frame
 	 * @return true has related frames
 	 * @return false do NOT have related frames
 	 */

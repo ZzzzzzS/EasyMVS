@@ -89,24 +89,8 @@ public:
 	 * @return false detect failed
 	 */
 	bool Compute(FrameObject::Ptr frame);
-	
-public slots:
+
 /**
- * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
- * **this method shold NOT be called since this algorithm can NOT process empty input data.**
- * 
- */
-	void Trigger();
-
-	/**
-	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-	 * 
-	 * @param data 
-	 */
-	void Trigger(DataQueue data) override;
-	
-
-	/**
  * @brief save data to file
  *
  * @param fs the json handler
@@ -123,6 +107,24 @@ public slots:
 	 * @return false load failed
 	 */
 	bool load(JsonNode& fs);
+
+public slots:
+/**
+ * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+ * **this method shold NOT be called since this algorithm can NOT process empty input data.**
+ * 
+ */
+	void Trigger();
+
+	/**
+	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+	 * 
+	 * @param data 
+	 */
+	void Trigger(DataQueue data) override;
+	
+
+
 
 private:
 	cv::Ptr<cv::Feature2D> detector;

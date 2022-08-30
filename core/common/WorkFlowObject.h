@@ -122,6 +122,12 @@ public slots:
  * 
  */
 	virtual void Trigger() = 0;
+
+	/**
+	 * @brief trigger one work load of the workflow with input data.
+	 * 
+	 * @param data queue of shared pointer of dataflow object(commonly is frame object)
+	 */
 	virtual void Trigger(DataQueue data) = 0;
 	
 

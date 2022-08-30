@@ -104,6 +104,24 @@ public:
 	 * @return double the map point quality from 0 to 1
 	 */
 	double getMapPointQuality();
+
+/**
+ * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+ * 
+ * @param fs 
+ * @return true 
+ * @return false 
+ */
+	bool save(JsonNode& fs) override;
+
+	/**
+	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+	 * 
+	 * @param fs 
+	 * @return true 
+	 * @return false 
+	 */
+	bool load(JsonNode& fs) override;
 	
 public:
 /**

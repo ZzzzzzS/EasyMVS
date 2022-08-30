@@ -43,4 +43,4 @@ endif(WIN32)
 add_subdirectory(core)
 add_subdirectory(app)
 
-include(doc/CMakeLists.txt)
+include(doc/CMakeLists.txt) 

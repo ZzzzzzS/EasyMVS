@@ -10,6 +10,7 @@
 #include <vector>
 #include <sophus/se3.hpp>
 
+
 class Photographer : public WorkFlowObject
 {
 	Q_OBJECT

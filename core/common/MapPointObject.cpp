@@ -53,3 +53,13 @@ double MapPointObject::getMapPointQuality()
 {
 	return 0.0;
 }
+
+bool MapPointObject::save(JsonNode& fs)
+{
+	return false;
+}
+
+bool MapPointObject::load(JsonNode& fs)
+{
+	return false;
+}

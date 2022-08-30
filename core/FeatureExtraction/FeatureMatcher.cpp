@@ -38,6 +38,16 @@ bool FeatureMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr Global
     return false;
 }
 
+bool FeatureMatcher::save(JsonNode& fs)
+{
+    return false;
+}
+
+bool FeatureMatcher::load(JsonNode& fs)
+{
+    return false;
+}
+
 void FeatureMatcher::Trigger()
 {
 }

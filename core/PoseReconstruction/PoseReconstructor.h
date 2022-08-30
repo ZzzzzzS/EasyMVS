@@ -80,6 +80,24 @@ public:
      */
 	bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr());
 
+    /**
+     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+     * 
+     * @param fs 
+     * @return true 
+     * @return false 
+     */
+    bool save(JsonNode& fs) override;
+
+    /**
+     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+     * 
+     * @param fs 
+     * @return true 
+     * @return false 
+     */
+    bool load(JsonNode& fs) override;
+
 public slots:
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
