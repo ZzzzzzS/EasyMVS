@@ -64,31 +64,34 @@ public:
 	 * 
 	 * @param Camera the shared pointer of another camera
 	 * @param Pose the extrinsic matrix between two cameras
+	 * @param the pose confidence from 0~1, -1 is invalid confidence.
 	 * @return true 
 	 * @return false 
 	 */
-	bool getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose);
+	bool getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose, double Confidence = 1);
 
 	/**
 	 * @brief Set the Best Camera
 	 * 
 	 * @param Camera the shared pointer of another camera
 	 * @param Pose the extrinsic matrix between two cameras
+	 * @param the pose confidence from 0~1, -1 is invalid confidence.
 	 * @return true 
 	 * @return false 
 	 */
-	bool setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose);
+	bool setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose, double Confidence = 1);
 	
 	/**
 	 * @brief add related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
 	 * 
 	 * @param Frame the shared pointer of another camera frame
 	 * @param Pose the extrinsic matrix between two cameras
+	 * @param the pose confidence from 0~1, -1 is invalid confidence.
 	 * @return true add successfully
 	 * @return false add failed, the frame is already in the related camera frame list,
 	 * or the input parameter is invalid.
 	 */
-	bool addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose);
+	bool addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose = Sophus::SE3d(Sophus::Matrix4d::Identity()), double Confidence = -1);
 
 
 	/**
@@ -96,11 +99,12 @@ public:
 	 * 
 	 * @param Frame the shared pointer of another camera frame
 	 * @param Pose the new extrinsic matrix between two cameras
+	 * @param the pose confidence from 0~1, -1 is invalid confidence.
 	 * @return true update successfully
 	 * @return false update failed, the frame is not in the related camera frame list,
 	 * or the input parameter is invalid.
 	 */
-	bool updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose);
+	bool updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose, double Confidence = -1);
 
 	/**
 	 * @brief remove the related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
@@ -248,8 +252,16 @@ public:
 
 private:
 	const int FrameID;
-	using RelatedFrameInfo = std::tuple<std::weak_ptr<FrameObject>, Sophus::SE3d>;
+	/**
+	 * @brief pointer of the related frame, the pose of related frame, the pose confidence of related frame (-1 means invalid)
+	 */
+	using RelatedFrameInfo = std::tuple<std::weak_ptr<FrameObject>, Sophus::SE3d, double>;
 	RelatedFrameInfo BestCamera;
+
+	/**
+	 * @brief int is the frame ID, the second is the related frame pointer.
+	 * the related frame pose might inaccurate once the global pose is found.
+	 */
 	std::map<int, RelatedFrameInfo> RelatedFrame;
 
 	using MapPointInfo = std::tuple<std::weak_ptr<MapPointObject>, Eigen::Vector4d>;

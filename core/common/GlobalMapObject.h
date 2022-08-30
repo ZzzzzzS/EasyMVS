@@ -35,6 +35,7 @@ public:
 	~GlobalMapObject();
 	
 
+
     /**
      * @brief map contain frames, Frame ID and Frame pointer
      * 
@@ -47,6 +48,19 @@ public:
      */
 	std::map<int, MapPointObject::Ptr> MapPoints;
 
+    /**
+     * @brief the initial fram ID
+     */
+    int InitialFrameID;
+
+    /**
+     * @brief get all related frame as a whole map, return different map frames, and Map Points.
+     * 
+     * @param Frames a set of maps' frames.
+     * @param MapPoint a set of maps' Mappoints.
+     * @return whether can find map.
+     */
+    bool getMaps(std::set<std::map<int, FrameObject>>& Frames, std::set<std::map<int, MapPointObject>>& MapPoint);
 /**
  * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
  * 

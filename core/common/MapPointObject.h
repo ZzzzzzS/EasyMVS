@@ -143,6 +143,11 @@ public:
 
 private:
 	const int ID;
+
+	/**
+	 * the shared pointer of observerd frame, and the keypoint index.
+	 * rememeber to delete the observation in related frame object when the mappoint is deleted!
+	 */
 	std::map<std::weak_ptr<FrameObject>,int> ObservedFrame;
 	double quality;
 };

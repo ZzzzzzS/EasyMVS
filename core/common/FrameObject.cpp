@@ -24,17 +24,22 @@ int FrameObject::getFrameID()
     return this->FrameID;
 }
 
-bool FrameObject::getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose)
+bool FrameObject::getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose,double confidence)
 {
     return false;
 }
 
-bool FrameObject::setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose)
+bool FrameObject::setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose, double confidence)
 {
     return false;
 }
 
-bool FrameObject::addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose)
+bool FrameObject::addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose, double confidence)
+{
+    return false;
+}
+
+bool FrameObject::updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose, double confidence)
 {
     return false;
 }
@@ -70,6 +75,16 @@ bool FrameObject::removeMapPoint(int KeyPointID)
 }
 
 bool FrameObject::removeAllMapPoints()
+{
+    return false;
+}
+
+bool FrameObject::getMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>& MapPoint, Eigen::Vector4d& LocalCoordinate)
+{
+    return false;
+}
+
+bool FrameObject::updateMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)
 {
     return false;
 }
