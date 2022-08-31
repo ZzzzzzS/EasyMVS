@@ -3,9 +3,13 @@ cmake_minimum_required(VERSION 3.2)
 set(NAME_POSTFIX CameraModule)
 project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
-set(SOURCE_FILES Photographer.cpp)
+set(SOURCE_FILES Photographer.cpp
+                HikVisionCamera.cpp
+                DualPhotographer.cpp)
 
-set(HEADER_FILES Photographer.h)
+set(HEADER_FILES Photographer.h
+                HikVisionCamera.h
+                DualPhotographer.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} Eigen3::Eigen)

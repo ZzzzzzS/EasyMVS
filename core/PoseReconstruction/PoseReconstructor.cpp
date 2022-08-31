@@ -38,6 +38,16 @@ bool PoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr Glo
 	return false;
 }
 
+bool PoseReconstructor::save(JsonNode& fs)
+{
+	return false;
+}
+
+bool PoseReconstructor::load(JsonNode& fs)
+{
+	return false;
+}
+
 void PoseReconstructor::Trigger()
 {
 }

@@ -1,11 +1,12 @@
 #include "DenseReconstructor.h"
 
-DenseReconstructor::Ptr DenseReconstructor::Create(cv::Ptr<cv::StereoMatcher> CustomizeMatcher)
+DenseReconstructor::Ptr DenseReconstructor::Create(GlobalMapObject::Ptr GlobalMap)
 {
     return DenseReconstructor::Ptr();
 }
 
-DenseReconstructor::DenseReconstructor(cv::Ptr<cv::StereoMatcher> CustomizeMatcher)
+DenseReconstructor::DenseReconstructor(GlobalMapObject::Ptr GlobalMap)
+    :GlobalMap(GlobalMap)
 {
 }
 
@@ -39,6 +40,11 @@ bool DenseReconstructor::save(JsonNode& fs)
 }
 
 bool DenseReconstructor::load(JsonNode& fs)
+{
+    return false;
+}
+
+bool DenseReconstructor::Compute(FrameObject::Ptr frame)
 {
     return false;
 }

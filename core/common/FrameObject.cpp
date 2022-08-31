@@ -1,17 +1,18 @@
 #include "FrameObject.h"
 
-FrameObject::Ptr FrameObject::Create(int ID)
+FrameObject::Ptr FrameObject::Create(int ID, uint32_t Timestamp)
 {
     return Ptr();
 }
 
-FrameObject::Ptr FrameObject::Create(int ID, const cv::Mat& RGBMat, const cv::Mat& XYZMap)
+FrameObject::Ptr FrameObject::Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp, const cv::Mat& XYZMap)
 {
     return Ptr();
 }
 
-FrameObject::FrameObject(int ID)
-    :FrameID(ID)
+FrameObject::FrameObject(int ID, uint32_t Timestamp)
+    :FrameID(ID),
+    Timestamp(Timestamp)
 {
 }
 
@@ -24,25 +25,26 @@ int FrameObject::getFrameID()
     return this->FrameID;
 }
 
-bool FrameObject::getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose,double confidence)
+uint32_t FrameObject::getTimestamp()
+{
+    return this->Timestamp;
+}
+
+bool FrameObject::setBestFrame(RelatedFrameInfo::Ptr FramePtr)
 {
     return false;
 }
 
-bool FrameObject::setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose, double confidence)
+FrameObject::RelatedFrameInfo::Ptr FrameObject::getBestFrame()
+{
+    return RelatedFrameInfo::Ptr();
+}
+
+bool FrameObject::addRelatedFrame(RelatedFrameInfo::Ptr FramePtr)
 {
     return false;
 }
 
-bool FrameObject::addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose, double confidence)
-{
-    return false;
-}
-
-bool FrameObject::updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose, double confidence)
-{
-    return false;
-}
 
 bool FrameObject::removeRelatedFrame(int FrameID)
 {
@@ -54,12 +56,12 @@ bool FrameObject::removeAllRelatedFrames()
     return false;
 }
 
-FrameObject::Ptr FrameObject::getRelatedFrame(int FrameID)
+FrameObject::RelatedFrameInfo::Ptr FrameObject::getRelatedFrame(int FrameID)
 {
-    return FrameObject::Ptr();
+    return RelatedFrameInfo::Ptr();
 }
 
-bool FrameObject::getAllRelatedFrames(std::vector<FrameObject::Ptr>& Frames)
+bool FrameObject::getAllRelatedFrames(std::vector<RelatedFrameInfo::Ptr>& Frames)
 {
     return false;
 }
@@ -115,5 +117,50 @@ PinholeFrameObject::PinholeFrameObject(int ID)
 }
 
 PinholeFrameObject::~PinholeFrameObject()
+{
+}
+
+
+FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame)
+{
+    return RelatedFrameInfo::Ptr();
+}
+
+FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame, std::shared_ptr<Sophus::SE3d> Pose, double sigma)
+{
+    return RelatedFrameInfo::Ptr();
+}
+
+FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame, std::vector<cv::DMatch> KeyPointMatch)
+{
+    return RelatedFrameInfo::Ptr();
+}
+
+std::shared_ptr<FrameObject> FrameObject::RelatedFrameInfo::getRelatedFrame()
+{
+    return std::shared_ptr<FrameObject>();
+}
+
+bool FrameObject::RelatedFrameInfo::isFrameExist()
+{
+    return false;
+}
+
+bool FrameObject::RelatedFrameInfo::save(JsonNode& fs)
+{
+    return false;
+}
+
+bool FrameObject::RelatedFrameInfo::load(JsonNode& fs)
+{
+    return false;
+}
+
+FrameObject::RelatedFrameInfo::RelatedFrameInfo(std::shared_ptr<FrameObject> RelatedFrame)
+    :sigma(0)
+{
+}
+
+FrameObject::RelatedFrameInfo::~RelatedFrameInfo()
 {
 }

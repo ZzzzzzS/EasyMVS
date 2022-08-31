@@ -49,7 +49,7 @@ public:
 	std::map<int, MapPointObject::Ptr> MapPoints;
 
     /**
-     * @brief the initial fram ID
+     * @brief the initial frame ID
      */
     int InitialFrameID;
 

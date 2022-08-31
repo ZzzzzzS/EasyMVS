@@ -5,10 +5,14 @@ project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
 
 set(SOURCE_FILES PoseOptimizer.cpp
-                PoseReconstructor.cpp)
+                PoseReconstructor.cpp
+                PinholePoseReconstructor.cpp
+                BundlePoseOptimizer.cpp)
 
 set(HEADER_FILES PoseOptimizer.h
-                PoseReconstructor.h)
+                PoseReconstructor.h
+                PinholePoseReconstructor.h
+                BundlePoseOptimizer.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} Eigen3::Eigen)

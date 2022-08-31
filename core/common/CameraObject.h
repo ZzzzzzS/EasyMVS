@@ -44,6 +44,7 @@ public:
 	virtual bool undistort(const cv::Mat& src, cv::Mat& dst) = 0;
 	
 
+
 	/**
 	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
 	 * 

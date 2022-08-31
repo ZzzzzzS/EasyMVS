@@ -8,6 +8,10 @@
 #include "GlobalMapObject.h"
 #include "FrameObject.h"
 
+/**
+ * @brief The goal of this node is to select the keypoint pairs to match. 
+ * The ambition is to find the images that are looking to the same areas of the scene.
+ */
 class FeatureMatcher:public WorkFlowObject
 {
 public:
@@ -38,7 +42,7 @@ public:
      * @brief Destroy the Feature Matcher object
      * 
      */
-	~FeatureMatcher();
+	virtual ~FeatureMatcher();
 
 /**
  * @brief Get the Flow Name
@@ -53,7 +57,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool clear() override;
+	virtual bool clear() override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -62,7 +66,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool init(JsonNode& fs) override;
+	virtual bool init(JsonNode& fs) override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -71,7 +75,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool saveParameter(JsonNode& fs) override;
+	virtual bool saveParameter(JsonNode& fs) override;
 
     /**
      * @brief match the features of the current frame with the global map
@@ -82,7 +86,7 @@ public:
      * @return true match succeed
      * @return false match failed or input parameter incorrect
      */
-	bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap=GlobalMapObject::Ptr());
+	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap=GlobalMapObject::Ptr());
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -117,8 +121,9 @@ public slots:
 	void Trigger(DataQueue data) override;
 
 
-private:
+protected:
+    /**
+     * @brief pointer of globalmap.
+     */
 	GlobalMapObject::Ptr GlobalMap;
-
-    //这里应该加dbow2的参数，但是dbow2目前只有orb的描述子，这个怎么办还得思考一下
 };

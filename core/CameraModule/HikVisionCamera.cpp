@@ -1,0 +1,2 @@
+#include "HikVisionCamera.h"
+

@@ -16,7 +16,7 @@ public:
 	DenseOptimizer::Ptr Create();
 public:
 	DenseOptimizer();
-	~DenseOptimizer();
+	virtual ~DenseOptimizer();
 
 	
 

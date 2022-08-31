@@ -6,7 +6,7 @@ project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
 set(SOURCE_FILES DenseFilter.cpp)
 
-set(HEADER_FILES DenseFilter.cpp)
+set(HEADER_FILES DenseFilter.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} Eigen3::Eigen)

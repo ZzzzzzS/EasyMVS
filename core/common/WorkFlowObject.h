@@ -34,7 +34,7 @@ public:
  * 
  * @return std::string 
  */
-	virtual std::string getFlowName() = 0;
+	virtual std::string getFlowName();
 
 	/**
 	 * @brief clear the workflow state, the workflow should be re-init after clear.

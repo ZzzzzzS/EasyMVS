@@ -6,6 +6,14 @@
 #include "GlobalMapObject.h"
 #include <QObject>
 
+
+/**
+ * @brief This workflow will analyze feature matches to understand the geometric relationship
+ *  behind all the 2D observations, and infer the rigid scene structure (3D points)
+ *  with the pose (position and orientation) and internal calibration of all cameras.
+ *  The pipeline is a growing reconstruction process (called incremental SfM):
+ *  it first computes an initial two-view reconstruction that is iteratively extended by adding new views.
+ */
 class PoseReconstructor : public WorkFlowObject
 {
 public:
@@ -34,7 +42,7 @@ public:
      * @brief Destroy the Pose Reconstructor object
      * 
      */
-	~PoseReconstructor();
+	virtual ~PoseReconstructor();
 
     /**
      * @brief Get the Flow Name
@@ -58,7 +66,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool init(JsonNode& fs) override;
+	virtual bool init(JsonNode& fs) override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -67,7 +75,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool saveParameter(JsonNode& fs) override;
+	virtual bool saveParameter(JsonNode& fs) override;
 
     /**
      * @brief compute the pose of the current frame
@@ -78,7 +86,7 @@ public:
      * @return true calculate the global pose successfully.
      * @return false failed to calculate the global pose, or input parameter is incorrect.
      */
-	bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr());
+	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr());
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -113,6 +121,6 @@ public slots:
 	void Trigger(DataQueue data) override;
 
 
-private:
+protected:
 	GlobalMapObject::Ptr GlobalMap;
 };

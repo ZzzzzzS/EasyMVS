@@ -26,7 +26,7 @@ public:
  * @param XYZMap the XYZ map or depth map, the RGBD camera may already compute the original depth map when frame is created.
  * @return Ptr 
  */
-	static Ptr Create(int ID, const cv::Mat& RGBMat, const cv::Mat& XYZMap = cv::Mat());
+	static Ptr Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp = 0, const cv::Mat& XYZMap = cv::Mat());
 
 	/**
 	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -34,7 +34,7 @@ public:
 	 * @param ID 
 	 * @return Ptr 
 	 */
-	static Ptr Create(int ID);
+	static Ptr Create(int ID, uint32_t Timestamp = 0);
 
 public:
 
@@ -43,7 +43,7 @@ public:
  * 
  * @param ID unique frame ID
  */
-	FrameObject(int ID);
+	FrameObject(int ID, uint32_t Timestamp = 0);
 
 	/**
 	 * @brief Destroy the Frame Object object
@@ -52,6 +52,115 @@ public:
 	virtual ~FrameObject();
 
 public:
+	
+	/**
+	 * @brief the related frame info class, related frame can be defined as the frames that have common
+	 * field of views.
+	 * which store Interframe information such as pose between two frames, 
+	 * prior believe of the pose, and the matched keypoints between frames.
+	 */
+	class RelatedFrameInfo : public DataFlowObject
+	{
+	public:
+		/**
+		 * @brief shared pointer.
+		 */
+		using Ptr = std::shared_ptr<RelatedFrameInfo>;
+
+		/**
+		 * @brief create the shared pointer of relatedframeinfo.
+		 * 
+		 * @param RelatedFrame shared pointer of related frame.
+		 * @return shared pointer, return empty pointer when create failed.
+		 */
+		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame);
+
+		/**
+		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts..
+		 * 
+		 * @param RelatedFrame
+		 * @param Pose
+		 * @param sigma
+		 * @return 
+		 */
+		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame, std::shared_ptr<Sophus::SE3d> Pose, double sigma = 0);
+
+		/**
+		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts..
+		 * 
+		 * @param RelatedFrame
+		 * @param KeyPointMatch
+		 * @return 
+		 */
+		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame, std::vector<cv::DMatch> KeyPointMatch);
+	public:
+
+		/**
+		 * @brief get the pointer of related frame.
+		 * 
+		 * @return shared pointer of related frame, return empty pointer if the frame is not exist.
+		 */
+		std::shared_ptr<FrameObject> getRelatedFrame();
+
+		/**
+		 * @brief query wether the frame exist.
+		 * usually the frame exist when the frame info exist, but there might be some garbage collection errors, during development.
+		 * this method is to make sure that the frame dose exist.
+		 * 
+		 * @return wether the frame exist.
+		 */
+		bool isFrameExist();
+
+		/**
+		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+		 * 
+		 * @param fs
+		 * @return 
+		 */
+		bool save(JsonNode& fs) override;
+
+		/**
+		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+		 * 
+		 * @param fs
+		 * @return 
+		 */
+		bool load(JsonNode& fs) override;
+
+		/**
+		 * @brief Construct a new Frameinfo object.
+		 * instead of call this method, it is better to construct new frame info object with **Create**method.
+		 * 
+		 * @param RelatedFrame
+		 */
+		RelatedFrameInfo(std::shared_ptr<FrameObject> RelatedFrame);
+
+		/**
+		 * @brief Destroy the object.
+		 * 
+		 */
+		~RelatedFrameInfo();
+
+		/**
+		 * @brief shared pointer of pose.
+		 */
+		std::shared_ptr<Sophus::SE3d> Pose;
+
+		/**
+		 * @brief variance of pose.
+		 */
+		double sigma;
+
+		/**
+		 * @brief matched feature points.
+		 */
+		std::vector<cv::DMatch> KeyPointMatch;
+
+	private:
+		std::weak_ptr<FrameObject> RelatedFramePtr;
+	};
+	
+public:
 /**
  * @brief Get the Frame ID
  * 
@@ -59,53 +168,42 @@ public:
  */
 	int getFrameID();
 
-	/**
-	 * @brief Get the Best Camera pair
-	 * 
-	 * @param Camera the shared pointer of another camera
-	 * @param Pose the extrinsic matrix between two cameras
-	 * @param the pose confidence from 0~1, -1 is invalid confidence.
-	 * @return true 
-	 * @return false 
-	 */
-	bool getBestCamera(FrameObject::Ptr& Camera, Sophus::SE3d& Pose, double Confidence = 1);
 
 	/**
-	 * @brief Set the Best Camera
+	 * @brief Get the timestamp.
 	 * 
-	 * @param Camera the shared pointer of another camera
-	 * @param Pose the extrinsic matrix between two cameras
-	 * @param the pose confidence from 0~1, -1 is invalid confidence.
-	 * @return true 
-	 * @return false 
+	 * @return uint32 timestamp
 	 */
-	bool setBestCamera(FrameObject::Ptr Camera, const Sophus::SE3d& Pose, double Confidence = 1);
+	uint32_t getTimestamp();
+
+
+	/**
+	 * @brief set the best frame, the best camera pair is the camera that will be used during dual camera dense reconstruction.
+	 * the best frame should be set after pose reconstruction in mono camera scenario, or be set when the frame is generated in dual camera or RGBD camera scenario.
+	 * @param the shared pointer of best frame.
+	 * @return wether created succeefully.
+	 *
+	 */
+	bool setBestFrame(RelatedFrameInfo::Ptr FramePtr);
+
+	/**
+	 * @brief get the best frame.
+	 * 
+	 * @return the shared pointer of the best frame, the pointer will be empty when no frame exist.
+	 */
+	RelatedFrameInfo::Ptr getBestFrame();
 	
-	/**
-	 * @brief add related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
-	 * 
-	 * @param Frame the shared pointer of another camera frame
-	 * @param Pose the extrinsic matrix between two cameras
-	 * @param the pose confidence from 0~1, -1 is invalid confidence.
-	 * @return true add successfully
-	 * @return false add failed, the frame is already in the related camera frame list,
-	 * or the input parameter is invalid.
-	 */
-	bool addRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose = Sophus::SE3d(Sophus::Matrix4d::Identity()), double Confidence = -1);
-
 
 	/**
-	 * @brief update the related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
+	 * @brief add relate frame, the related frame is the frame with common field of view, 
+	 * it may because the two frames have matched feature points, or because the two frames are created from an dual cameras, or RGBD camera.
 	 * 
-	 * @param Frame the shared pointer of another camera frame
-	 * @param Pose the new extrinsic matrix between two cameras
-	 * @param the pose confidence from 0~1, -1 is invalid confidence.
-	 * @return true update successfully
-	 * @return false update failed, the frame is not in the related camera frame list,
-	 * or the input parameter is invalid.
+	 * @param FramePtr the shared pointer of related frame.
+	 * @return true the frame is successfully created.
+	 * @return false failed to create the frame, may because the related frame already exist.
 	 */
-	bool updateRelatedFrame(FrameObject::Ptr Frame, const Sophus::SE3d& Pose, double Confidence = -1);
-
+	bool addRelatedFrame(RelatedFrameInfo::Ptr FramePtr);
+	
 	/**
 	 * @brief remove the related camera frame, the related camera frame is the frame which has the common filed of view with current frame.
 	 * 
@@ -129,7 +227,7 @@ public:
 	 * @param FrameID frame ID
 	 * @return FrameObject::Ptr the shared pointer of the frame
 	 */
-	FrameObject::Ptr getRelatedFrame(int FrameID);
+	RelatedFrameInfo::Ptr getRelatedFrame(int FrameID);
 
 	/**
 	 * @brief Get the All Related Frames object
@@ -138,7 +236,7 @@ public:
 	 * @return true has related frames
 	 * @return false do NOT have related frames
 	 */
-	bool getAllRelatedFrames(std::vector<FrameObject::Ptr>& Frames);
+	bool getAllRelatedFrames(std::vector<RelatedFrameInfo::Ptr>& Frames);
 
 
 /**
@@ -250,19 +348,19 @@ public:
 	Sophus::SE3d GlobalPose;
 
 
-private:
+protected:
 	const int FrameID;
+	const uint32_t Timestamp;
 	/**
 	 * @brief pointer of the related frame, the pose of related frame, the pose confidence of related frame (-1 means invalid)
 	 */
-	using RelatedFrameInfo = std::tuple<std::weak_ptr<FrameObject>, Sophus::SE3d, double>;
-	RelatedFrameInfo BestCamera;
+	RelatedFrameInfo::Ptr BestCamera;
 
 	/**
 	 * @brief int is the frame ID, the second is the related frame pointer.
 	 * the related frame pose might inaccurate once the global pose is found.
 	 */
-	std::map<int, RelatedFrameInfo> RelatedFrame;
+	std::map<int, RelatedFrameInfo::Ptr> RelatedFrame;
 
 	using MapPointInfo = std::tuple<std::weak_ptr<MapPointObject>, Eigen::Vector4d>;
 	std::map<int, MapPointInfo> OvservedMapPoints;

@@ -31,7 +31,7 @@ bool Photographer::init(JsonNode& fs)
 	return false;
 }
 
-bool Photographer::takePhoto(std::vector<FrameObject::Ptr>& Frames)
+bool Photographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 {
 	return false;
 }

@@ -3,6 +3,7 @@
 #include "WorkFlowObject.h"
 #include "FrameObject.h"
 #include "MapPointObject.h"
+#include "GlobalMapObject.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/calib3d.hpp>
@@ -26,7 +27,7 @@ public:
      * @param CustomizeMatcher 
      * @return DenseReconstructor::Ptr 
      */
-	static DenseReconstructor::Ptr Create(cv::Ptr<cv::StereoMatcher> CustomizeMatcher = cv::Ptr<cv::StereoMatcher>());
+	static DenseReconstructor::Ptr Create(GlobalMapObject::Ptr GlobalMap);
 	
 public:
 
@@ -35,8 +36,8 @@ public:
  * 
  * @param CustomizeMatcher 
  */
-	DenseReconstructor(cv::Ptr<cv::StereoMatcher> CustomizeMatcher=cv::Ptr<cv::StereoMatcher>());
-	~DenseReconstructor();
+	DenseReconstructor(GlobalMapObject::Ptr GlobalMap);
+	virtual ~DenseReconstructor();
 
 /**
  * @brief Get the Flow Name object
@@ -52,7 +53,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool clear() override;
+	virtual bool clear() override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -61,7 +62,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool init(JsonNode& fs) override;
+	virtual bool init(JsonNode& fs) override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -70,7 +71,7 @@ public:
      * @return true 
      * @return false 
      */
-	bool saveParameter(JsonNode& fs) override;
+	virtual bool saveParameter(JsonNode& fs) override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -92,6 +93,15 @@ public:
 
 
     /**
+     * @brief computes disparity map for the frame with preloaded parameters, and preloaded best camera(s).
+     * 
+     * @param frame the new comming frame
+     * @return true compute success 
+     * @return false compute failed
+     */
+    virtual bool Compute(FrameObject::Ptr frame);
+
+    /**
      * @brief computes disparity map for the specified stereo pair with preloaded parameters,
      * the output disparity map will be stored in the frame.
      * 
@@ -100,7 +110,7 @@ public:
      * @return true compute success 
      * @return false compute failed, maybe the frame is not stereo pair
      */
-	bool Compute(FrameObject::Ptr frame1, FrameObject Frame2);
+	virtual bool Compute(FrameObject::Ptr frame1, FrameObject Frame2);
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -109,7 +119,7 @@ public:
      * @return true compute success 
      * @return false compute failed, maybe the frame is not stereo pair
      */
-	bool Compute(std::vector<FrameObject::Ptr>& frames);
+	virtual bool Compute(std::vector<FrameObject::Ptr>& frames);
 	
 	
 public slots:
@@ -129,7 +139,8 @@ public slots:
 	
 	
 
-private:
+protected:
 	cv::Ptr<cv::StereoMatcher> MatcherPtr;
+    GlobalMapObject::Ptr GlobalMap;
 };
 

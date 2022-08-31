@@ -78,7 +78,7 @@ public:
 	 * @return true succeed
 	 * @return false failed
 	 */
-	virtual bool takePhoto(std::vector<FrameObject::Ptr>& Frames);
+	virtual bool Compute(std::vector<FrameObject::Ptr>& Frames);
 
 	/**
 	 * @brief save the parameters of the flow to json node
@@ -112,10 +112,9 @@ public slots:
 	
 	void Trigger(Photographer::DataQueue data);
 	
-private:
+protected:
 	using CameraGroup = std::tuple<CameraObject::Ptr, Sophus::SE3d>;
 	std::vector<CameraGroup> Cameras;
-	
-	
+
 };
 
