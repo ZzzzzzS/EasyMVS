@@ -22,7 +22,8 @@ set(HEADER_FILES CameraObject.h
                 MVSObject.h
                 WorkFlowObject.h
 				MVSConfig.h
-                GlobalMapObject.h)
+                GlobalMapObject.h
+                JsonSaver.hpp)
 
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
