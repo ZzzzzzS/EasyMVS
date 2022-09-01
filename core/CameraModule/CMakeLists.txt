@@ -4,11 +4,11 @@ set(NAME_POSTFIX CameraModule)
 project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
 set(SOURCE_FILES Photographer.cpp
-                HikVisionCamera.cpp
+                CVHikCamera.cpp
                 DualPhotographer.cpp)
 
 set(HEADER_FILES Photographer.h
-                HikVisionCamera.h
+                CVHikCamera.h
                 DualPhotographer.h)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

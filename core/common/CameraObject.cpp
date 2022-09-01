@@ -1,7 +1,6 @@
 #include "CameraObject.h"
 
-CameraObject::CameraObject(const std::string CameraName)
-	:CameraName(CameraName)
+CameraObject::CameraObject()
 {
 }
 
@@ -26,14 +25,13 @@ bool CameraObject::load(JsonNode& fn)
 	return false;
 }
 
-PinholeCamera::Ptr PinholeCamera::Create(const std::string CameraName, const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff)
+PinholeCamera::Ptr PinholeCamera::Create(const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff)
 {
-	return std::make_shared<PinholeCamera>(CameraName, CameraMatrix, DistCoeff);
+	return std::make_shared<PinholeCamera>(CameraMatrix, DistCoeff);
 }
 
-PinholeCamera::PinholeCamera(const std::string CameraName, const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff)
-	:CameraObject(CameraName),
-	CameraMatrix(CameraMatrix),
+PinholeCamera::PinholeCamera(const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff)
+	:CameraMatrix(CameraMatrix),
 	DistCoeff(DistCoeff)
 {
 }

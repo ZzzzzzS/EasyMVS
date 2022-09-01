@@ -17,7 +17,7 @@ public:
  * 
  * @param CameraName the unique name of Camera
  */
-	CameraObject(const std::string CameraName);
+	CameraObject();
 
 /**
  * @brief Destroy the Camera Object object
@@ -43,10 +43,16 @@ public:
  */
 	virtual bool undistort(const cv::Mat& src, cv::Mat& dst) = 0;
 	
-
+	/**
+	 * @brief open the camera with the preloaded parameter
+	 * 
+	 * @return true 
+	 * @return false 
+	 */
+	virtual bool open();
 
 	/**
-	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+	 * @brief save the camera parameter to a json file
 	 * 
 	 * @param fs 
 	 * @return true 
@@ -55,7 +61,7 @@ public:
 	bool save(JsonNode& fs) override;
 
 	/**
-	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+	 * @brief load the camera parameter from a json file
 	 * 
 	 * @param fs 
 	 * @return true 
@@ -71,7 +77,7 @@ public:
 	using Ptr = std::shared_ptr<CameraObject>;
 
 protected:
-	const std::string CameraName;
+	std::string CameraName;
 };
 
 
@@ -91,7 +97,7 @@ public:
  * @param CameraMatrix the 3x3 camera intrinsic matrix
  * @param DistCoeff the camera distortion parameters
  */
-	PinholeCamera(const std::string CameraName, const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff);
+	PinholeCamera(const cv::Mat1d& CameraMatrix=cv::Mat1d(), const cv::Mat1d& DistCoeff=cv::Mat1d());
 
 	/**
 	 * @brief Destroy the Pinhole Camera object
@@ -127,7 +133,7 @@ public:
  	 * @param DistCoeff the camera distortion parameters
 	 * @return Ptr the shared pointer of PinholeCamera class
 	 */
-	static Ptr Create(const std::string CameraName, const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff);
+	static Ptr Create(const cv::Mat1d& CameraMatrix=cv::Mat1d(), const cv::Mat1d& DistCoeff=cv::Mat1d());
 
 	/**
 	 * @brief Get the Camera Parameters

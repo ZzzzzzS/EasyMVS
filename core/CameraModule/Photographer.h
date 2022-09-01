@@ -10,7 +10,9 @@
 #include <vector>
 #include <sophus/se3.hpp>
 
-
+/**
+ * @brief the photographer class, generate frame with given cameras.
+ */
 class Photographer : public WorkFlowObject
 {
 	Q_OBJECT
@@ -69,7 +71,7 @@ public:
 	 * @return true initialized successfully
 	 * @return false initialized failed
 	 */
-	bool init(JsonNode& fs) override;
+	virtual bool init(JsonNode& fs) override;
 
 	/**
 	 * @brief take a photo with given cameras
@@ -87,7 +89,7 @@ public:
 	 * @return true succeed
 	 * @return false failed
 	 */
-	bool saveParameter(JsonNode& fs) override;
+	virtual bool saveParameter(JsonNode& fs) override;
 
 	/**
 	 * @brief clear the parameters of the flow, and deinitialize the flow
@@ -95,7 +97,7 @@ public:
 	 * @return true succeed
 	 * @return false failed
 	 */
-	bool clear() override;
+	virtual bool clear() override;
 
 public slots:
 /**
