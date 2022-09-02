@@ -41,6 +41,23 @@ public:
  */
 	virtual bool load(JsonNode& fs) = 0;
 	
+protected:
+	/**
+	 * @brief check if the directory is exist.
+	 * 
+	 * @param path directory
+	 * @return 
+	 */
+	bool isDirExist(std::string path);
+
+	/**
+	 * @brief create directory in given path.
+	 * 
+	 * @param path
+	 * @return if create succeed or the directory already exist, return true, 
+	 * otherwise return false
+	 */
+	bool mkdir(std::string path);
 	
 private:
 

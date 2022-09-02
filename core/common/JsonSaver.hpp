@@ -5,7 +5,9 @@
 #include <sophus/se3.hpp>
 #include <Eigen/Dense>
 
-using json = nlohmann::json;
+class MapPointObject;
+class FrameObject;
+class PinholeFrameObject;
 
 /**
  * @brief these functions are used to save and load the data in json format,
@@ -25,6 +27,14 @@ namespace nlohmann {
 				j["type_id"] = std::string("opencv-matrix");
 				j["rows"] = mat.rows;
 				j["cols"] = mat.cols;
+
+				if (mat.empty())
+				{
+					j["dt"] = "u";
+					j["data"] = json::array();
+					return;
+				}
+
 				switch (mat.type())
 				{
 				case CV_8UC1:
@@ -116,6 +126,13 @@ namespace nlohmann {
 
 				auto rows = j.at("rows").get<int>();
 				auto cols = j.at("cols").get<int>();
+
+				if (rows == 0 || cols == 0)
+				{
+					mat = cv::Mat();
+					return;
+				}
+
 				auto typestring = j.at("dt").get<std::string>();
 				
 				auto type = typestring.back();
@@ -311,6 +328,78 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				matrix = Eigen::Matrix<Scalar, Rows, Cols>::Zero();
+				std::cout << e.what() << std::endl;
+			}
+		}
+	};
+
+	template <>
+    struct adl_serializer<cv::DMatch> {
+        static void to_json(json& j, const cv::DMatch& opt) {
+			j.push_back(opt.queryIdx);
+			j.push_back(opt.trainIdx);
+			j.push_back(opt.imgIdx);
+			j.push_back(opt.distance);
+        }
+
+        static void from_json(const json& j, cv::DMatch& opt) {
+			opt.queryIdx = j.at(0);
+			opt.trainIdx = j.at(1);
+			opt.imgIdx = j.at(2);
+			opt.distance = j.at(3);
+        }
+    };
+
+	template<typename T>
+	struct adl_serializer<cv::Mat_<T>>
+	{
+		static void to_json(json& j, const cv::Mat_<T>& mat_) 
+		{
+			j = cv::Mat(mat_);
+		}
+		
+		static void from_json(const json& j, cv::Mat_<T>& mat_)
+		{
+			cv::Mat tmp;
+			tmp = j;
+			mat_ = tmp;
+		}
+	};
+
+	template<>
+	struct adl_serializer<cv::KeyPoint>
+	{
+		static void to_json(json& j, const cv::KeyPoint& Point)
+		{
+			try
+			{
+				j = { Point.pt.x,Point.pt.y,
+					Point.size, Point.angle, Point.response,
+					Point.octave,Point.class_id
+				};
+			}
+			catch (const std::exception& e)
+			{
+				j = json();
+				std::cout << e.what() << std::endl;
+			}
+		}
+
+		static void from_json(const json& j, cv::KeyPoint& Point)
+		{
+			try
+			{
+				Point.pt.x = j[0];
+				Point.pt.y = j[1];
+				Point.size = j[2];
+				Point.angle = j[3];
+				Point.response = j[4];
+				Point.octave = j[5];
+				Point.class_id = j[6];
+			}
+			catch (const std::exception& e)
+			{
+				Point = cv::KeyPoint();
 				std::cout << e.what() << std::endl;
 			}
 		}

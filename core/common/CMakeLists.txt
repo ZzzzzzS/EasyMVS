@@ -11,6 +11,7 @@ set(SOURCE_FILES CameraObject.cpp
                 MapPointObject.cpp
                 MVSObject.cpp
                 WorkFlowObject.cpp
+                MVSConfig.cpp
                 GlobalMapObject.cpp)
 
 set(HEADER_FILES CameraObject.h

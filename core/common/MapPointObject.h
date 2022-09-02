@@ -23,6 +23,14 @@ public:
 	static Ptr Create(int ID);
 
 public:
+
+	/**
+	 * @brief Construct a new MapPointObject object.
+	 * 
+	 * @param ID
+	 * @return 
+	 */
+	MapPointObject();
 /**
  * @brief Construct a new MapPointObject object
  * 
@@ -79,6 +87,17 @@ public:
 	 * @return false update failed, may be the observation is not exist, or input is invalid
 	 */
 	bool updateObservation(std::shared_ptr<FrameObject> Frame,int KeyPointID);
+
+	/**
+	 * @brief Get the Observation object
+	 * 
+	 * @param FrameID FrameID
+	 * @param Frame the shared pointer of frame
+	 * @param KeyPointID the keypoint id of observation in the frame
+	 * @return true get succeed
+	 * @return false get failed, may be the observation is not exist
+	 */
+	bool getObservation(int FrameID, std::shared_ptr<FrameObject>& Frame,int &KeyPointID);
 
 	/**
 	 * @brief Get the All Observation object
@@ -142,12 +161,14 @@ public:
 	
 
 private:
-	const int ID;
+	int ID;
 
 	/**
 	 * the shared pointer of observerd frame, and the keypoint index.
 	 * rememeber to delete the observation in related frame object when the mappoint is deleted!
 	 */
-	std::map<std::weak_ptr<FrameObject>,int> ObservedFrame;
+	using ObservationInfo=std::tuple<std::weak_ptr<FrameObject>,int>;
+
+	std::map<int,ObservationInfo> ObservedFrame;
 	double quality;
 };

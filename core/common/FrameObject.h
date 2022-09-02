@@ -5,6 +5,7 @@
 #include <DBoW2/DBoW2.h>
 #include <sophus/se3.hpp>
 #include <Eigen/Dense>
+#include <nlohmann/json.hpp>
 
 class MapPointObject;
 
@@ -37,6 +38,10 @@ public:
 	static Ptr Create(int ID, uint32_t Timestamp = 0);
 
 public:
+	/**
+	 * @brief Construct a new Frame Object object.
+	 */
+	FrameObject();
 
 /**
  * @brief Construct a new Frame Object object
@@ -103,6 +108,13 @@ public:
 		std::shared_ptr<FrameObject> getRelatedFrame();
 
 		/**
+		 * @brief Get the Related Frame ID object
+		 * 
+		 * @return int frame id
+		 */
+		int getRelatedFrameID();
+
+		/**
 		 * @brief query wether the frame exist.
 		 * usually the frame exist when the frame info exist, but there might be some garbage collection errors, during development.
 		 * this method is to make sure that the frame dose exist.
@@ -116,6 +128,7 @@ public:
 		 * 
 		 * @param fs
 		 * @return 
+		 * @bug the shared state of pose will not be saved.
 		 */
 		bool save(JsonNode& fs) override;
 
@@ -124,9 +137,15 @@ public:
 		 * 
 		 * @param fs
 		 * @return 
+		 * @bug the shared state of pose is lost when load from file.
 		 */
 		bool load(JsonNode& fs) override;
 
+		/**
+		 * @brief Construct a new Related Frame Info object
+		 * 
+		 */
+		RelatedFrameInfo();
 		/**
 		 * @brief Construct a new Frameinfo object.
 		 * instead of call this method, it is better to construct new frame info object with **Create**method.
@@ -143,6 +162,9 @@ public:
 
 		/**
 		 * @brief shared pointer of pose.
+		 * @details the pose is the pose between current frame and related frame, 
+		 * many related frame may share the same pose, that is when in pose optimization process,
+		 * all the pointer that point to the same pose will be optimized as one coeefficient.
 		 */
 		std::shared_ptr<Sophus::SE3d> Pose;
 
@@ -158,6 +180,7 @@ public:
 
 	private:
 		std::weak_ptr<FrameObject> RelatedFramePtr;
+		int RelatedFrameID;
 	};
 	
 public:
@@ -296,7 +319,7 @@ public:
  * @return true load successed 
  * @return false load failed
  */
-	bool load(JsonNode& fs) override;
+	virtual bool load(JsonNode& fs) override;
 
 	/**
 	 * @brief save frame to file
@@ -305,8 +328,7 @@ public:
 	 * @return true save successed
 	 * @return false save failed
 	 */
-	bool save(JsonNode& fs) override;
-
+	virtual bool save(JsonNode& fs) override;
 public:
 /**
  * @brief the RGB image in the current frame
@@ -349,8 +371,8 @@ public:
 
 
 protected:
-	const int FrameID;
-	const uint32_t Timestamp;
+	int FrameID;
+	uint32_t Timestamp;
 	/**
 	 * @brief pointer of the related frame, the pose of related frame, the pose confidence of related frame (-1 means invalid)
 	 */
@@ -363,7 +385,7 @@ protected:
 	std::map<int, RelatedFrameInfo::Ptr> RelatedFrame;
 
 	using MapPointInfo = std::tuple<std::weak_ptr<MapPointObject>, Eigen::Vector4d>;
-	std::map<int, MapPointInfo> OvservedMapPoints;
+	std::map<int, MapPointInfo> ObservedMapPoints;
 
 
 };
@@ -410,6 +432,17 @@ public:
 	 * 
 	 */
 	~PinholeFrameObject();
+
+	/**
+	 * @brief 
+	 * 
+	 * @param fs 
+	 * @return true 
+	 * @return false 
+	 * @bug the shared states between multiple same intrinsic matrix and distortion coefficient will be lost.
+	 */
+	virtual bool load(JsonNode& fs) override;
+	virtual bool save(JsonNode& fs) override;
 
 /**
  * @brief Camera intrinsic matrix
