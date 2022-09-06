@@ -29,12 +29,6 @@ public:
 	virtual ~WorkFlowObject() {}
 	
 public:
-/**
- * @brief Get the Flow Name object
- * 
- * @return std::string 
- */
-	virtual std::string getFlowName();
 
 	/**
 	 * @brief clear the workflow state, the workflow should be re-init after clear.

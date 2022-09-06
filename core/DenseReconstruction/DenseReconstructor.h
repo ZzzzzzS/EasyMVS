@@ -45,7 +45,7 @@ public:
  * 
  * @return std::string 
  */
-	std::string getFlowName() override;
+	std::string type_name() override;
 
     /**
      * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.

@@ -19,7 +19,7 @@ FeatureExtractor::~FeatureExtractor()
 {
 }
 
-std::string FeatureExtractor::getFlowName()
+std::string FeatureExtractor::type_name()
 {
 	return std::string("Workflow FeatureExtractor");
 }

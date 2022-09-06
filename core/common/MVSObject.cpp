@@ -6,6 +6,11 @@ MVSObject::MVSObject()
 {
 }
 
+std::string MVSObject::type_name()
+{
+    return typeid(this).name();
+}
+
 bool MVSObject::isDirExist(std::string path)
 {
     QDir dir;

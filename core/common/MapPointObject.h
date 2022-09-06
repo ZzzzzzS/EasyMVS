@@ -50,7 +50,7 @@ public:
  * 
  * @return int unique MapPoint ID
  */
-	int getFrameID();
+	int getMappointID();
 
 /**
  * @brief Get the Observed Times
@@ -86,8 +86,8 @@ public:
 	 * @return true update succeed
 	 * @return false update failed, may be the observation is not exist, or input is invalid
 	 */
-	bool updateObservation(std::shared_ptr<FrameObject> Frame,int KeyPointID);
-
+	bool updateObservation(std::shared_ptr<FrameObject> Frame, int KeyPointID = -1);
+	
 	/**
 	 * @brief Get the Observation object
 	 * 
@@ -107,6 +107,14 @@ public:
 	 * @return false get failed
 	 */
 	bool getAllObservation(std::vector<std::shared_ptr<FrameObject>>& Frames);
+
+	/**
+	 * @brief Get all the Observation frame id.
+	 * 
+	 * @param ids
+	 * @return 
+	 */
+	bool getAllObservation(std::set<int>& ids);
 
 /**
  * @brief Set the Map Point Quality object

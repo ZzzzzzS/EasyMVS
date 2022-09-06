@@ -22,7 +22,7 @@ MapPointObject::~MapPointObject()
 {
 }
 
-int MapPointObject::getFrameID()
+int MapPointObject::getMappointID()
 {
 	return this->ID;
 }
@@ -57,6 +57,17 @@ bool MapPointObject::getAllObservation(std::vector<std::shared_ptr<FrameObject>>
 	return false;
 }
 
+bool MapPointObject::getAllObservation(std::set<int>& ids)
+{
+	if (this->ObservedFrame.empty())
+		return false;
+
+	for (auto&& item : this->ObservedFrame)
+	{
+		ids.insert(item.first);
+	}
+}
+
 bool MapPointObject::setMapPointQuality(double quality)
 {
 	return false;
@@ -73,7 +84,7 @@ bool MapPointObject::save(JsonNode& fs)
 	{
 		//save coeffcients
 		fs["id"] = this->ID;
-		fs["type-id"] = std::string("mappoint-object");
+		fs["type-id"] = this->type_name();
 		fs["position"] = this->Position;
 		fs["normal"] = this->Normal;
 		fs["keypoint-descriptors"] = this->KeyPointDescriptor;

@@ -108,11 +108,12 @@ public:
 		std::shared_ptr<FrameObject> getRelatedFrame();
 
 		/**
-		 * @brief Get the Related Frame ID object
+		 * @brief set the shared pointer of related frame.
 		 * 
-		 * @return int frame id
+		 * @param frame
+		 * @return 
 		 */
-		int getRelatedFrameID();
+		bool setRelatedFrame(FrameObject::Ptr frame);
 
 		/**
 		 * @brief query wether the frame exist.
@@ -180,7 +181,6 @@ public:
 
 	private:
 		std::weak_ptr<FrameObject> RelatedFramePtr;
-		int RelatedFrameID;
 	};
 	
 public:
@@ -253,13 +253,21 @@ public:
 	RelatedFrameInfo::Ptr getRelatedFrame(int FrameID);
 
 	/**
-	 * @brief Get the All Related Frames object
+	 * @brief Get all the Related Frames object
 	 * 
 	 * @param Frames array of the shared pointer of the frame
 	 * @return true has related frames
 	 * @return false do NOT have related frames
 	 */
 	bool getAllRelatedFrames(std::vector<RelatedFrameInfo::Ptr>& Frames);
+
+	/**
+	 * @brief get all the related frame id.
+	 * 
+	 * @param FrameID
+	 * @return 
+	 */
+	bool getAllRelatedFrames(std::set<int>& FrameID);
 
 
 /**
@@ -300,6 +308,14 @@ public:
 	 * @return false get failed
 	 */
 	bool getMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>& MapPoint, Eigen::Vector4d& LocalCoordinate);
+
+	/**
+	 * @brief get mappoint id related to keypoint.
+	 * 
+	 * @param KeyPointID
+	 * @return 
+	 */
+	bool getMapPoint(int KeyPointID, int& MappointID, Eigen::Vector4d& LocalCoordinate);
 
 	/**
 	 * @brief update the map point
@@ -384,7 +400,7 @@ protected:
 	 */
 	std::map<int, RelatedFrameInfo::Ptr> RelatedFrame;
 
-	using MapPointInfo = std::tuple<std::weak_ptr<MapPointObject>, Eigen::Vector4d>;
+	using MapPointInfo = std::tuple<std::weak_ptr<MapPointObject>, Eigen::Vector4d, int>;
 	std::map<int, MapPointInfo> ObservedMapPoints;
 
 

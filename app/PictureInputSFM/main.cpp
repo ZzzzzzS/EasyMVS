@@ -13,7 +13,7 @@ int main()
 	std::cout << cv::getBuildInformation();
 	
 	cv::Mat a(3, 3, CV_8UC1);
-	json j = a;
+	JsonNode j = a;
 	std::cout << j;
 
 	Eigen::Matrix4d b = Eigen::Matrix4d::Identity();

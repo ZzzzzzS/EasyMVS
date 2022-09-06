@@ -1,6 +1,7 @@
 ﻿#include "FrameObject.h"
 #include "MVSConfig.h"
 #include "JsonSaver.hpp"
+#include "MapPointObject.h"
 
 FrameObject::Ptr FrameObject::Create(int ID, uint32_t Timestamp)
 {
@@ -75,6 +76,18 @@ bool FrameObject::getAllRelatedFrames(std::vector<RelatedFrameInfo::Ptr>& Frames
     return false;
 }
 
+bool FrameObject::getAllRelatedFrames(std::set<int>& FrameID)
+{
+    if (this->RelatedFrame.empty())
+        return false;
+
+    for (auto&& item: this->RelatedFrame)
+    {
+        FrameID.insert(item.first);
+    }
+    return true;
+}
+
 bool FrameObject::addMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)
 {
     return false;
@@ -92,6 +105,21 @@ bool FrameObject::removeAllMapPoints()
 
 bool FrameObject::getMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>& MapPoint, Eigen::Vector4d& LocalCoordinate)
 {
+    return false;
+}
+
+bool FrameObject::getMapPoint(int KeyPointID, int& MappointID, Eigen::Vector4d& LocalCoordinate)
+{
+    try
+    {
+        MappointID = std::get<2>(this->ObservedMapPoints[KeyPointID]);
+        LocalCoordinate = std::get<1>(this->ObservedMapPoints[KeyPointID]);
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
@@ -145,10 +173,13 @@ bool FrameObject::load(JsonNode& fs)
         JsonNode mappointnode = fs.at("observed-mappoint");
         for(auto & item : mappointnode)
         {
-            int id = item.at("id");
+            int id = item.at("keypoint-id");
             JsonNode pos = item.at("local-position");
             Eigen::Vector4d tmppos(pos.at(0), pos.at(1), pos.at(2), pos.at(3));
-            ObservedMapPoints[id] = { std::weak_ptr<MapPointObject>(),tmppos }; //c++17的语法真高级
+            
+            auto FakeMappoint = MapPointObject::Create(item.at("mappoint-id"));
+
+            ObservedMapPoints[id] = { FakeMappoint,tmppos,item.at("mappoint-id") }; //c++17的语法真高级
         }
 
         //read related frame without pointer
@@ -160,7 +191,8 @@ bool FrameObject::load(JsonNode& fs)
             {
                 throw std::exception("failed to load related frame");
             }
-            this->RelatedFrame[tmpframe->getRelatedFrameID()] = tmpframe;
+
+            this->RelatedFrame[item.at("frame-id")] = tmpframe;
         }
 
         //read best frame
@@ -193,14 +225,14 @@ bool FrameObject::save(JsonNode& fs)
     {
         //save parameters
         fs = {
-            {"type-id","frame-object"},
+            {"type-id",this->type_name()},
             {"id",this->FrameID},
             {"timestamp",this->Timestamp}
         };
 
         if (this->BestCamera != nullptr)
         {
-            fs["best-camera-id"] = this->BestCamera->getRelatedFrameID();
+            fs["best-camera-id"] = this->BestCamera->getRelatedFrame()->getFrameID();
         }
         else
         {
@@ -230,7 +262,19 @@ bool FrameObject::save(JsonNode& fs)
         for (auto&& item : this->ObservedMapPoints)
         {
             JsonNode temp;
-            temp["id"] = item.first;
+            temp["keypoint-id"] = item.first;
+            
+            //syntax from c++ 17
+            if (auto MappointTmp = std::get<0>(item.second).lock(); MappointTmp != nullptr)
+            {
+                temp["mappoint-id"] = MappointTmp->getMappointID();
+            }
+            else
+            {
+                throw std::exception("the mappoint related to keypoint does NOT exist");
+            }
+
+            //temp["mappoint-id"]
             temp["local-position"] = {
                 std::get<1>(item.second)(0),
                 std::get<1>(item.second)(1),
@@ -332,7 +376,7 @@ bool PinholeFrameObject::save(JsonNode& fs)
 
     try
     {
-        fs["type-id"] = std::string("Pinhole-frame-object");
+        fs["type-id"] = this->type_name();
         fs["intrinsic-matrix"] = this->CameraMatrix;
         fs["distcoeff-matrix"] = this->DistCoeff;
         return true;
@@ -365,10 +409,15 @@ std::shared_ptr<FrameObject> FrameObject::RelatedFrameInfo::getRelatedFrame()
     return std::shared_ptr<FrameObject>();
 }
 
-int FrameObject::RelatedFrameInfo::getRelatedFrameID()
+
+bool FrameObject::RelatedFrameInfo::setRelatedFrame(FrameObject::Ptr frame)
 {
-    return this->RelatedFrameID;
+    if (frame == nullptr)
+        return false;
+    this->RelatedFramePtr = frame;
+    return true;
 }
+
 
 bool FrameObject::RelatedFrameInfo::isFrameExist()
 {
@@ -390,7 +439,7 @@ bool FrameObject::RelatedFrameInfo::save(JsonNode& fs)
             throw std::exception("related frame dose NOT exist");
             return false;
         }
-        fs["id"] = FramePtr->FrameID;
+        fs["frame-id"] = FramePtr->FrameID;
         return true;
     }
     catch (const std::exception& e)
@@ -408,7 +457,7 @@ bool FrameObject::RelatedFrameInfo::load(JsonNode& fs)
         this->KeyPointMatch = fs.at("keypoint-match");
         Sophus::SE3d tmppose = fs.at("extrinsic-matrix").get<Sophus::SE3d>();
         this->Pose = std::make_shared<Sophus::SE3d>(std::move(tmppose));
-        this->RelatedFrameID = fs["id"].get<int>();
+        //this->RelatedFrameID = fs["id"].get<int>();
         return true;
     }
     catch (const std::exception& e)
@@ -419,15 +468,13 @@ bool FrameObject::RelatedFrameInfo::load(JsonNode& fs)
 }
 
 FrameObject::RelatedFrameInfo::RelatedFrameInfo()
-    :sigma(0),
-    RelatedFrameID(-1)
+    :sigma(0)
 {
 
 }
 
 FrameObject::RelatedFrameInfo::RelatedFrameInfo(std::shared_ptr<FrameObject> RelatedFrame)
-    :sigma(0),
-    RelatedFrameID(-1)
+    :sigma(0)
 {
 }
 

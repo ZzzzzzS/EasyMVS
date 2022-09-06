@@ -13,7 +13,7 @@ PoseReconstructor::~PoseReconstructor()
 {
 }
 
-std::string PoseReconstructor::getFlowName()
+std::string PoseReconstructor::type_name()
 {
 	return std::string();
 }

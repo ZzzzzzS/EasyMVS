@@ -13,7 +13,7 @@ FeatureMatcher::~FeatureMatcher()
 {
 }
 
-std::string FeatureMatcher::getFlowName()
+std::string FeatureMatcher::type_name()
 {
     return std::string("Workflow FeatureMatcher");
 }

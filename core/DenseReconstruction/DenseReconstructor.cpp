@@ -14,7 +14,7 @@ DenseReconstructor::~DenseReconstructor()
 {
 }
 
-std::string DenseReconstructor::getFlowName()
+std::string DenseReconstructor::type_name()
 {
     return std::string("Workflow DenseReconstructor");
 }

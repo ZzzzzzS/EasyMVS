@@ -41,6 +41,13 @@ public:
  */
 	virtual bool load(JsonNode& fs) = 0;
 	
+	/**
+	 * @brief get the typename.
+	 * 
+	 * @return 
+	 */
+	virtual std::string type_name();
+	
 protected:
 	/**
 	 * @brief check if the directory is exist.

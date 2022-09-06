@@ -21,7 +21,7 @@ Photographer::~Photographer()
 {
 }
 
-std::string Photographer::getFlowName()
+std::string Photographer::type_name()
 {
 	return std::string("Workflow Photographer");
 }

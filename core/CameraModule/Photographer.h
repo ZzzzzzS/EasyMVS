@@ -62,7 +62,7 @@ public:
  * 
  * @return std::string flow name
  */
-	std::string getFlowName() override;
+	std::string type_name() override;
 
 	/**
 	 * @brief initialize the flow with given parameters
