@@ -50,7 +50,7 @@ public:
  * 
  * @return int unique MapPoint ID
  */
-	int getMappointID();
+	int getID();
 
 /**
  * @brief Get the Observed Times
@@ -106,7 +106,7 @@ public:
 	 * @return true get succeed
 	 * @return false get failed
 	 */
-	bool getAllObservation(std::vector<std::shared_ptr<FrameObject>>& Frames);
+	bool getAllObservation(std::set<std::shared_ptr<FrameObject>>& Frames);
 
 	/**
 	 * @brief Get all the Observation frame id.
@@ -150,6 +150,8 @@ public:
 	 */
 	bool load(JsonNode& fs) override;
 	
+	virtual std::string type_name() override;
+
 public:
 /**
  * @brief the discriptor of map point related 2D key point

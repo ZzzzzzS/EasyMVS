@@ -5,12 +5,15 @@
 
 FrameObject::Ptr FrameObject::Create(int ID, uint32_t Timestamp)
 {
-    return Ptr();
+    return std::make_shared<FrameObject>(ID, Timestamp);
 }
 
-FrameObject::Ptr FrameObject::Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp, const cv::Mat& XYZMap)
+FrameObject::Ptr FrameObject::Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp, const cv::Mat& XYZMat)
 {
-    return Ptr();
+    auto ptr = std::make_shared<FrameObject>(ID, Timestamp);
+    ptr->RGBMat = RGBMat;
+    ptr->XYZMat = XYZMat;
+    return ptr;
 }
 
 FrameObject::FrameObject(int ID, uint32_t Timestamp)
@@ -30,7 +33,7 @@ FrameObject::~FrameObject()
 {
 }
 
-int FrameObject::getFrameID()
+int FrameObject::getID()
 {
     return this->FrameID;
 }
@@ -42,38 +45,120 @@ uint32_t FrameObject::getTimestamp()
 
 bool FrameObject::setBestFrame(RelatedFrameInfo::Ptr FramePtr)
 {
+    try
+    {
+        if (auto id = FramePtr->getRelatedFrame()->getID(); this->RelatedFrame.count(id) == 0)
+        {
+            std::cerr << "best frame is not within related frames\n";
+            return false;
+        }
+        this->BestCamera = FramePtr;
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
 FrameObject::RelatedFrameInfo::Ptr FrameObject::getBestFrame()
 {
-    return RelatedFrameInfo::Ptr();
+    if (this->BestCamera == nullptr)
+    {
+        std::cerr << "Best camera is empty!" << std::endl;
+    }
+    return this->BestCamera;
 }
 
 bool FrameObject::addRelatedFrame(RelatedFrameInfo::Ptr FramePtr)
 {
+    try
+    {
+        if (auto id = FramePtr->getRelatedFrame()->getID(); this->RelatedFrame.count(id) != 0)
+        {
+            this->RelatedFrame[id] = FramePtr;
+            return true;
+        }
+        else
+        {
+            std::cerr << "frame already exist" << std::endl;
+            return false;
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
 
 bool FrameObject::removeRelatedFrame(int FrameID)
 {
-    return false;
+    if (this->RelatedFrame.count(FrameID) == 0)
+    {
+        std::cerr << "frame dose NOT exist, ID=" << FrameID << std::endl;
+        return false;
+    }
+    else
+    {
+        this->RelatedFrame.erase(FrameID);
+        return true;
+    }
 }
 
 bool FrameObject::removeAllRelatedFrames()
 {
+    this->RelatedFrame.clear();
+    return true;
+}
+
+bool FrameObject::updateRelatedFrame(RelatedFrameInfo::Ptr FramePtr)
+{
+    try
+    {
+        if (auto id = FramePtr->getRelatedFrame()->getID(); this->RelatedFrame.count(id) != 0)
+        {
+            this->RelatedFrame[id] = FramePtr;
+        }
+        else
+        {
+            std::cerr << "the frame dose NOT exist" << std::endl;
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
 FrameObject::RelatedFrameInfo::Ptr FrameObject::getRelatedFrame(int FrameID)
 {
+    try
+    {
+        auto ptr = this->RelatedFrame.at(FrameID);
+        return  ptr;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return RelatedFrameInfo::Ptr();
 }
 
-bool FrameObject::getAllRelatedFrames(std::vector<RelatedFrameInfo::Ptr>& Frames)
+bool FrameObject::getAllRelatedFrames(std::set<RelatedFrameInfo::Ptr>& Frames)
 {
-    return false;
+    if (this->RelatedFrame.empty())
+        return false;
+    
+    for (auto&& item : this->RelatedFrame)
+    {
+        Frames.insert(item.second);
+    }
+    return true;
+
 }
 
 bool FrameObject::getAllRelatedFrames(std::set<int>& FrameID)
@@ -90,21 +175,65 @@ bool FrameObject::getAllRelatedFrames(std::set<int>& FrameID)
 
 bool FrameObject::addMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)
 {
+    try
+    {
+        if (this->ObservedMapPoints.count(KeyPointID) != 0)
+        {
+            std::cerr << "Mappoint already exist, keypoint id=" << KeyPointID << std::endl;
+            return false;
+        }
+
+        this->ObservedMapPoints[KeyPointID] = { MapPoint,LocalCoordinate,MapPoint->getID() };
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
 bool FrameObject::removeMapPoint(int KeyPointID)
 {
+    try
+    {
+        if (this->ObservedMapPoints.erase(KeyPointID) == 0)
+        {
+            std::cerr << "the mappoint dose NOT exist, keypoint id=" << KeyPointID << std::endl;
+            return false;
+        }
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
 bool FrameObject::removeAllMapPoints()
 {
-    return false;
+    if(this->ObservedMapPoints.empty())
+        return false;
+    else
+    {
+        this->ObservedMapPoints.clear();
+        return true;
+    }
 }
 
 bool FrameObject::getMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>& MapPoint, Eigen::Vector4d& LocalCoordinate)
 {
+    try
+    {
+        MapPoint = std::get<0>(this->ObservedMapPoints[KeyPointID]).lock();
+        LocalCoordinate = std::get<1>(this->ObservedMapPoints[KeyPointID]);
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
@@ -125,6 +254,15 @@ bool FrameObject::getMapPoint(int KeyPointID, int& MappointID, Eigen::Vector4d& 
 
 bool FrameObject::updateMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)
 {
+    try
+    {
+        this->ObservedMapPoints.at(KeyPointID) = std::make_tuple(MapPoint, LocalCoordinate, MapPoint->getID());
+        return true;
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
     return false;
 }
 
@@ -176,10 +314,8 @@ bool FrameObject::load(JsonNode& fs)
             int id = item.at("keypoint-id");
             JsonNode pos = item.at("local-position");
             Eigen::Vector4d tmppos(pos.at(0), pos.at(1), pos.at(2), pos.at(3));
-            
-            auto FakeMappoint = MapPointObject::Create(item.at("mappoint-id"));
 
-            ObservedMapPoints[id] = { FakeMappoint,tmppos,item.at("mappoint-id") }; //c++17的语法真高级
+            ObservedMapPoints[id] = { MapPointObject::Ptr(),tmppos,item.at("mappoint-id")}; //c++17的语法真高级
         }
 
         //read related frame without pointer
@@ -232,7 +368,7 @@ bool FrameObject::save(JsonNode& fs)
 
         if (this->BestCamera != nullptr)
         {
-            fs["best-camera-id"] = this->BestCamera->getRelatedFrame()->getFrameID();
+            fs["best-camera-id"] = this->BestCamera->getRelatedFrame()->getID();
         }
         else
         {
@@ -267,7 +403,7 @@ bool FrameObject::save(JsonNode& fs)
             //syntax from c++ 17
             if (auto MappointTmp = std::get<0>(item.second).lock(); MappointTmp != nullptr)
             {
-                temp["mappoint-id"] = MappointTmp->getMappointID();
+                temp["mappoint-id"] = MappointTmp->getID();
             }
             else
             {
@@ -325,18 +461,28 @@ bool FrameObject::save(JsonNode& fs)
     return false;
 }
 
-PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID)
+std::string FrameObject::type_name()
 {
-    return Ptr();
+    return std::string("frame-object");
 }
 
-PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID, const cv::Mat& CameraMatrix, const cv::Mat& DistCoeff, const cv::Mat& RGBMat, const cv::Mat& XYZMap)
+PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID, uint32_t Timestamp)
 {
-    return Ptr();
+    return std::make_shared<PinholeFrameObject>(ID, Timestamp);
 }
 
-PinholeFrameObject::PinholeFrameObject(int ID)
-    :FrameObject(ID)
+PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID, const cv::Mat& CameraMatrix, const cv::Mat& DistCoeff, uint32_t Timestamp, const cv::Mat& RGBMat, const cv::Mat& XYZMat)
+{
+    auto ptr = std::make_shared<PinholeFrameObject>(ID, Timestamp);
+    ptr->CameraMatrix = CameraMatrix;
+    ptr->DistCoeff = DistCoeff;
+    ptr->RGBMat = RGBMat;
+    ptr->XYZMat = XYZMat;
+    return ptr;
+}
+
+PinholeFrameObject::PinholeFrameObject(int ID, uint32_t Timestamp)
+    :FrameObject(ID,Timestamp)
 {
 }
 
@@ -389,24 +535,39 @@ bool PinholeFrameObject::save(JsonNode& fs)
     return false;
 }
 
+std::string PinholeFrameObject::type_name()
+{
+    return std::string("pinhole-frame-object");
+}
+
 FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame)
 {
-    return RelatedFrameInfo::Ptr();
+    return std::make_shared<RelatedFrameInfo>(RelatedFrame);
 }
 
 FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame, std::shared_ptr<Sophus::SE3d> Pose, double sigma)
 {
-    return RelatedFrameInfo::Ptr();
+    auto ptr = Create(RelatedFrame);
+    ptr->Pose = Pose;
+    ptr->sigma = sigma;
+    return ptr;
 }
 
-FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame, std::vector<cv::DMatch> KeyPointMatch)
+FrameObject::RelatedFrameInfo::Ptr FrameObject::RelatedFrameInfo::Create(std::shared_ptr<FrameObject> RelatedFrame,const std::vector<cv::DMatch>& KeyPointMatch)
 {
-    return RelatedFrameInfo::Ptr();
+    auto ptr = Create(RelatedFrame);
+    ptr->KeyPointMatch = KeyPointMatch;
+    return ptr;
 }
 
 std::shared_ptr<FrameObject> FrameObject::RelatedFrameInfo::getRelatedFrame()
 {
-    return std::shared_ptr<FrameObject>();
+    auto ptr = this->RelatedFramePtr.lock();
+    if (ptr == nullptr)
+    {
+        std::cerr << "the related frame does NOT exist" << std::endl;
+    }
+    return ptr;
 }
 
 
@@ -421,7 +582,7 @@ bool FrameObject::RelatedFrameInfo::setRelatedFrame(FrameObject::Ptr frame)
 
 bool FrameObject::RelatedFrameInfo::isFrameExist()
 {
-    return false;
+    return (this->RelatedFramePtr.lock() != nullptr) ? true : false;
 }
 
 bool FrameObject::RelatedFrameInfo::save(JsonNode& fs)
@@ -467,6 +628,11 @@ bool FrameObject::RelatedFrameInfo::load(JsonNode& fs)
     return false;
 }
 
+std::string FrameObject::RelatedFrameInfo::type_name()
+{
+    return std::string("related-frame-info");
+}
+
 FrameObject::RelatedFrameInfo::RelatedFrameInfo()
     :sigma(0)
 {
@@ -474,7 +640,8 @@ FrameObject::RelatedFrameInfo::RelatedFrameInfo()
 }
 
 FrameObject::RelatedFrameInfo::RelatedFrameInfo(std::shared_ptr<FrameObject> RelatedFrame)
-    :sigma(0)
+    :sigma(0),
+    RelatedFramePtr(RelatedFrame)
 {
 }
 

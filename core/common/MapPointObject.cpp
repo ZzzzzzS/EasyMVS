@@ -1,9 +1,10 @@
 #include "MapPointObject.h"
 #include "JsonSaver.hpp"
+#include "FrameObject.h"
 
 MapPointObject::Ptr MapPointObject::Create(int ID)
 {
-	return Ptr();
+	return std::make_shared<MapPointObject>(ID);
 }
 
 MapPointObject::MapPointObject()
@@ -22,39 +23,110 @@ MapPointObject::~MapPointObject()
 {
 }
 
-int MapPointObject::getMappointID()
+int MapPointObject::getID()
 {
 	return this->ID;
 }
 
 int MapPointObject::getObservedTimes()
 {
-	return 0;
+	return	this->ObservedFrame.size();
 }
 
 bool MapPointObject::addObservation(std::shared_ptr<FrameObject> Frame, int KeyPointID)
 {
+	try
+	{
+		//syntex from c++ 17
+		if (int id = Frame->getID(); this->ObservedFrame.count(id) != 0)
+		{
+			return false;
+		}
+
+		this->ObservedFrame[Frame->getID()] = { Frame,KeyPointID };
+		
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 	return false;
 }
 
 bool MapPointObject::removeObservation(std::shared_ptr<FrameObject> Frame)
 {
+	try
+	{
+		if (auto id = Frame->getID(); this->ObservedFrame.count(id) == 0)
+		{
+			return false;
+		}
+
+		this->ObservedFrame.erase(Frame->getID());
+		
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 	return false;
 }
 
 bool MapPointObject::updateObservation(std::shared_ptr<FrameObject> Frame, int KeyPointID)
 {
+	try
+	{
+		auto id = Frame->getID();
+		if (this->ObservedFrame.count(id) == 0)
+		{
+			return false;
+		}
+		
+		std::get<0>(this->ObservedFrame[id]) = Frame;
+		if (KeyPointID != -1) //won't update keypointid when it equals -1
+		{
+			std::get<1>(this->ObservedFrame[id]) = KeyPointID;
+		}
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
 	return false;
 }
 
 bool MapPointObject::getObservation(int FrameID, std::shared_ptr<FrameObject>& Frame,int &KeyPointID)
 {
-	return false;
+	if (this->ObservedFrame.count(FrameID) == 0)
+	{
+		return false;
+	}
+	
+	if (Frame = std::get<0>(this->ObservedFrame.at(FrameID)).lock();Frame == nullptr)
+	{
+		return false;
+	}
+	
+	KeyPointID = std::get<1>(this->ObservedFrame.at(FrameID));
+	return true;
 }
 
-bool MapPointObject::getAllObservation(std::vector<std::shared_ptr<FrameObject>>& Frames)
+bool MapPointObject::getAllObservation(std::set<std::shared_ptr<FrameObject>>& Frames)
 {
-	return false;
+	Frames.clear();
+	if (this->ObservedFrame.size() == 0)
+	{
+		return false;
+	}
+	
+	for (auto&& item : this->ObservedFrame)
+	{
+		Frames.insert(std::get<0>(item.second).lock());
+	}
+	return true;
 }
 
 bool MapPointObject::getAllObservation(std::set<int>& ids)
@@ -70,12 +142,20 @@ bool MapPointObject::getAllObservation(std::set<int>& ids)
 
 bool MapPointObject::setMapPointQuality(double quality)
 {
-	return false;
+	if (quality >= 0)
+	{
+		this->quality = quality;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 double MapPointObject::getMapPointQuality()
 {
-	return 0.0;
+	return this->quality;
 }
 
 bool MapPointObject::save(JsonNode& fs)
@@ -138,4 +218,9 @@ bool MapPointObject::load(JsonNode& fs)
 		std::cout << e.what() << std::endl;
 	}
 	return false;
+}
+
+std::string MapPointObject::type_name()
+{
+	return std::string("mappoint-object");
 }

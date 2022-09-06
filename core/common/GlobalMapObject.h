@@ -79,6 +79,8 @@ public:
      */
     bool load(JsonNode& fs) override;
 
+    virtual std::string type_name() override;
+
 private:
 
 };

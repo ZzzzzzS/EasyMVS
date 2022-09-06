@@ -87,7 +87,7 @@ bool GlobalMapObject::load(JsonNode& fs)
 			{
 				throw std::exception("failed to load frame");
 			}
-			this->Frames[tmp->getFrameID()] = tmp;
+			this->Frames[tmp->getID()] = tmp;
 		}
 
 		//load mappoints
@@ -99,7 +99,7 @@ bool GlobalMapObject::load(JsonNode& fs)
 			{
 				throw std::exception("failed to load mappoint");
 			}
-			this->MapPoints[tmp->getMappointID()] = tmp;
+			this->MapPoints[tmp->getID()] = tmp;
 		}
 
 		//set related frames and observed mappoints
@@ -142,7 +142,15 @@ bool GlobalMapObject::load(JsonNode& fs)
 	}
 	catch (const std::exception& e)
 	{
+		this->MapPoints.clear();
+		this->Frames.clear();
+		this->InitialFrameID = -1;
 		std::cerr << e.what() << std::endl;
 	}
     return false;
+}
+
+std::string GlobalMapObject::type_name()
+{
+	return std::string("global-map");
 }

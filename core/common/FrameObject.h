@@ -27,7 +27,7 @@ public:
  * @param XYZMap the XYZ map or depth map, the RGBD camera may already compute the original depth map when frame is created.
  * @return Ptr 
  */
-	static Ptr Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp = 0, const cv::Mat& XYZMap = cv::Mat());
+	static Ptr Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp = 0, const cv::Mat& XYZMat = cv::Mat());
 
 	/**
 	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -97,7 +97,7 @@ public:
 		 * @param KeyPointMatch
 		 * @return 
 		 */
-		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame, std::vector<cv::DMatch> KeyPointMatch);
+		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame,const std::vector<cv::DMatch>& KeyPointMatch);
 	public:
 
 		/**
@@ -141,6 +141,8 @@ public:
 		 * @bug the shared state of pose is lost when load from file.
 		 */
 		bool load(JsonNode& fs) override;
+
+		virtual std::string type_name() override;
 
 		/**
 		 * @brief Construct a new Related Frame Info object
@@ -189,7 +191,7 @@ public:
  * 
  * @return int Frame ID
  */
-	int getFrameID();
+	int getID();
 
 
 	/**
@@ -245,6 +247,14 @@ public:
 	bool removeAllRelatedFrames();
 
 	/**
+	 * @brief update related frame.
+	 * 
+	 * @param FramePtr
+	 * @return 
+	 */
+	bool updateRelatedFrame(RelatedFrameInfo::Ptr FramePtr);
+
+	/**
 	 * @brief Get the Related Frame object
 	 * 
 	 * @param FrameID frame ID
@@ -259,7 +269,7 @@ public:
 	 * @return true has related frames
 	 * @return false do NOT have related frames
 	 */
-	bool getAllRelatedFrames(std::vector<RelatedFrameInfo::Ptr>& Frames);
+	bool getAllRelatedFrames(std::set<RelatedFrameInfo::Ptr>& Frames);
 
 	/**
 	 * @brief get all the related frame id.
@@ -345,6 +355,8 @@ public:
 	 * @return false save failed
 	 */
 	virtual bool save(JsonNode& fs) override;
+
+	virtual std::string type_name() override;
 public:
 /**
  * @brief the RGB image in the current frame
@@ -417,7 +429,7 @@ public:
 	 * @param ID 
 	 * @return Ptr 
 	 */
-	static Ptr Create(int ID);
+	static Ptr Create(int ID,uint32_t Timestamp = 0);
 
 	/**
 	 * @brief Create the PinholeFrameObject object
@@ -432,8 +444,9 @@ public:
 	static Ptr Create(int ID, 
 		const cv::Mat& CameraMatrix,
 		const cv::Mat& DistCoeff,
+		uint32_t Timestamp = 0,
 		const cv::Mat& RGBMat = cv::Mat(),
-		const cv::Mat& XYZMap = cv::Mat());
+		const cv::Mat& XYZMat = cv::Mat());
 
 public:
 /**
@@ -441,7 +454,7 @@ public:
  * 
  * @param ID unique frame ID
  */
-	PinholeFrameObject(int ID);
+	PinholeFrameObject(int ID, uint32_t Timestamp = 0);
 
 	/**
 	 * @brief Destroy the Pinhole Frame Object object
@@ -459,6 +472,8 @@ public:
 	 */
 	virtual bool load(JsonNode& fs) override;
 	virtual bool save(JsonNode& fs) override;
+
+	virtual std::string type_name() override;
 
 /**
  * @brief Camera intrinsic matrix
