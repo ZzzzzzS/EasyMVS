@@ -19,6 +19,7 @@ int main()
 	Eigen::Matrix4d b = Eigen::Matrix4d::Identity();
 	j = b;
 	std::cout << j;
+
 	
 	return 0;
 }
