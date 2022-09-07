@@ -404,4 +404,36 @@ namespace nlohmann {
 			}
 		}
 	};
+
+	template<typename T>
+	struct adl_serializer<cv::Size_<T>>
+	{
+		static void to_json(json& j, const cv::Size_<T>& Size)
+		{
+			try
+			{
+				j = { Size.width,Size.height };
+			}
+			catch (const std::exception& e)
+			{
+				j = json();
+				std::cerr << e.what() << std::endl;
+			}
+		}
+
+		static void from_json(const json& j, cv::Size_<T>& Size)
+		{
+			try
+			{
+				Size.width=j.at(0);
+				Size.height=j.at(1);
+			}
+			catch(const std::exception& e)
+			{
+				Size = cv::Size_<T>();
+				std::cerr << e.what() << '\n';
+			}
+			
+		}
+	};
 }

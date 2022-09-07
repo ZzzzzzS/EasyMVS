@@ -78,7 +78,7 @@ public:
 		 * @param RelatedFrame shared pointer of related frame.
 		 * @return shared pointer, return empty pointer when create failed.
 		 */
-		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame);
+		static Ptr Create(std::shared_ptr<FrameObject> RelatedFrame);
 
 		/**
 		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts..
@@ -88,7 +88,7 @@ public:
 		 * @param sigma
 		 * @return 
 		 */
-		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame, std::shared_ptr<Sophus::SE3d> Pose, double sigma = 0);
+		static Ptr Create(std::shared_ptr<FrameObject> RelatedFrame, std::shared_ptr<Sophus::SE3d> Pose, double sigma = 0);
 
 		/**
 		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts..
@@ -97,7 +97,7 @@ public:
 		 * @param KeyPointMatch
 		 * @return 
 		 */
-		Ptr Create(std::shared_ptr<FrameObject> RelatedFrame,const std::vector<cv::DMatch>& KeyPointMatch);
+		static Ptr Create(std::shared_ptr<FrameObject> RelatedFrame,const std::vector<cv::DMatch>& KeyPointMatch);
 	public:
 
 		/**
@@ -200,6 +200,12 @@ public:
 	 * @return uint32 timestamp
 	 */
 	uint32_t getTimestamp();
+
+	/**
+	 * @brief set the timestamp.
+	 * @param time the new timestamp
+	 */
+	bool setTimestamp(uint32_t time);
 
 
 	/**

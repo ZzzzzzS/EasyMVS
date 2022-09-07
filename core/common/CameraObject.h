@@ -19,6 +19,13 @@ public:
  */
 	CameraObject();
 
+	/**
+	 * @brief Construct a new Camera Object object
+	 * 
+	 * @param CameraName camera name
+	 */
+	CameraObject(std::string CameraName);
+
 /**
  * @brief Destroy the Camera Object object
  * 
@@ -69,6 +76,8 @@ public:
 	 */
 	bool load(JsonNode& fs) override;
 
+	virtual std::string type_name() override;
+
 public:
 /**
  * @brief shared pointer
@@ -78,6 +87,9 @@ public:
 
 protected:
 	std::string CameraName;
+	cv::Size2i ImageSize;
+private:
+	int CameraIndex; // this is for opencv camera open method only
 };
 
 
@@ -160,6 +172,11 @@ public:
 	 */
 	bool updateDistCoeff(const cv::Mat1d& DistCoeff);
 
+	virtual std::string type_name() override;
+
+	virtual bool save(JsonNode& fs) override;
+	virtual bool load(JsonNode& fs) override;
+
 protected:
 /**
  * @brief Camera Intrinsic Matrix
@@ -172,6 +189,10 @@ protected:
 	 * 
 	 */
 	cv::Mat1d DistCoeff;
+
+private:
+	cv::Mat UndistortMap1, UndistortMap2;
+	bool initParameters();
 };
 
 

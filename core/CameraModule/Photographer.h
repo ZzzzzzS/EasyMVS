@@ -41,7 +41,7 @@ public:
 	 * 
 	 * @param Camera camera pointer
 	 */
-	Photographer(std::shared_ptr<CameraObject::Ptr> Camera);
+	Photographer(CameraObject::Ptr Camera);
 
 	/**
 	 * @brief Construct a new Photographer object with multiple cameras
@@ -99,6 +99,9 @@ public:
 	 */
 	virtual bool clear() override;
 
+	virtual bool save(JsonNode& fs) override;
+	virtual bool load(JsonNode& fs) override;
+
 public slots:
 /**
  * @brief trigger the flow with pre-defined parameters
@@ -116,7 +119,31 @@ public slots:
 	
 protected:
 	using CameraGroup = std::tuple<CameraObject::Ptr, Sophus::SE3d>;
-	std::vector<CameraGroup> Cameras;
+	std::vector<CameraGroup> CamerasMap;
+	//std::map<std::string,CameraGroup> CamerasMap;
 
 };
 
+
+class PinholePhotographer : public Photographer
+{
+	Q_OBJECT
+public:
+	using Ptr = std::shared_ptr<PinholePhotographer>;
+	static PinholePhotographer::Ptr Create(std::initializer_list<CameraObject::Ptr> Cameras);
+	
+public:
+	PinholePhotographer();
+	PinholePhotographer(std::initializer_list<CameraObject::Ptr> Cameras);
+	virtual ~PinholePhotographer();
+
+public:
+	bool Compute(std::vector<FrameObject::Ptr>& Frames) override;
+
+public slots:
+	void Trigger() override;
+	void Trigger(Photographer::DataQueue data) override;
+	
+private:
+	int FrameIDCounter = 0;
+};

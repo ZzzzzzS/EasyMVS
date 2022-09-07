@@ -38,6 +38,16 @@ int FrameObject::getID()
     return this->FrameID;
 }
 
+bool FrameObject::setTimestamp(uint32_t time)
+{
+    if (time < 0)
+    {
+        return false;
+    }
+    this->Timestamp = time;
+    return true;
+}
+
 uint32_t FrameObject::getTimestamp()
 {
     return this->Timestamp;
