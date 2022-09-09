@@ -85,7 +85,7 @@ bool FrameObject::addRelatedFrame(RelatedFrameInfo::Ptr FramePtr)
 {
     try
     {
-        if (auto id = FramePtr->getRelatedFrame()->getID(); this->RelatedFrame.count(id) != 0)
+        if (auto id = FramePtr->getRelatedFrame()->getID(); this->RelatedFrame.count(id) == 0)
         {
             this->RelatedFrame[id] = FramePtr;
             return true;
@@ -251,6 +251,10 @@ bool FrameObject::getMapPoint(int KeyPointID, int& MappointID, Eigen::Vector4d& 
 {
     try
     {
+        if (this->ObservedMapPoints.count(KeyPointID) == 0)
+        {
+            return false;
+        }
         MappointID = std::get<2>(this->ObservedMapPoints[KeyPointID]);
         LocalCoordinate = std::get<1>(this->ObservedMapPoints[KeyPointID]);
         return true;
@@ -288,7 +292,7 @@ bool FrameObject::load(JsonNode& fs)
         this->GlobalPose = fs.at("global-pose");
 
         //read rgb mat
-        if (!fs.at("rgb-mat").is_null())
+        if (fs.at("rgb-mat").is_string())
         {
             std::string path = fs.at("rgb-mat");
             this->RGBMat = cv::imread(path);
@@ -303,7 +307,7 @@ bool FrameObject::load(JsonNode& fs)
         }
 
         //read xyz mat
-        if (!fs.at("xyz-mat").is_null())
+        if (fs.at("xyz-mat").is_string())
         {
             std::string path = fs.at("xyz-mat");
             this->XYZMat = cv::imread(path);
@@ -352,7 +356,7 @@ bool FrameObject::load(JsonNode& fs)
     }
     catch (const std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
     return false;
 }
@@ -382,7 +386,7 @@ bool FrameObject::save(JsonNode& fs)
         }
         else
         {
-            fs["best-camera-id"] = JsonNode::object();
+            fs["best-camera-id"] = JsonNode::value_t::null;
         }
 
         fs["global-pose"] = this->GlobalPose;
@@ -443,7 +447,7 @@ bool FrameObject::save(JsonNode& fs)
         }
         else
         {
-            fs["rgb-mat"] = JsonNode::object();
+            fs["rgb-mat"] = JsonNode::value_t::null;
         }
 
         //save xyz mat
@@ -458,14 +462,14 @@ bool FrameObject::save(JsonNode& fs)
         }
         else
         {
-            fs["xyz-mat"] = JsonNode::object();
+            fs["xyz-mat"] = JsonNode::value_t::null;
         }
         return true;
     }
     catch (const std::exception& e)
     {
         fs = JsonNode::object();
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
     
     return false;
@@ -517,7 +521,7 @@ bool PinholeFrameObject::load(JsonNode& fs)
     }
     catch (const std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
     return false;
 }
@@ -540,7 +544,7 @@ bool PinholeFrameObject::save(JsonNode& fs)
     catch (const std::exception& e)
     {
         fs = JsonNode::object();
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
     return false;
 }
@@ -606,16 +610,15 @@ bool FrameObject::RelatedFrameInfo::save(JsonNode& fs)
         auto FramePtr = this->RelatedFramePtr.lock();
         if (FramePtr == nullptr)
         {
-            fs = JsonNode::object();
             throw std::exception("related frame dose NOT exist");
-            return false;
         }
         fs["frame-id"] = FramePtr->FrameID;
         return true;
     }
     catch (const std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        fs = JsonNode::object();
+        std::cerr << e.what() << std::endl;
     }
     return false;
 }
@@ -633,7 +636,7 @@ bool FrameObject::RelatedFrameInfo::load(JsonNode& fs)
     }
     catch (const std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
     return false;
 }

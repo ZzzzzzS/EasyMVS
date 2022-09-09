@@ -185,7 +185,7 @@ bool MapPointObject::save(JsonNode& fs)
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		fs = JsonNode::object();
 	}
 	return false;
@@ -215,7 +215,7 @@ bool MapPointObject::load(JsonNode& fs)
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 	}
 	return false;
 }

@@ -14,3 +14,6 @@ doc/doxygen/
 doc/Doxyfile
 .vscode/
 
+.vs/
+out/
+CMakeSettings.json

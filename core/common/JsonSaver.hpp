@@ -110,7 +110,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				j = json();
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 			}
 		}
 
@@ -167,7 +167,6 @@ namespace nlohmann {
 					float_t* ptr = mat.ptr<float_t>(0);
 					for (size_t i = 0; i < rows * cols * chennelnumber; i++)
 					{
-						std::cout << data[i].get<float_t>() << std::endl;
 						ptr[i] = data[i].get<float_t>();
 					}
 					break;
@@ -189,7 +188,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				mat = cv::Mat();
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 			}
 			
 		}
@@ -219,7 +218,7 @@ namespace nlohmann {
 			}
 			catch (const std::exception& e)
 			{
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 				j = json();
 			}
 			
@@ -250,7 +249,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				matrix = Sophus::SE3<T>();
-				std::cout << e.what()<<std::endl;
+				std::cerr << e.what()<<std::endl;
 			}
 			
 		}
@@ -280,7 +279,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				j = json();
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 			}
 		}
 
@@ -328,7 +327,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				matrix = Eigen::Matrix<Scalar, Rows, Cols>::Zero();
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 			}
 		}
 	};
@@ -381,7 +380,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				j = json();
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 			}
 		}
 
@@ -400,7 +399,7 @@ namespace nlohmann {
 			catch (const std::exception& e)
 			{
 				Point = cv::KeyPoint();
-				std::cout << e.what() << std::endl;
+				std::cerr << e.what() << std::endl;
 			}
 		}
 	};

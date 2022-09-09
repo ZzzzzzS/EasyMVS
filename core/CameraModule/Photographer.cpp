@@ -166,6 +166,7 @@ void Photographer::Trigger(Photographer::DataQueue data)
 {
 	std::vector<FrameObject::Ptr> frames;
 	frames.reserve(data.size());
+
 	while (!data.empty())
 	{
 		FrameObject::Ptr frame=std::dynamic_pointer_cast<FrameObject>(data.front());
@@ -182,7 +183,16 @@ void Photographer::Trigger(Photographer::DataQueue data)
 	
 	if(this->Compute(frames))
 	{
-		emit this->Finished(data);
+		DataQueue OutData;
+		for (auto &&i : frames)
+		{
+			OutData.push(i);
+		}
+		emit this->Finished(OutData);
+	}
+	else
+	{
+		emit this->Failed();
 	}
 
 }
@@ -220,6 +230,7 @@ PinholePhotographer::~PinholePhotographer()
 
 bool PinholePhotographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 {
+	//call parent method first
 	if (!Photographer::Compute(Frames))
 	{
 		return false;
@@ -275,10 +286,21 @@ void PinholePhotographer::Trigger(Photographer::DataQueue data)
 		{
 			emit this->Warning(this->type_name() + ": dynamic cast input data error!");
 		}
+		data.pop();
 	}
 
 	if (this->Compute(frames))
 	{
-		emit this->Finished(data);
+		DataQueue outdata;
+		for (auto &&i : frames)
+		{
+			outdata.push(i);
+		}
+		
+		emit this->Finished(outdata);
+	}
+	else
+	{
+		emit this->Failed();
 	}
 }

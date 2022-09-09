@@ -2,7 +2,7 @@
 
 GlobalMapObject::Ptr GlobalMapObject::Create()
 {
-    return GlobalMapObject::Ptr();
+	return std::make_shared<GlobalMapObject>();
 }
 
 GlobalMapObject::GlobalMapObject()
@@ -112,9 +112,11 @@ bool GlobalMapObject::load(JsonNode& fs)
 			{
 				int mappoint;
 				Eigen::Vector4d position;
-				tmpframe->getMapPoint(i, mappoint, position);
-				//reload with real shared mappoint
-				tmpframe->updateMapPoint(i, this->MapPoints[mappoint], position);
+				if (tmpframe->getMapPoint(i, mappoint, position))
+				{
+					//reload with real shared mappoint
+					tmpframe->updateMapPoint(i, this->MapPoints[mappoint], position);
+				}
 			}
 
 			//fix shared state of related frames

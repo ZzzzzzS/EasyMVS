@@ -80,6 +80,7 @@ signals:
  * 
  */
 	void Finished();
+	void Failed();
 
 	/**
 	 * @brief emit error message

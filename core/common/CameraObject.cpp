@@ -176,8 +176,8 @@ bool PinholeCamera::load(JsonNode& fs)
 			return false;
 		}
 
-		this->CameraMatrix=fs.at("camera-matrix").get<cv::Mat>();
-		this->DistCoeff=fs.at("dist-coeff").get<cv::Mat>();
+		this->CameraMatrix=fs.at("camera-matrix").get<cv::Mat1d>();
+		this->DistCoeff=fs.at("dist-coeff").get<cv::Mat1d>();
 
 		return this->initParameters();
 	}
