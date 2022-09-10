@@ -9,7 +9,7 @@
 #include "FrameObject.h"
 
 /**
- * @brief The goal of this node is to select the keypoint pairs to match. 
+ * @details The goal of this node is to select the keypoint pairs to match. 
  * The ambition is to find the images that are looking to the same areas of the scene.
  */
 class FeatureMatcher:public WorkFlowObject
@@ -44,38 +44,9 @@ public:
      */
 	virtual ~FeatureMatcher();
 
-/**
- * @brief Get the Flow Name
- * 
- * @return std::string flow name
- */
 	std::string type_name() override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @return true 
-     * @return false 
-     */
 	virtual bool clear() override;
-
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs json file node
-     * @return true 
-     * @return false 
-     */
-	virtual bool init(JsonNode& fs) override;
-
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs json file node
-     * @return true 
-     * @return false 
-     */
-	virtual bool saveParameter(JsonNode& fs) override;
 
     /**
      * @brief match the features of the current frame with the global map
@@ -88,36 +59,16 @@ public:
      */
 	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap=GlobalMapObject::Ptr());
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs 
-     * @return true 
-     * @return false 
-     */
     bool save(JsonNode& fs) override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs 
-     * @return true 
-     * @return false 
-     */
     bool load(JsonNode& fs) override;
 
 public slots:
 /**
- * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
- * **this method shold NOT be called since this algorithm can NOT process empty input data.**
+ * @warning **this method shold NOT be called since this algorithm can NOT process empty input data.**
  */
 	void Trigger() override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param data 
-     */
 	void Trigger(DataQueue data) override;
 
 

@@ -19,16 +19,6 @@ bool DualFrameReconstructor::clear()
     return false;
 }
 
-bool DualFrameReconstructor::init(JsonNode& fs)
-{
-    return false;
-}
-
-bool DualFrameReconstructor::saveParameter(JsonNode& fs)
-{
-    return false;
-}
-
 bool DualFrameReconstructor::Compute(FrameObject::Ptr frame)
 {
     return false;

@@ -6,7 +6,7 @@
 /**
  * @brief DualCamera Photographer class.
  */
-class DualPhotographer : public Photographer
+class DualPhotographer : public PinholePhotographer
 {
 public:
 	Q_OBJECT
@@ -18,9 +18,7 @@ public:
 	virtual ~DualPhotographer();
 
 public:
-	bool init(JsonNode& fs) override;
 	bool Compute(std::vector<FrameObject::Ptr>& Frames) override;
-	bool saveParameter(JsonNode& fs) override;
 	bool clear() override;
 
 };

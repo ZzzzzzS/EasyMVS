@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-
     auto GlobalMapLoadTest = GlobalMapObject::Create();
     std::ifstream loader1("data.json");
     JsonNode loaderNode = JsonNode::parse(loader1);
@@ -56,10 +55,10 @@ int main(int argc, char *argv[])
     }
 
 	// load currently unimplemented
-    //if (auto ExtractorNode = Json["Extractor1"]; !FeatureExtractor1->load(ExtractorNode))
-    //{
-    //    std::cerr << "failed to load extractor" << std::endl;
-    //}
+    if (auto ExtractorNode = Json["Extractor1"]; !FeatureExtractor1->load(ExtractorNode))
+    {
+        std::cerr << "failed to load extractor" << std::endl;
+    }
 
     //connect signal-slots
     QTimer* t = new QTimer();

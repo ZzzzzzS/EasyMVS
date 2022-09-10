@@ -34,15 +34,8 @@ public:
 	 * 
 	 * @return std::string flow name
 	 */
-	std::string type_name() override;
+	virtual std::string type_name() override;
 
-	/**
-	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-	 * 
-	 * @return true 
-	 * @return false 
-	 */
-	
 	bool clear() override;
 
 
@@ -55,37 +48,13 @@ public:
 	 */
 	bool Compute(FrameObject::Ptr frame);
 
-/**
- * @brief save data to file
- *
- * @param fs the json handler
- * @return true save successfully
- * @return false save failed
- */
-	bool save(JsonNode& fs);
-
-	/**
-	 * @brief load data from file
-	 *
-	 * @param fs the json handler
-	 * @return true load successfully
-	 * @return false load failed
-	 */
-	bool load(JsonNode& fs);
-
 public slots:
+
 /**
- * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
- * **this method shold NOT be called since this algorithm can NOT process empty input data.**
- * 
+ * @warning **this method shold NOT be called since this algorithm can NOT process empty input data.**
  */
 	void Trigger();
 
-	/**
-	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-	 * 
-	 * @param data 
-	 */
 	void Trigger(DataQueue data) override;
 	
 protected:
@@ -103,6 +72,8 @@ public:
 	CVFeatureExtractor();
 	virtual ~CVFeatureExtractor();
 	
-	virtual bool init(JsonNode& fs) override;
-	virtual bool saveParameter(JsonNode& fs) override;
+	virtual bool load(JsonNode& fs) override;
+	virtual bool save(JsonNode& fs) override;
+
+	virtual std::string type_name() override;
 };

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "CameraObject.h"
 
-class CVHikCamera : public CameraObject
+class CVHikCamera : public PinholeCamera
 {
 public:
 	CVHikCamera();

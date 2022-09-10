@@ -156,3 +156,22 @@ std::string GlobalMapObject::type_name()
 {
 	return std::string("global-map");
 }
+
+
+bool GlobalMapObject::addFrameObject(FrameObject::Ptr frame)
+{
+	if (this->Frames.count(frame->getID()) != 0)
+		return false;
+
+	this->Frames.insert(std::pair(frame->getID(), frame));
+	return true;
+}
+
+bool GlobalMapObject::addMapPoint(MapPointObject::Ptr mappoint)
+{
+	if (this->Frames.count(mappoint->getID()) != 0)
+		return false;
+
+	this->MapPoints.insert(std::pair(mappoint->getID(), mappoint));
+	return true;
+}

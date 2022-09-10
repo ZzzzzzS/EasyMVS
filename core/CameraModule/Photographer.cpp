@@ -38,7 +38,7 @@ std::string Photographer::type_name()
 	return std::string("workflow-photographer");
 }
 
-bool Photographer::init(JsonNode& fs)
+bool Photographer::load(JsonNode& fs)
 {
 	try
 	{
@@ -121,7 +121,7 @@ bool Photographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 	return false;
 }
 
-bool Photographer::saveParameter(JsonNode& fs)
+bool Photographer::save(JsonNode& fs)
 {
 	try
 	{
@@ -150,16 +150,6 @@ bool Photographer::clear()
 	}
 	this->m_isInit = false;
 	return true;
-}
-
-bool Photographer::save(JsonNode& fs) 
-{
-	return false;
-}
-
-bool Photographer::load(JsonNode& fs) 
-{
-	return false;
 }
 
 void Photographer::Trigger(Photographer::DataQueue data)

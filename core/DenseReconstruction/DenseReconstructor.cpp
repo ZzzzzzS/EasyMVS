@@ -24,16 +24,6 @@ bool DenseReconstructor::clear()
     return false;
 }
 
-bool DenseReconstructor::init(JsonNode& fs)
-{
-    return false;
-}
-
-bool DenseReconstructor::saveParameter(JsonNode& fs)
-{
-    return false;
-}
-
 bool DenseReconstructor::save(JsonNode& fs)
 {
     return false;

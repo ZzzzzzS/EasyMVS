@@ -2,7 +2,7 @@
 #include "PoseReconstructor.h"
 
 /**
- * @brief this is the implementation of increasemental sfm(structure from motion)
+ * @details this is the implementation of increasemental sfm(structure from motion)
  * under pinhole camera model secnario.
  */
 class PinholePoseReconstructor: public PoseReconstructor
@@ -16,8 +16,8 @@ public:
 	PinholePoseReconstructor(GlobalMapObject::Ptr GlobalMap);
 	virtual ~PinholePoseReconstructor();
 
-	virtual bool saveParameter(JsonNode& fs) override;
-	virtual bool init(JsonNode& fs) override;
+	virtual bool save(JsonNode& fs) override;
+	virtual bool load(JsonNode& fs) override;
 	virtual bool clear() override;
 	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr()) override;
 

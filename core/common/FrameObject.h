@@ -124,22 +124,8 @@ public:
 		 */
 		bool isFrameExist();
 
-		/**
-		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-		 * 
-		 * @param fs
-		 * @return 
-		 * @bug the shared state of pose will not be saved.
-		 */
 		bool save(JsonNode& fs) override;
 
-		/**
-		 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-		 * 
-		 * @param fs
-		 * @return 
-		 * @bug the shared state of pose is lost when load from file.
-		 */
 		bool load(JsonNode& fs) override;
 
 		virtual std::string type_name() override;
@@ -344,22 +330,8 @@ public:
 	 */
 	bool updateMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate);
 
-/**
- * @brief load frame from file
- * 
- * @param fs 
- * @return true load successed 
- * @return false load failed
- */
 	virtual bool load(JsonNode& fs) override;
 
-	/**
-	 * @brief save frame to file
-	 * 
-	 * @param fs 
-	 * @return true save successed
-	 * @return false save failed
-	 */
 	virtual bool save(JsonNode& fs) override;
 
 	virtual std::string type_name() override;
@@ -474,7 +446,7 @@ public:
 	 * @param fs 
 	 * @return true 
 	 * @return false 
-	 * @bug the shared states between multiple same intrinsic matrix and distortion coefficient will be lost.
+	 * @bug the shared states between multiple same intrinsic matrix and distortion coefficient will lost.
 	 */
 	virtual bool load(JsonNode& fs) override;
 	virtual bool save(JsonNode& fs) override;

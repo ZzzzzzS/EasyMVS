@@ -11,8 +11,6 @@ public:
 	DualFrameReconstructor(GlobalMapObject::Ptr GlobalMap);
 	virtual ~DualFrameReconstructor();
 	bool clear() override;
-	bool init(JsonNode& fs) override;
-	bool saveParameter(JsonNode& fs) override;
 	bool Compute(FrameObject::Ptr frame) override;
 	bool Compute(FrameObject::Ptr frame1, FrameObject Frame2) override;
 	

@@ -2,7 +2,7 @@
 #include "FeatureMatcher.h"
 
 /**
- * @brief 
+ * @details
  * **VocabularyTree** It uses image retrieval techniques to find images 
  * that share some content without the cost of resolving all feature 
  * matches in details. Each image is represented in a compact image 
@@ -21,8 +21,8 @@ public:
 	virtual ~VocTreeMatcher();
 
 	bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr()) override;
-	bool saveParameter(JsonNode& fs) override;
-	bool init(JsonNode& fs) override;
+	bool save(JsonNode& fs) override;
+	bool load(JsonNode& fs) override;
 	bool clear() override;
 
 

@@ -1,4 +1,5 @@
 #include "FeatureExtractor.h"
+#include <opencv2/features2d.hpp>
 
 FeatureExtractor::FeatureExtractor()
 {
@@ -48,16 +49,6 @@ void FeatureExtractor::Trigger(DataQueue data)
 	emit this->Finished(DataOut);
 }
 
-bool FeatureExtractor::save(JsonNode& fs)
-{
-	return false;
-}
-
-bool FeatureExtractor::load(JsonNode& fs)
-{
-	return false;
-}
-
 void FeatureExtractor::Trigger()
 {
 	emit this->Error("Can NOT triggered without input data");
@@ -70,21 +61,133 @@ CVFeatureExtractor::Ptr CVFeatureExtractor::Create()
 
 CVFeatureExtractor::CVFeatureExtractor() 
 {
-	this->detector=cv::ORB::create();
-	//HACK: 
 }
 
 CVFeatureExtractor::~CVFeatureExtractor() 
 {
 }
 
-bool CVFeatureExtractor::init(JsonNode& fs) 
+bool CVFeatureExtractor::load(JsonNode& fs) 
 {
-	this->m_isInit=true;
-	return true;
+	try
+	{
+		//initialize with different algorithm
+		std::string algorithm = fs.at("algorithm-name");
+		auto parameters = fs.at("parameters");
+		if (algorithm == "opencv-orb")
+		{
+			try
+			{
+				int nfeatures		= parameters.at("nfeatures");
+				float scaleFactor	= parameters.at("scale-factor");
+				int nlevel			= parameters.at("nlevel");
+				int edgeThreshold	= parameters.at("edge-threshold");
+				int firstlevel		= parameters.at("first-level");
+				int WTA_K			= parameters.at("wta-k");
+				int scoretype		= parameters.at("score-type"); //TODO: fix with enum type
+				int patchsize		= parameters.at("patch-size");
+				int fastthres		= parameters.at("fast-threshold");
+
+				this->detector = cv::ORB::create(nfeatures, scaleFactor,
+					nlevel, edgeThreshold, firstlevel,
+					WTA_K, static_cast<cv::ORB::ScoreType>(scoretype),
+					patchsize, fastthres);
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << e.what() << std::endl;
+				std::cout << this->type_name() << ": failed to load parameters, default parameters will be used!" << std::endl;
+				this->detector = cv::ORB::create();
+			}
+		}
+		else if(algorithm=="opencv-sift")
+		{
+			try
+			{
+				int nfeature		 = parameters.at("nfeatures");
+				int noctavelayers	 = parameters.at("n-octave-layers");
+				double contrastThres = parameters.at("contrast-threshold");
+				double edgeThres	 = parameters.at("edge-threshold");
+				double sigma		 = parameters.at("sigma");
+				//int desctype		 = parameters.at("descriptor-type");
+
+				this->detector = cv::SIFT::create(nfeature, noctavelayers, 
+					contrastThres, edgeThres, sigma);
+			}
+			catch (const std::exception& e)
+			{
+				std::cerr << e.what() << std::endl;
+				std::cout << this->type_name() << ": failed to load parameters, default parameters will be used!" << std::endl;
+				this->detector = cv::SIFT::create();
+			}
+		}
+		else
+		{
+			auto message = this->type_name() + ": failed to initialize, bad algorithm type!";
+			throw std::exception(message.c_str());
+		}
+
+		this->m_isInit = (this->detector == nullptr) ? false : true;
+		return this->m_isInit;
+	}
+	catch (const std::exception& e)
+	{
+		this->m_isInit = false;
+		std::cerr << e.what() << std::endl;
+	}
+	return false;
 }
 
-bool CVFeatureExtractor::saveParameter(JsonNode& fs) 
+bool CVFeatureExtractor::save(JsonNode& fs) 
 {
+	try
+	{
+		JsonNode parameters;
+		if (typeid(this->detector) == typeid(cv::Ptr<cv::ORB>))
+		{
+			fs.at("algorithm-name") = std::string("opencv-orb");
+			auto ptr = this->detector.staticCast<cv::ORB>();
+
+			parameters.at("nfeatures") = ptr->getMaxFeatures();
+			parameters.at("scale-factor") = ptr->getScaleFactor();
+			parameters.at("nlevel") = ptr->getNLevels();
+			parameters.at("edge-threshold") = ptr->getEdgeThreshold();
+			parameters.at("first-level") = ptr->getFirstLevel();
+			parameters.at("wta-k") = ptr->getWTA_K();
+			parameters.at("score-type") = static_cast<int>(ptr->getScoreType()); //TODO: fix with enum type
+			parameters.at("patch-size") = ptr->getPatchSize();
+			parameters.at("fast-threshold") = ptr->getFastThreshold();
+
+			fs.at("parameters") = parameters;
+		}
+		else if (typeid(this->detector) == typeid(cv::Ptr<cv::SIFT>))
+		{
+			fs.at("algorithm-name") = std::string("opencv-sift");
+
+			//auto ptr = this->detector.staticCast<cv::SIFT>();
+			fs.at("paramers") = JsonNode::value_t::null;
+			std::cout << "save SIFT parameters is not supported currently!" << std::endl;
+			//TODO: fix sift save
+		}
+		else
+		{
+			std::cout << this->type_name() <<
+				": failed to save algorithm parameters, type " <<
+				typeid(this->detector).name() << " is unknown" << std::endl;
+			fs = JsonNode::value_t::null;
+			return false;
+		}
+		return true;
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		fs = JsonNode::value_t::null;
+	}
 	return false;
+}
+
+std::string CVFeatureExtractor::type_name()
+{
+	return std::string("Workflow CVFeatureExtractor");
 }

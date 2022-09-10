@@ -58,22 +58,8 @@ public:
 	 */
 	virtual bool open();
 
-	/**
-	 * @brief save the camera parameter to a json file
-	 * 
-	 * @param fs 
-	 * @return true 
-	 * @return false 
-	 */
 	bool save(JsonNode& fs) override;
 
-	/**
-	 * @brief load the camera parameter from a json file
-	 * 
-	 * @param fs 
-	 * @return true 
-	 * @return false 
-	 */
 	bool load(JsonNode& fs) override;
 
 	virtual std::string type_name() override;
@@ -117,17 +103,6 @@ public:
 	 */
 	virtual ~PinholeCamera();
 
-	/**
-	 * @brief Transforms an image to compensate for lens distortion. 
-	 * this function use the same distortion module as OpenCV, 
-	 * the detailed undistort algorithm can be found in OpenCV document 
-	 * "Camera Calibration and 3D Reconstruction" part
-	 * 
-	 * @param src Input (distorted) image.
-	 * @param dst Output (corrected) image that has the same size and type as src.
-	 * @return true successfully undistort
-	 * @return false undistort failed
-	 */
 	virtual bool undistort(const cv::Mat& src, cv::Mat& dst) override;
 
 public:

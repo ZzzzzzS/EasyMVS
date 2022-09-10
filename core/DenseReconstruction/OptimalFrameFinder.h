@@ -19,8 +19,6 @@ public:
 	
 public:
 	virtual bool clear() override;
-	virtual bool init(JsonNode& fs) override;
-	virtual bool saveParameter(JsonNode& fs) override;
 	
 	bool save(JsonNode& fs) override;
 	bool load(JsonNode& fs) override;
@@ -47,6 +45,10 @@ public:
 public slots:
 
 	virtual void Trigger(DataQueue data) override;
+	
+/**
+ * @warning **this method shold NOT be called since this algorithm can NOT process empty input data.**
+ */
 	virtual void Trigger() override;
 	
 	

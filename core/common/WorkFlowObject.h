@@ -9,7 +9,7 @@
 
 /**
  * @brief this is the base class of all workflow class,
- * the workflow classes will implement different algorithms to operate data which stored in dataflow classes to complete SFM and MVS steps.
+ * @details the workflow classes will implement different algorithms to operate data which stored in dataflow classes to complete SFM and MVS steps.
  * 
  */
 class WorkFlowObject : public QObject, public MVSObject
@@ -38,15 +38,6 @@ public:
 	 */
 	virtual bool clear() = 0;
 
-/**
- * @brief init the workflow with paramters stored in json node.
- * 
- * @param fs 
- * @return true init succeed
- * @return false init faled
- */
-	virtual bool init(JsonNode& fs) = 0;
-
 	/**
 	 * @brief check if the workflow is inited
 	 * 
@@ -54,15 +45,6 @@ public:
 	 * @return false not inited
 	 */
 	virtual bool isInit();
-
-	/**
-	 * @brief save the current paramter to json node
-	 * 
-	 * @param fs 
-	 * @return true save succeed
-	 * @return false save failed
-	 */
-	virtual bool saveParameter(JsonNode& fs) = 0;
 	
 public:
 	using DataQueue=std::queue<DataFlowObject::Ptr>;
@@ -71,15 +53,20 @@ signals:
 /**
  * @brief the current work load of the workflow is finished, 
  * and the processeed data pointer is stored in the queue, 
- * the workflow can be assigned to new work load with **trigger()** methiod
- * 
+ * the workflow can be assigned to new work load with **trigger()** method
+ * @param parameter DataQueue the output data.
  */
 	void Finished(DataQueue);
 /**
- * @brief the current work load of the workflow is finished, the workflow can be assigned to new work load with **trigger()** methiod
+ * @brief the current work load of the workflow is finished, the workflow can be assigned to new work load with **trigger()** method
  * 
  */
 	void Finished();
+
+	/**
+	 * @brief the current work failed.
+	 * 
+	 */
 	void Failed();
 
 	/**
@@ -134,6 +121,12 @@ public:
 	using Ptr = std::shared_ptr<WorkFlowObject>;
 	
 protected:
+/**
+ * @brief default indicator of wether the workflow is initialized, 
+ * the workflow may or may not use this variable to indicate if its initialized, 
+ * it depends on the implementation of **isInit()** method.
+ * 
+ */
 	bool m_isInit = false;
 };
 

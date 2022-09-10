@@ -23,16 +23,6 @@ bool FeatureMatcher::clear()
     return false;
 }
 
-bool FeatureMatcher::init(JsonNode& fs)
-{
-    return false;
-}
-
-bool FeatureMatcher::saveParameter(JsonNode& fs)
-{
-    return false;
-}
-
 bool FeatureMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
 {
     return false;

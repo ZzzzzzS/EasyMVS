@@ -8,7 +8,7 @@
 
 
 /**
- * @brief This workflow will analyze feature matches to understand the geometric relationship
+ * @details This workflow will analyze feature matches to understand the geometric relationship
  *  behind all the 2D observations, and infer the rigid scene structure (3D points)
  *  with the pose (position and orientation) and internal calibration of all cameras.
  *  The pipeline is a growing reconstruction process (called incremental SfM):
@@ -51,31 +51,7 @@ public:
      */
 	std::string type_name() override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @return true 
-     * @return false 
-     */
 	bool clear() override;
-
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs json file node
-     * @return true 
-     * @return false 
-     */
-	virtual bool init(JsonNode& fs) override;
-
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs 
-     * @return true 
-     * @return false 
-     */
-	virtual bool saveParameter(JsonNode& fs) override;
 
     /**
      * @brief compute the pose of the current frame
@@ -88,36 +64,16 @@ public:
      */
 	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr());
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs 
-     * @return true 
-     * @return false 
-     */
     bool save(JsonNode& fs) override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs 
-     * @return true 
-     * @return false 
-     */
     bool load(JsonNode& fs) override;
 
 public slots:
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * **this method shold NOT be called since this algorithm can NOT process empty input data.**
-    */
+/**
+ * @warning **this method shold NOT be called since this algorithm can NOT process empty input data.**
+ */
 	void Trigger() override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param data 
-     */
 	void Trigger(DataQueue data) override;
 
 

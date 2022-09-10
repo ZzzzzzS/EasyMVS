@@ -19,12 +19,12 @@ bool VocTreeMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr Global
     return false;
 }
 
-bool VocTreeMatcher::saveParameter(JsonNode& fs)
+bool VocTreeMatcher::save(JsonNode& fs)
 {
     return false;
 }
 
-bool VocTreeMatcher::init(JsonNode& fs)
+bool VocTreeMatcher::load(JsonNode& fs)
 {
     return false;
 }

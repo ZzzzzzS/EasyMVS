@@ -37,16 +37,6 @@ bool OptimalFrameFinder::clear()
     return false;
 }
 
-bool OptimalFrameFinder::init(JsonNode& fs)
-{
-    return false;
-}
-
-bool OptimalFrameFinder::saveParameter(JsonNode& fs)
-{
-    return false;
-}
-
 bool OptimalFrameFinder::save(JsonNode& fs)
 {
     return false;

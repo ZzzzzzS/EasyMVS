@@ -14,12 +14,12 @@ PinholePoseReconstructor::~PinholePoseReconstructor()
 {
 }
 
-bool PinholePoseReconstructor::saveParameter(JsonNode& fs)
+bool PinholePoseReconstructor::save(JsonNode& fs)
 {
     return false;
 }
 
-bool PinholePoseReconstructor::init(JsonNode& fs)
+bool PinholePoseReconstructor::load(JsonNode& fs)
 {
     return false;
 }

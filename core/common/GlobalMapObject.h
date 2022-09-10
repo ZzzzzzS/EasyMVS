@@ -34,7 +34,15 @@ public:
      */
 	~GlobalMapObject();
 	
+    /**
+     * @brief add frame to global map.
+     */
+    bool addFrameObject(FrameObject::Ptr frame);
 
+    /**
+     * @brief add map point to global map.
+     */
+    bool addMapPoint(MapPointObject::Ptr mappoint);
 
     /**
      * @brief map contain frames, Frame ID and Frame pointer
@@ -61,22 +69,9 @@ public:
      * @return whether can find map.
      */
     bool getMaps(std::set<std::map<int, FrameObject>>& Frames, std::set<std::map<int, MapPointObject>>& MapPoint);
-/**
- * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
- * 
- * @param fs 
- * @return true 
- * @return false 
- */
+
     bool save(JsonNode& fs) override;
 
-    /**
-     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
-     * 
-     * @param fs 
-     * @return true 
-     * @return false 
-     */
     bool load(JsonNode& fs) override;
 
     virtual std::string type_name() override;

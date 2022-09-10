@@ -17,17 +17,7 @@ DualPhotographer::~DualPhotographer()
 {
 }
 
-bool DualPhotographer::init(JsonNode& fs)
-{
-    return false;
-}
-
 bool DualPhotographer::Compute(std::vector<FrameObject::Ptr>& Frames)
-{
-    return false;
-}
-
-bool DualPhotographer::saveParameter(JsonNode& fs)
 {
     return false;
 }
