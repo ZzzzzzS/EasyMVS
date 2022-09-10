@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include "MVSConfig.h"
-#include <opencv2/opencv.hpp>
 
 /**
  * @brief the base class of all MVS objects

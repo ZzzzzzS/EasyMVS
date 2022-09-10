@@ -17,3 +17,4 @@ doc/Doxyfile
 .vs/
 out/
 CMakeSettings.json
+build/

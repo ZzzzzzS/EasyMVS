@@ -13,6 +13,7 @@
 #include "CameraModule/Photographer.h"
 #include "FeatureExtraction/FeatureExtractor.h"
 #include "SavetestNode.h"
+#include "CameraModule/ImageReaderCamera.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,15 +31,17 @@ int main(int argc, char *argv[])
 
     //create global map and workflow
     auto GlobalMap = GlobalMapObject::Create();
-    auto Camera1 = PinholeCamera::Create();
+    //auto Camera1 = PinholeCamera::Create();
+    auto Camera1 = PinholeImageReader::Create();
     auto Photographer1 = PinholePhotographer::Create({ Camera1 });
     auto FeatureExtractor1 = CVFeatureExtractor::Create();
 
     //load settings
     std::ifstream settings("test0.json");
     JsonNode Json = JsonNode::parse(settings);
-    std::cout << Json;
+    //std::cout << Json;
     settings.close();
+
     if (JsonNode CameraNode = Json["Camera1"]; !Camera1->load(CameraNode))
     {
         std::cerr << "failed to load camera settings" << std::endl;

@@ -5,11 +5,15 @@ project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
 set(SOURCE_FILES Photographer.cpp
                 CVHikCamera.cpp
-                DualPhotographer.cpp)
+                DualPhotographer.cpp
+                ImageReaderCamera.cpp
+)
 
 set(HEADER_FILES Photographer.h
                 CVHikCamera.h
-                DualPhotographer.h)
+                DualPhotographer.h
+                ImageReaderCamera.h
+)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} Eigen3::Eigen)

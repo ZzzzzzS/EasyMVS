@@ -60,12 +60,6 @@ bool CameraObject::load(JsonNode& fs)
 {
 	try
 	{
-		if(fs.at("type-id").get<std::string>()!=this->type_name())
-		{
-			std::cerr<<"type-id not match!"<<std::endl;
-			return false;
-		}
-
 		this->CameraName=fs.at("camera-name").get<std::string>();
 		this->CameraIndex=fs.at("camera-index").get<int>();
 
@@ -125,7 +119,10 @@ std::tuple<cv::Mat1d, cv::Mat1d> PinholeCamera::getCameraParameters()
 bool PinholeCamera::updateCameraMatrix(const cv::Mat1d& CameraMatrix)
 {
 	if (CameraMatrix.size() != cv::Size(3, 3))
+	{
+		std::cout << this->type_name() + ": Intrisic matrix is illegal!" << std::endl;
 		return false;
+	}
 	else
 		this->CameraMatrix = CameraMatrix;
 	return true;
@@ -134,7 +131,10 @@ bool PinholeCamera::updateCameraMatrix(const cv::Mat1d& CameraMatrix)
 bool PinholeCamera::updateDistCoeff(const cv::Mat1d& DistCoeff)
 {
 	if (DistCoeff.empty())
+	{
+		std::cout << this->type_name() + ": Distortion matrix is empty!" << std::endl;
 		return false;
+	}
 	else
 		this->DistCoeff = DistCoeff;
 	return true;
@@ -170,12 +170,6 @@ bool PinholeCamera::load(JsonNode& fs)
 		return false;
 	try
 	{
-		if(fs.at("type-id").get<std::string>()!=this->type_name())
-		{
-			std::cerr<<"type-id not match!"<<std::endl;
-			return false;
-		}
-
 		this->CameraMatrix=fs.at("camera-matrix").get<cv::Mat1d>();
 		this->DistCoeff=fs.at("dist-coeff").get<cv::Mat1d>();
 

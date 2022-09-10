@@ -1,6 +1,6 @@
 #include "MVSObject.h"
-#include <QDir>
-#include <QString>
+#include <filesystem>
+
 
 MVSObject::MVSObject()
 {
@@ -11,21 +11,20 @@ std::string MVSObject::type_name()
     return typeid(this).name();
 }
 
+
+using namespace std::filesystem;
 bool MVSObject::isDirExist(std::string path)
 {
-    QDir dir;
-    return dir.exists(QString::fromStdString(path));
+    std::filesystem::path p1 = path;
+    return exists(p1);
 }
 
 bool MVSObject::mkdir(std::string path)
 {
-    QDir dir;
-    if (dir.exists(QString::fromStdString(path)))
-    {
+    if (this->isDirExist(path))
         return true;
-    }
     else
     {
-        return dir.mkdir(QString::fromStdString(path));
+        return create_directories(path);
     }
 }

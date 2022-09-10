@@ -9,11 +9,6 @@
 
 class MapPointObject;
 
-
-/**
- * @brief the is the frame class
- * 
- */
 class FrameObject : public DataFlowObject
 {
 public:

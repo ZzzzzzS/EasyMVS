@@ -23,16 +23,6 @@ bool PoseReconstructor::clear()
 	return false;
 }
 
-bool PoseReconstructor::init(JsonNode& fs)
-{
-	return false;
-}
-
-bool PoseReconstructor::saveParameter(JsonNode& fs)
-{
-	return false;
-}
-
 bool PoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
 {
 	return false;
