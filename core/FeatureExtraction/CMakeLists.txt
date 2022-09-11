@@ -6,11 +6,15 @@ project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
 set(SOURCE_FILES FeatureExtractor.cpp
                 FeatureMatcher.cpp
-                VocTreeMatcher.cpp)
+                VocTreeMatcher.cpp
+                FSift128.cpp
+)
 
 set(HEADER_FILES FeatureExtractor.h
                 FeatureMatcher.h
-                VocTreeMatcher.h)
+                VocTreeMatcher.h
+                FSift128.h
+)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} Eigen3::Eigen)
