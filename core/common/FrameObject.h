@@ -315,6 +315,18 @@ public:
 	bool getMapPoint(int KeyPointID, int& MappointID, Eigen::Vector4d& LocalCoordinate);
 
 	/**
+	 * @brief Get the Map Point object.
+	 */
+	std::shared_ptr<MapPointObject> getMapPoint(int KeyPointID);
+
+	/**
+	 * @brief get all keypoint id related to mappoint.
+	 * @param KeyPointID output set of keypoint ID.
+	 * @return if get KeyPointID
+	 */
+	bool getAllMappointID(std::set<int>& KeyPointID);
+
+	/**
 	 * @brief update the map point
 	 * 
 	 * @param KeyPointID input key point ID
@@ -364,10 +376,10 @@ public:
 	DBoW2::BowVector BoWDescriptors;
 
 
-/**
- * @brief the global pose of current frame
- * 
- */
+	/**
+	 * @brief the global pose of current frame
+	 * 
+	 */
 	Sophus::SE3d GlobalPose;
 
 

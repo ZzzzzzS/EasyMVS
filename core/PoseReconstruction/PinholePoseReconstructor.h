@@ -13,6 +13,7 @@ public:
 	static PinholePoseReconstructor::Ptr Create(GlobalMapObject::Ptr GlobalMap);
 
 public:
+	PinholePoseReconstructor();
 	PinholePoseReconstructor(GlobalMapObject::Ptr GlobalMap);
 	virtual ~PinholePoseReconstructor();
 
@@ -22,5 +23,12 @@ public:
 	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr()) override;
 
 private:
-
+	void SolveNewFramePose(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap);
+	bool SolveWithMappoint(FrameObject::Ptr current, GlobalMapObject::Ptr GlobalMap);
+	bool SolveWithEHMat(FrameObject::Ptr current, FrameObject::RelatedFrameInfo::Ptr referenced);
+	double ComputeReprojectionError(std::vector<cv::Point2f>& src, std::vector<cv::Point2f>& dst,
+		cv::Mat& CameraMat1, cv::Mat& CameraMat2, cv::Mat T);
+	
+	void ComputeMappoint();
+	void LocalOptimization();
 };

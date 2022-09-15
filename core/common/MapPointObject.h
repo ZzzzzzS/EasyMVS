@@ -138,6 +138,9 @@ public:
 	
 	virtual std::string type_name() override;
 
+	
+	int assignNewMapID();
+
 public:
 /**
  * @brief the discriptor of map point related 2D key point
@@ -167,4 +170,6 @@ private:
 
 	std::map<int,ObservationInfo> ObservedFrame;
 	double quality;
+
+	int MapCounter = 1;
 };

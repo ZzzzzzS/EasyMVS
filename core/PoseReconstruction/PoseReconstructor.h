@@ -32,10 +32,16 @@ public:
      */
 	static PoseReconstructor::Ptr Create(GlobalMapObject::Ptr GlobalMap);
 public:
-/**
- * @brief Construct a new Pose Reconstructor object
- * 
- */
+    /**
+     * @brief Construct a new Pose Reconstructor object
+     * 
+     */
+    PoseReconstructor();
+	
+    /**
+     * @brief Construct a new Pose Reconstructor object
+     *
+     */
 	PoseReconstructor(GlobalMapObject::Ptr GlobalMap);
 
     /**

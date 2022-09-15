@@ -1,5 +1,7 @@
 #pragma once
 #include "MVSObject.h"
+#include <sophus/se3.hpp>
+#include <opencv2/opencv.hpp>
 
 /**
  * @brief this is the base class for all data storage types.
@@ -34,6 +36,11 @@ public:
      * @return DataFlowObject::Ptr 
      */
     //static DataFlowObject::Ptr Create();
+
+    static void cvMat2Sophus(const cv::Mat1d& Mat, Sophus::SE3d& Pose);
+    static void Sophus2cvMat(const Sophus::SE3d& pose, cv::Mat1d& Mat);
+    static cv::Mat1d Rt2T(const cv::Mat1d& R, const cv::Mat1d t);
+    static std::tuple<cv::Mat1d, cv::Mat1d> T2Rt(const cv::Mat1d& T);
 
 private:
     /* data */

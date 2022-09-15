@@ -266,6 +266,11 @@ bool FrameObject::getMapPoint(int KeyPointID, int& MappointID, Eigen::Vector4d& 
     return false;
 }
 
+std::shared_ptr<MapPointObject> FrameObject::getMapPoint(int KeyPointID)
+{
+    return std::get<0>(this->ObservedMapPoints.at(KeyPointID)).lock();
+}
+
 bool FrameObject::updateMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)
 {
     try
@@ -278,6 +283,17 @@ bool FrameObject::updateMapPoint(int KeyPointID, std::shared_ptr<MapPointObject>
         std::cerr << e.what() << std::endl;
     }
     return false;
+}
+
+bool FrameObject::getAllMappointID(std::set<int>& KeyPointID)
+{
+    KeyPointID.clear();
+    for (auto& [key, value] : this->ObservedMapPoints)
+    {
+        if (!std::get<0>(value).expired())
+            KeyPointID.insert(key);
+    }
+    return !KeyPointID.empty();
 }
 
 bool FrameObject::load(JsonNode& fs)

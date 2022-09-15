@@ -1,4 +1,4 @@
-#include "GlobalMapObject.h"
+﻿#include "GlobalMapObject.h"
 
 GlobalMapObject::Ptr GlobalMapObject::Create()
 {
@@ -158,12 +158,13 @@ std::string GlobalMapObject::type_name()
 }
 
 
-bool GlobalMapObject::addFrameObject(FrameObject::Ptr frame)
+bool GlobalMapObject::addFrameObject(FrameObject::Ptr frame, int MapID)
 {
 	if (this->Frames.count(frame->getID()) != 0)
 		return false;
 
 	this->Frames.insert(std::pair(frame->getID(), frame));
+	this->MapID.insert({ frame->getID(), MapID });
 	return true;
 }
 
@@ -174,4 +175,119 @@ bool GlobalMapObject::addMapPoint(MapPointObject::Ptr mappoint)
 
 	this->MapPoints.insert(std::pair(mappoint->getID(), mappoint));
 	return true;
+}
+
+bool GlobalMapObject::removeFrameObject(int ID)
+{
+	if (this->Frames.count(ID) == 0)
+		return false;
+
+	this->Frames.erase(ID);
+	this->MapID.erase(ID);
+	return true;
+}
+
+//TODO: 修复删除时删除路点引用的问题
+bool GlobalMapObject::removeAllFrameObject()
+{
+	this->Frames.clear();
+	this->MapID.clear();
+	return true;
+}
+
+bool GlobalMapObject::updateFrameObject(FrameObject::Ptr frame, int MapID)
+{
+	if (this->Frames.count(frame->getID()) == 0)
+		return false;
+
+	this->Frames.at(frame->getID()) = frame;
+	if (MapID != -1)
+		this->MapID.at(frame->getID()) = MapID;
+
+	return true;
+}
+
+FrameObject::Ptr GlobalMapObject::getFrameObject(int ID)
+{
+	try
+	{
+		return this->Frames.at(ID);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	return FrameObject::Ptr();
+}
+
+bool GlobalMapObject::getAllFrameObjectID(std::set<int>& IDs)
+{
+	IDs.clear();
+	for (auto& [key,value] : this->Frames)
+	{
+		IDs.insert(key);
+	}
+	return true;
+}
+
+int GlobalMapObject::getFrameObjectMapID(int frameID)
+{
+	return this->MapID.at(frameID);
+}
+
+//TODO: 修正关联问题
+bool GlobalMapObject::updateMapPoint(MapPointObject::Ptr mappoint)
+{
+	if (this->MapPoints.count(mappoint->getID()) == 0)
+		return false;
+	this->MapPoints.at(mappoint->getID()) = mappoint;
+	return true;
+}
+
+bool GlobalMapObject::removeMapPoint(int ID)
+{
+	if (this->MapPoints.count(ID) == 0)
+		return false;
+	this->MapPoints.erase(ID);
+	return true;
+}
+
+bool GlobalMapObject::removeAllMapPoint()
+{
+	this->MapPoints.clear();
+	return true;
+}
+
+MapPointObject::Ptr GlobalMapObject::getMapPoint(int ID)
+{
+	try
+	{
+		return this->MapPoints.at(ID);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+	}
+	return nullptr;
+}
+
+bool GlobalMapObject::getAllMapPointID(std::set<int>& ID)
+{
+	ID.clear();
+	for (auto& [key,value] : this->MapPoints)
+	{
+		ID.insert(key);
+	}
+	return true;
+}
+
+int GlobalMapObject::getFrameSize()
+{
+	return this->Frames.size();
+}
+
+
+int GlobalMapObject::getMappointSize()
+{
+	return this->MapPoints.size();
 }

@@ -37,24 +37,26 @@ public:
     /**
      * @brief add frame to global map.
      */
-    bool addFrameObject(FrameObject::Ptr frame);
+    bool addFrameObject(FrameObject::Ptr frame,int MapID=-1);
+
+    bool removeFrameObject(int ID);
+    bool removeAllFrameObject();
+    bool updateFrameObject(FrameObject::Ptr frame, int MapID = -1);
+    FrameObject::Ptr getFrameObject(int ID);
+    bool getAllFrameObjectID(std::set<int>& IDs);
+    int getFrameObjectMapID(int frameID);
+    int getFrameSize();
 
     /**
      * @brief add map point to global map.
      */
     bool addMapPoint(MapPointObject::Ptr mappoint);
-
-    /**
-     * @brief map contain frames, Frame ID and Frame pointer
-     * 
-     */
-	std::map<int, FrameObject::Ptr> Frames;
-
-    /**
-     * @brief map contain map points, MapPoint ID and MapPoint pointer
-     * 
-     */
-	std::map<int, MapPointObject::Ptr> MapPoints;
+    bool updateMapPoint(MapPointObject::Ptr mappoint);
+    bool removeMapPoint(int ID);
+    bool removeAllMapPoint();
+    MapPointObject::Ptr getMapPoint(int ID);
+    bool getAllMapPointID(std::set<int>& ID);
+    int getMappointSize();
 
     /**
      * @brief the initial frame ID
@@ -77,6 +79,23 @@ public:
     virtual std::string type_name() override;
 
 private:
+
+    /**
+ * @brief map contain frames, Frame ID and Frame pointer
+ *
+ */
+    std::map<int, FrameObject::Ptr> Frames;
+
+    /**
+     * @brief map contain map points, MapPoint ID and MapPoint pointer
+     *
+     */
+    std::map<int, MapPointObject::Ptr> MapPoints;
+
+    /**
+     * @brief .
+     */
+    std::map<int, int>  MapID;
 
 };
 

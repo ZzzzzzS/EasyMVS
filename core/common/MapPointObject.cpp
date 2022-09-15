@@ -224,3 +224,8 @@ std::string MapPointObject::type_name()
 {
 	return std::string("mappoint-object");
 }
+
+int MapPointObject::assignNewMapID()
+{
+	return this->MapCounter++;
+}

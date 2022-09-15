@@ -5,6 +5,10 @@ PoseReconstructor::Ptr PoseReconstructor::Create(GlobalMapObject::Ptr GlobalMap)
 	return PoseReconstructor::Ptr();
 }
 
+PoseReconstructor::PoseReconstructor()
+{
+}
+
 PoseReconstructor::PoseReconstructor(GlobalMapObject::Ptr GlobalMap)
 {
 }
