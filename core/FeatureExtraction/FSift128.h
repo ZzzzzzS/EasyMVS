@@ -74,6 +74,11 @@ namespace DBoW2 {
          * @param descriptors
          */
         static void fromMat32F(const cv::Mat& mat, std::vector<TDescriptor>& descriptors);
+
+        /**
+         * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+         */
+        static std::vector<TDescriptor> fromMat32F(const cv::Mat& mat);
     };
 
 } // namespace DBoW2

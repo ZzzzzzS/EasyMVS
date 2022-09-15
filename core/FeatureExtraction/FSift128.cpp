@@ -107,6 +107,13 @@ namespace DBoW2 {
         }
     }
 
+    std::vector<FSift128::TDescriptor> FSift128::fromMat32F(const cv::Mat& mat)
+    {
+        std::vector<TDescriptor> tmp;
+        fromMat32F(mat, tmp);
+        return tmp;
+    }
+
     // --------------------------------------------------------------------------
 
 } // namespace DBoW2

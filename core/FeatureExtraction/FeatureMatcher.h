@@ -49,7 +49,7 @@ public:
 	virtual bool clear() override;
 
     /**
-     * @brief match the features of the current frame with the global map
+     * @brief match the features of the current frame within the global map
      * 
      * @param frame inputoutput frame object
      * @param GlobalMap the global map pointer, if the global map is empty,
@@ -58,6 +58,36 @@ public:
      * @return false match failed or input parameter incorrect
      */
 	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap=GlobalMapObject::Ptr());
+
+    /**
+     * @brief find related frames of input frame within the global map.
+     * 
+	 * @param frame input frame object
+	 * @param related output related frame
+	 * @param the global map pointer, if the global map is empty,
+     * the method will use preloaded global map
+     * @ return if related frame found
+     */
+    virtual bool MatchRelatedFrame(FrameObject::Ptr frame, std::list<FrameObject::Ptr>& related, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr());
+	
+
+	/**
+	 * @brief find matched keypoints between the input frame and its related frame.
+	 * 
+	 * @param frame inputoutput frame object
+	 * @return if matched keypoints found
+	 */
+    virtual bool MatchKeyPoints(FrameObject::Ptr frame);
+
+    /**
+     * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+     * 
+     * @param queryFrames query frame
+     * @param trainFrames train frame
+     * @param matches keypoint match info
+     * @return if related frame found
+     */
+    virtual bool MatchKeyPoints(FrameObject::Ptr queryFrames, FrameObject::Ptr trainFrames, std::vector<cv::DMatch>& matches);
 
     bool save(JsonNode& fs) override;
 
