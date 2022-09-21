@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "MVSConfig.h"
 #include "DataFlowObject.h"
 #include "FrameObject.h"
@@ -37,14 +37,13 @@ public:
     /**
      * @brief add frame to global map.
      */
-    bool addFrameObject(FrameObject::Ptr frame,int MapID=-1);
+    bool addFrameObject(FrameObject::Ptr frame);
 
     bool removeFrameObject(int ID);
     bool removeAllFrameObject();
-    bool updateFrameObject(FrameObject::Ptr frame, int MapID = -1);
+    bool updateFrameObject(FrameObject::Ptr frame);
     FrameObject::Ptr getFrameObject(int ID);
     bool getAllFrameObjectID(std::set<int>& IDs);
-    int getFrameObjectMapID(int frameID);
     int getFrameSize();
 
     /**
@@ -58,10 +57,7 @@ public:
     bool getAllMapPointID(std::set<int>& ID);
     int getMappointSize();
 
-    /**
-     * @brief the initial frame ID
-     */
-    int InitialFrameID;
+    int AssignMapID(int FrameID);
 
     /**
      * @brief get all related frame as a whole map, return different map frames, and Map Points.
@@ -78,6 +74,11 @@ public:
 
     virtual std::string type_name() override;
 
+    /**
+     * @brief initial frames of different map <MapID,FrameID>.
+     */
+    std::map<int, int> InitalFrames;
+
 private:
 
     /**
@@ -92,10 +93,8 @@ private:
      */
     std::map<int, MapPointObject::Ptr> MapPoints;
 
-    /**
-     * @brief .
-     */
-    std::map<int, int>  MapID;
+    int MapIDCounter = 0;
 
+    void CleanUnusedMapID();
 };
 

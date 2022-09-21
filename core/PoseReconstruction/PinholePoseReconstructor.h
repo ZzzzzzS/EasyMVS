@@ -23,12 +23,12 @@ public:
 	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr()) override;
 
 private:
-	void SolveNewFramePose(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap);
+	bool SolveNewFramePose(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap);
 	bool SolveWithMappoint(FrameObject::Ptr current, GlobalMapObject::Ptr GlobalMap);
-	bool SolveWithEHMat(FrameObject::Ptr current, FrameObject::RelatedFrameInfo::Ptr referenced);
+	double SolveWithEHMat(FrameObject::Ptr current, FrameObject::RelatedFrameInfo::Ptr referenced, Sophus::SE3d& T);
 	double ComputeReprojectionError(std::vector<cv::Point2f>& src, std::vector<cv::Point2f>& dst,
 		cv::Mat& CameraMat1, cv::Mat& CameraMat2, cv::Mat T);
 	
-	void ComputeMappoint();
-	void LocalOptimization();
+	void ComputeMappoint(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap);
+	//void LocalOptimization();
 };

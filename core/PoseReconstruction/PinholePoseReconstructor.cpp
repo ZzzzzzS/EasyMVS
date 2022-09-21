@@ -41,36 +41,74 @@ bool PinholePoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::
     return false;
 }
 
-void PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
+bool PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
 {
-	try
+	try 
 	{
-		if (frame->getID() == GlobalMap->InitialFrameID) // do nothing in first frame
-			return;
-
 		std::set<int> relatedFrameID;
-		if (!frame->getAllRelatedFrames(relatedFrameID)) return;
+		if (!frame->getAllRelatedFrames(relatedFrameID)) return false;
 
-		this->SolveWithMappoint(frame); //先用路点来求姿态
+		//如果全局姿态不是单位阵，说明姿态已知，这里就不求了
+		if (frame->GlobalPose.matrix() != Eigen::Matrix4d::Identity())
+			return true;
 
-		for (auto& i : relatedFrameID) //没办法了再用对极几何来求姿态
+		auto result = this->SolveWithMappoint(frame, GlobalMap); //先用路点来求姿态
+
+		//如果不存在路点，则使用对极几何来求姿态。使用对极几何来求位姿即重新新开地图初始化
+		if (result == false)
 		{
-			auto relatedFramePtr = frame->getRelatedFrame(i);
-			
-			if (relatedFramePtr->Pose != nullptr) continue; //位姿已知，不用求了
-			
-			if (this->SolveWithEHMat(frame, relatedFramePtr))
+			//使用对极几何对每一个关联帧求相对姿态，并使用重投影误差最小的关联帧做初始值
+			std::map<int, std::tuple<double, Sophus::SE3d>> Frameid2ErrNPose;
+			for (auto& i : relatedFrameID)
 			{
-				std::cout << this->type_name() << ": failed to solve pose between frame" <<
-					frame->getID() << " and frame" << relatedFramePtr->getRelatedFrame()->getID() << std::endl;
+				/*
+				只有关联帧没有关联帧的情况下才可以使用对极几何来初始化，
+				关联帧如果有关联帧，说明该关联帧肯定存在路点，那么肯定属于某一个地图中，
+				所以如果这里又用对极几何就会产生一个新的地图，将产生矛盾。
+				该函数只考虑计算当前帧的位姿的情况，多个地图的拼接问题由其他函数考虑。
+				*/
+				std::set<int> RelatedRelatedFrameID; 
+				if (frame->getRelatedFrame(i)->getRelatedFrame()->getAllRelatedFrames(RelatedRelatedFrameID))
+					continue; //关联帧存在关联帧，不能用来初始化，跳过
+
+				Sophus::SE3d tmp;
+				double error = this->SolveWithEHMat(frame, frame->getRelatedFrame(i), tmp);
+				if (error >= 0)
+					Frameid2ErrNPose[i] = { error,tmp };
 			}
+			
+			//assert(Frameid2ErrNPose.empty()); //应该不会都匹配错误，错误证明前节点有问题
+			if (Frameid2ErrNPose.empty()) //没有合适的关联帧，那么这帧就无法使用，等待更多信息
+				return false;
+			
+			//找到最小误差的ID
+			int LeastErrorID = 0;
+			double LeastError = DBL_MAX;
+			for (auto& [key,value] : Frameid2ErrNPose)
+			{
+				if (std::get<double>(value) < LeastError)
+				{
+					LeastError = std::get<double>(value);
+					LeastErrorID = key;
+				}
+			}
+			
+			//计算在这个子地图中的全局坐标
+			frame->GlobalPose = std::get<Sophus::SE3d>(Frameid2ErrNPose[LeastErrorID]) 
+				* frame->getRelatedFrame(LeastErrorID)->getRelatedFrame()->GlobalPose;
+			
+			//将该帧加入子地图
+			frame->MapID = frame->getRelatedFrame(LeastErrorID)->getRelatedFrame()->MapID;
+			GlobalMap->InitalFrames.at(frame->MapID) = LeastErrorID; //修改当前地图中的初始帧ID
+			return true;
 		}
+		return true;
 	}
 	catch (const std::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	return;
+	return false;
 }
 
 bool PinholePoseReconstructor::SolveWithMappoint(FrameObject::Ptr current, GlobalMapObject::Ptr GlobalMap)
@@ -82,13 +120,15 @@ bool PinholePoseReconstructor::SolveWithMappoint(FrameObject::Ptr current, Globa
 	//从关联帧中提取出所有可以用于pnp的路点，以及将不同地图的路点进行分类
 	std::set<int> relatedframes;
 	current->getAllRelatedFrames(relatedframes);
+	assert(!relatedframes.empty());
 	for (auto& index : relatedframes)
 	{
 		//获得mapID
-		int MapID = GlobalMap->getFrameObjectMapID(index);
-		assert(MapID != -1);
+		//int MapID = GlobalMap->getFrameObjectMapID(index);
 		auto RelatedFrameInfo = current->getRelatedFrame(index);
 		auto relatedFramePtr = RelatedFrameInfo->getRelatedFrame();
+		int MapID = relatedFramePtr->MapID;
+		assert(MapID != -1);
 		std::set<int> RelateFrameMappoint;
 		relatedFramePtr->getAllMappointID(RelateFrameMappoint);
 		for (auto& dmatch : RelatedFrameInfo->KeyPointMatch)
@@ -144,15 +184,16 @@ bool PinholePoseReconstructor::SolveWithMappoint(FrameObject::Ptr current, Globa
 	Sophus::SE3d pose;
 	DataFlowObject::cvMat2Sophus(T, pose);
 	current->GlobalPose = pose;
-
-
+	//int MapID = GlobalMap->getFrameObjectMapID(MappointNumber[LargestIndex].front()->getID());
+	//GlobalMap->updateFrameObject(current, MapID);
+	current->MapID = LargestIndex;
 	return true;
 }
 
-bool PinholePoseReconstructor::SolveWithEHMat(FrameObject::Ptr current, FrameObject::RelatedFrameInfo::Ptr referenced)
+double PinholePoseReconstructor::SolveWithEHMat(FrameObject::Ptr current, FrameObject::RelatedFrameInfo::Ptr referenced, Sophus::SE3d& T)
 {
 	if (referenced->KeyPointMatch.size() < 8) //八点法最少需要8个点
-		return false;
+		return -1;
 	
 	auto ReferencedFrame = std::dynamic_pointer_cast<PinholeFrameObject>(referenced->getRelatedFrame());
 	auto PinholeCurrent = std::dynamic_pointer_cast<PinholeFrameObject>(current);
@@ -181,11 +222,9 @@ bool PinholePoseReconstructor::SolveWithEHMat(FrameObject::Ptr current, FrameObj
 		PinholeCurrent->CameraMatrix, ReferencedFrame->CameraMatrix, E_T);
 	
 	cv::Mat1d finalT = (E_Error > H_Error) ? H_T : E_T;
-	
-	Sophus::SE3d SophusT;
-	DataFlowObject::cvMat2Sophus(finalT, SophusT);
-	referenced->Pose = std::make_shared<Sophus::SE3d>(SophusT);
-	return true;
+
+	DataFlowObject::cvMat2Sophus(finalT, T);
+	return (E_Error > H_Error) ? H_Error : E_Error; //返回一个小的重投影误差
 }
 
 double PinholePoseReconstructor::ComputeReprojectionError(std::vector<cv::Point2f>& src, std::vector<cv::Point2f>& dst, cv::Mat& CameraMat1, cv::Mat& CameraMat2, cv::Mat T)
@@ -215,4 +254,10 @@ double PinholePoseReconstructor::ComputeReprojectionError(std::vector<cv::Point2
 	}
 
 	return Error;
+}
+
+void PinholePoseReconstructor::ComputeMappoint(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
+{
+	//考虑计算新路点的问题和地图融合的问题
+
 }

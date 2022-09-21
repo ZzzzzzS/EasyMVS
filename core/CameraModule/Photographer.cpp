@@ -6,9 +6,11 @@
 #include <sophus/se3.hpp>
 
 
-Photographer::Ptr Photographer::Create(std::initializer_list<CameraObject::Ptr> Cameras)
+Photographer::Ptr Photographer::Create(GlobalMapObject::Ptr Map, std::initializer_list<CameraObject::Ptr> Cameras)
 {
-	return std::make_shared<Photographer>(Cameras);
+	auto ptr = std::make_shared<Photographer>(Cameras);
+	ptr->GlobalMap = Map;
+	return ptr;
 }
 
 Photographer::Photographer()
@@ -81,6 +83,7 @@ bool Photographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 	try
 	{
 		int index=0;
+		Sophus::SE3d AccGlobalPose(Sophus::Matrix4d::Identity());
 		for(auto&& camera:this->CamerasMap)
 		{
 			auto CameraInstance = std::get<0>(camera);
@@ -108,6 +111,8 @@ bool Photographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 				{
 					emit this->Warning(this->type_name() + ": add related frame failed, frame id: "+std::to_string(Frames.at(index)->getID()));
 				}
+				AccGlobalPose = *se3ptr * AccGlobalPose;
+				Frames.at(index)->GlobalPose = AccGlobalPose;
 			}
 			index++;
 		}
@@ -192,9 +197,11 @@ void Photographer::Trigger()
 	emit this->Warning(this->type_name() + ": this workflow can not be triggered without input data!");
 }
 
-PinholePhotographer::Ptr PinholePhotographer::Create(std::initializer_list<CameraObject::Ptr> Cameras)
+PinholePhotographer::Ptr PinholePhotographer::Create(GlobalMapObject::Ptr Map, std::initializer_list<CameraObject::Ptr> Cameras)
 {
-	return std::make_shared<PinholePhotographer>(Cameras);
+	auto ptr = std::make_shared<PinholePhotographer>(Cameras);
+	ptr->GlobalMap = Map;
+	return ptr;
 }
 
 PinholePhotographer::PinholePhotographer()
@@ -252,9 +259,10 @@ bool PinholePhotographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 void PinholePhotographer::Trigger()
 {
 	DataQueue data;
+	int MapID = this->GlobalMap->AssignMapID(this->FrameIDCounter);
 	for (size_t i = 0; i < this->CamerasMap.size(); i++)
 	{
-		auto tmpframe = PinholeFrameObject::Create(this->FrameIDCounter++);
+		auto tmpframe = PinholeFrameObject::Create(this->FrameIDCounter++, MapID);
 		data.push(tmpframe);
 	}
 	

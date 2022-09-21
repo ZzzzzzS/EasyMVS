@@ -34,10 +34,9 @@ int main(int argc, char *argv[])
     auto GlobalMap = GlobalMapObject::Create();
     //auto Camera1 = PinholeCamera::Create();
     auto Camera1 = PinholeImageReader::Create();
-    auto Photographer1 = PinholePhotographer::Create({ Camera1 });
+    auto Photographer1 = PinholePhotographer::Create(GlobalMap, { Camera1 });
     auto FeatureExtractor1 = CVFeatureExtractor::Create();
     auto FeatureMatcher1 = VocTreeMatcher::Create(GlobalMap);
-
     //load settings
     std::ifstream settings("test0.json");
     JsonNode Json = JsonNode::parse(settings);

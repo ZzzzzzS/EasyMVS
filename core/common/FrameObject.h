@@ -18,11 +18,12 @@ public:
  * @brief Create FrameObject object.
  * 
  * @param ID Unique frame ID
+ * @param the map ID, which is assigned by GlobalMap
  * @param RGBMat the undistorted RGB image.
  * @param XYZMap the XYZ map or depth map, the RGBD camera may already compute the original depth map when frame is created.
  * @return Ptr 
  */
-	static Ptr Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp = 0, const cv::Mat& XYZMat = cv::Mat());
+	static Ptr Create(int ID, int MapID, const cv::Mat& RGBMat, uint32_t Timestamp = 0, const cv::Mat& XYZMat = cv::Mat());
 
 	/**
 	 * @brief This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
@@ -30,7 +31,7 @@ public:
 	 * @param ID 
 	 * @return Ptr 
 	 */
-	static Ptr Create(int ID, uint32_t Timestamp = 0);
+	static Ptr Create(int ID, int MapID, uint32_t Timestamp = 0);
 
 public:
 	/**
@@ -382,9 +383,14 @@ public:
 	 */
 	Sophus::SE3d GlobalPose;
 
+	/**
+	 * @brief this variable indicate which submap this frame belong.
+	 */
+	int MapID = -1;
 
 protected:
 	int FrameID;
+
 	uint32_t Timestamp;
 	/**
 	 * @brief pointer of the related frame, the pose of related frame, the pose confidence of related frame (-1 means invalid)
@@ -414,7 +420,7 @@ public:
 	 * @param ID 
 	 * @return Ptr 
 	 */
-	static Ptr Create(int ID,uint32_t Timestamp = 0);
+	static Ptr Create(int ID, int MapID, uint32_t Timestamp = 0);
 
 	/**
 	 * @brief Create the PinholeFrameObject object
@@ -429,6 +435,7 @@ public:
 	static Ptr Create(int ID, 
 		const cv::Mat& CameraMatrix,
 		const cv::Mat& DistCoeff,
+		int MapID,
 		uint32_t Timestamp = 0,
 		const cv::Mat& RGBMat = cv::Mat(),
 		const cv::Mat& XYZMat = cv::Mat());

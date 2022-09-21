@@ -4,6 +4,7 @@
 #include "WorkFlowObject.h"
 #include "CameraObject.h"
 #include "FrameObject.h"
+#include "GlobalMapObject.h"
 
 #include <QObject>
 #include <opencv2/opencv.hpp>
@@ -28,7 +29,7 @@ public:
 	 * @param Cameras camera lists
 	 * @return Photographer::Ptr 
 	 */
-	static Photographer::Ptr Create(std::initializer_list<CameraObject::Ptr> Cameras);
+	static Photographer::Ptr Create(GlobalMapObject::Ptr Map, std::initializer_list<CameraObject::Ptr> Cameras);
 public:
 /**
  * @brief Construct a new Photographer object
@@ -94,7 +95,7 @@ protected:
 	using CameraGroup = std::tuple<CameraObject::Ptr, Sophus::SE3d>;
 	std::vector<CameraGroup> CamerasMap;
 	//std::map<std::string,CameraGroup> CamerasMap;
-
+	GlobalMapObject::Ptr GlobalMap;
 };
 
 
@@ -103,7 +104,7 @@ class PinholePhotographer : public Photographer
 	Q_OBJECT
 public:
 	using Ptr = std::shared_ptr<PinholePhotographer>;
-	static PinholePhotographer::Ptr Create(std::initializer_list<CameraObject::Ptr> Cameras);
+	static PinholePhotographer::Ptr Create(GlobalMapObject::Ptr Map,std::initializer_list<CameraObject::Ptr> Cameras);
 	
 public:
 	PinholePhotographer();

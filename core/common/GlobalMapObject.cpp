@@ -6,7 +6,6 @@ GlobalMapObject::Ptr GlobalMapObject::Create()
 }
 
 GlobalMapObject::GlobalMapObject()
-	:InitialFrameID(0)
 {
 }
 
@@ -27,7 +26,6 @@ bool GlobalMapObject::save(JsonNode& fs)
 		fs["type-id"] = this->type_name();
 		fs["frame-size"] = this->Frames.size();
 		fs["mappoint-size"] = this->MapPoints.size();
-		fs["initial-frame-id"] = this->InitialFrameID;
 
 		//save frame info
 		JsonNode FramesNode = JsonNode::array();
@@ -55,6 +53,17 @@ bool GlobalMapObject::save(JsonNode& fs)
 			MappointNode.push_back(tmp);
 		}
 		fs["mappoint-info"] = MappointNode;
+
+		//save initialframe
+		JsonNode InitialframesArray = JsonNode::array();
+		for (auto& [key,value] : this->InitalFrames)
+		{
+			JsonNode tmp = JsonNode::object();
+			tmp["map-id"] = key;
+			tmp["initial-frame-id"] = value;
+			InitialframesArray.push_back(tmp);
+		}
+		fs["initial-frames"] = InitialframesArray;
 		
 		return true;
 	}
@@ -75,8 +84,6 @@ bool GlobalMapObject::load(JsonNode& fs)
 		{
 			return false;
 		}
-		
-		this->InitialFrameID = fs.at("initial-frame-id").get<int>();
 		
 		//load frames
 		JsonNode FrameNode = fs.at("frame-info");
@@ -100,6 +107,13 @@ bool GlobalMapObject::load(JsonNode& fs)
 				throw std::exception("failed to load mappoint");
 			}
 			this->MapPoints[tmp->getID()] = tmp;
+		}
+
+		//load initial frames
+		JsonNode InitialFrameNode = fs.at("initial-frames");
+		for (auto&& Frame : InitialFrameNode)
+		{
+			this->InitalFrames.insert({ Frame.at("map-id"),Frame.at("initial-frame-id") });
 		}
 
 		//set related frames and observed mappoints
@@ -146,7 +160,6 @@ bool GlobalMapObject::load(JsonNode& fs)
 	{
 		this->MapPoints.clear();
 		this->Frames.clear();
-		this->InitialFrameID = -1;
 		std::cerr << e.what() << std::endl;
 	}
     return false;
@@ -158,13 +171,12 @@ std::string GlobalMapObject::type_name()
 }
 
 
-bool GlobalMapObject::addFrameObject(FrameObject::Ptr frame, int MapID)
+bool GlobalMapObject::addFrameObject(FrameObject::Ptr frame)
 {
 	if (this->Frames.count(frame->getID()) != 0)
 		return false;
 
 	this->Frames.insert(std::pair(frame->getID(), frame));
-	this->MapID.insert({ frame->getID(), MapID });
 	return true;
 }
 
@@ -183,7 +195,6 @@ bool GlobalMapObject::removeFrameObject(int ID)
 		return false;
 
 	this->Frames.erase(ID);
-	this->MapID.erase(ID);
 	return true;
 }
 
@@ -191,18 +202,15 @@ bool GlobalMapObject::removeFrameObject(int ID)
 bool GlobalMapObject::removeAllFrameObject()
 {
 	this->Frames.clear();
-	this->MapID.clear();
 	return true;
 }
 
-bool GlobalMapObject::updateFrameObject(FrameObject::Ptr frame, int MapID)
+bool GlobalMapObject::updateFrameObject(FrameObject::Ptr frame)
 {
 	if (this->Frames.count(frame->getID()) == 0)
 		return false;
 
 	this->Frames.at(frame->getID()) = frame;
-	if (MapID != -1)
-		this->MapID.at(frame->getID()) = MapID;
 
 	return true;
 }
@@ -228,11 +236,6 @@ bool GlobalMapObject::getAllFrameObjectID(std::set<int>& IDs)
 		IDs.insert(key);
 	}
 	return true;
-}
-
-int GlobalMapObject::getFrameObjectMapID(int frameID)
-{
-	return this->MapID.at(frameID);
 }
 
 //TODO: 修正关联问题
@@ -290,4 +293,27 @@ int GlobalMapObject::getFrameSize()
 int GlobalMapObject::getMappointSize()
 {
 	return this->MapPoints.size();
+}
+
+int GlobalMapObject::AssignMapID(int FrameID)
+{
+	this->InitalFrames.insert({ this->MapIDCounter,FrameID });
+	return this->MapIDCounter++;
+}
+
+void GlobalMapObject::CleanUnusedMapID()
+{
+	std::set<int> MapID;
+	for (auto& [key, value] : this->Frames)
+	{
+		MapID.insert(value->MapID);
+	}
+
+	for (auto it = this->InitalFrames.begin(); it != this->InitalFrames.end();)
+	{
+		if (MapID.count(it->first))
+			++it;
+		else
+			it = this->InitalFrames.erase(it);
+	}
 }

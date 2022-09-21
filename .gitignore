@@ -18,3 +18,4 @@ doc/Doxyfile
 out/
 CMakeSettings.json
 build/
+.VSCodeCounter/

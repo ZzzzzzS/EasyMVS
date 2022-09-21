@@ -3,28 +3,33 @@
 #include "JsonSaver.hpp"
 #include "MapPointObject.h"
 
-FrameObject::Ptr FrameObject::Create(int ID, uint32_t Timestamp)
+FrameObject::Ptr FrameObject::Create(int ID,int MapID, uint32_t Timestamp)
 {
-    return std::make_shared<FrameObject>(ID, Timestamp);
+    auto ptr = std::make_shared<FrameObject>(ID, Timestamp);
+    ptr->MapID = MapID;
+    return ptr;
 }
 
-FrameObject::Ptr FrameObject::Create(int ID, const cv::Mat& RGBMat, uint32_t Timestamp, const cv::Mat& XYZMat)
+FrameObject::Ptr FrameObject::Create(int ID,int MapID, const cv::Mat& RGBMat, uint32_t Timestamp, const cv::Mat& XYZMat)
 {
     auto ptr = std::make_shared<FrameObject>(ID, Timestamp);
     ptr->RGBMat = RGBMat;
     ptr->XYZMat = XYZMat;
+    ptr->MapID = MapID;
     return ptr;
 }
 
 FrameObject::FrameObject(int ID, uint32_t Timestamp)
     :FrameID(ID),
-    Timestamp(Timestamp)
+    Timestamp(Timestamp),
+    GlobalPose(Sophus::Matrix4d::Identity())
 {
 }
 
 FrameObject::FrameObject()
     :FrameID(-1),
-    Timestamp(-1)
+    Timestamp(-1),
+    GlobalPose(Sophus::Matrix4d::Identity())
 {
 
 }
@@ -306,6 +311,7 @@ bool FrameObject::load(JsonNode& fs)
         this->KeyPoints = fs.at("key-points");
         this->KeyPointsDescriptors = fs.at("key-points-descriptors");
         this->GlobalPose = fs.at("global-pose");
+        this->MapID = fs.at("map-id");
 
         //read rgb mat
         if (fs.at("rgb-mat").is_string())
@@ -408,7 +414,7 @@ bool FrameObject::save(JsonNode& fs)
         fs["global-pose"] = this->GlobalPose;
         fs["key-points"] = this->KeyPoints;
         fs["key-points-descriptors"] = this->KeyPointsDescriptors;
-        
+        fs["map-id"] = this->MapID;
 
         //save related frame
         JsonNode RelatedFrameNode = JsonNode::array();
@@ -496,18 +502,21 @@ std::string FrameObject::type_name()
     return std::string("frame-object");
 }
 
-PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID, uint32_t Timestamp)
+PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID,int MapID, uint32_t Timestamp)
 {
-    return std::make_shared<PinholeFrameObject>(ID, Timestamp);
+    auto ptr = std::make_shared<PinholeFrameObject>(ID, Timestamp);
+    ptr->MapID = MapID;
+    return ptr;
 }
 
-PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID, const cv::Mat& CameraMatrix, const cv::Mat& DistCoeff, uint32_t Timestamp, const cv::Mat& RGBMat, const cv::Mat& XYZMat)
+PinholeFrameObject::Ptr PinholeFrameObject::Create(int ID, const cv::Mat& CameraMatrix, const cv::Mat& DistCoeff,int MapID, uint32_t Timestamp, const cv::Mat& RGBMat, const cv::Mat& XYZMat)
 {
     auto ptr = std::make_shared<PinholeFrameObject>(ID, Timestamp);
     ptr->CameraMatrix = CameraMatrix;
     ptr->DistCoeff = DistCoeff;
     ptr->RGBMat = RGBMat;
     ptr->XYZMat = XYZMat;
+    ptr->MapID = MapID;
     return ptr;
 }
 

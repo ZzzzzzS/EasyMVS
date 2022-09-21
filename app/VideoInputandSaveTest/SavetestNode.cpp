@@ -30,5 +30,6 @@ void SavetestNode::tempshow(WorkFlowObject::DataQueue inputdata)
 	cv::drawKeypoints(ptr->RGBMat, ptr->KeyPoints, show);
 	cv::imshow("Camera1", show);
 	cv::waitKey(1);
-	this->map->Frames.insert(std::make_pair(ptr->getID(), ptr));
+	//this->map->Frames.insert(std::make_pair(ptr->getID(), ptr));
+	this->map->addFrameObject(ptr);
 }

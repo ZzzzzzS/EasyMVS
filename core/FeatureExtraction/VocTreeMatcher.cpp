@@ -29,8 +29,6 @@ bool VocTreeMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr Global
 		auto map = (GlobalMap == nullptr) ? this->GlobalMap : GlobalMap;
 		std::list<FrameObject::Ptr> related;
 		map->addFrameObject(frame);
-		if (map->getFrameSize() == 1)
-			map->InitialFrameID = frame->getID();
 
 		auto result = this->MatchRelatedFrame(frame, related, map);
 		if (!result)
