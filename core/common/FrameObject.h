@@ -267,6 +267,7 @@ public:
 	 */
 	bool getAllRelatedFrames(std::set<int>& FrameID);
 
+	bool hasRelatedFrame();
 
 /**
  * @brief add frame observed map point
@@ -319,6 +320,7 @@ public:
 	 * @brief Get the Map Point object.
 	 */
 	std::shared_ptr<MapPointObject> getMapPoint(int KeyPointID);
+	bool hasMappoint(int KeyPointID);
 
 	/**
 	 * @brief get all keypoint id related to mappoint.
@@ -343,6 +345,11 @@ public:
 	virtual bool save(JsonNode& fs) override;
 
 	virtual std::string type_name() override;
+
+	Sophus::SE3d getGlobalPose();
+	void setGlobalPose(Sophus::SE3d& pose);
+	Sophus::SE3d& GlobalPose();
+	bool isGlobalPoseKnown();
 public:
 /**
  * @brief the RGB image in the current frame
@@ -378,15 +385,18 @@ public:
 
 
 	/**
-	 * @brief the global pose of current frame
-	 * 
-	 */
-	Sophus::SE3d GlobalPose;
-
-	/**
 	 * @brief this variable indicate which submap this frame belong.
 	 */
 	int MapID = -1;
+
+private:
+	/**
+	 * @brief the global pose of current frame
+	 *
+	 */
+	Sophus::SE3d m_GlobalPose;
+
+	int ReferencedCount = 0;
 
 protected:
 	int FrameID;
@@ -406,7 +416,7 @@ protected:
 	using MapPointInfo = std::tuple<std::weak_ptr<MapPointObject>, Eigen::Vector4d, int>;
 	std::map<int, MapPointInfo> ObservedMapPoints;
 
-
+	bool KnownPose = false;
 };
 
 class PinholeFrameObject : public FrameObject

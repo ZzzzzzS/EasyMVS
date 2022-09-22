@@ -112,7 +112,14 @@ bool Photographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 					emit this->Warning(this->type_name() + ": add related frame failed, frame id: "+std::to_string(Frames.at(index)->getID()));
 				}
 				AccGlobalPose = *se3ptr * AccGlobalPose;
-				Frames.at(index)->GlobalPose = AccGlobalPose;
+				//Frames.at(index)->GlobalPose = AccGlobalPose;
+				Frames[index]->setGlobalPose(AccGlobalPose);
+
+				//in multi camera senerio the pose of first camera should be set as known
+				if (!Frames[0]->isGlobalPoseKnown())
+				{
+					Frames[0]->setGlobalPose(Sophus::SE3d());
+				}
 			}
 			index++;
 		}

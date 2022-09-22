@@ -1,4 +1,5 @@
 ﻿#include "PinholePoseReconstructor.h"
+#include <opencv2/core/eigen.hpp>
 
 PinholePoseReconstructor::Ptr PinholePoseReconstructor::Create(GlobalMapObject::Ptr GlobalMap)
 {
@@ -46,10 +47,11 @@ bool PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalM
 	try 
 	{
 		std::set<int> relatedFrameID;
+		//找不到关联帧直接返回
 		if (!frame->getAllRelatedFrames(relatedFrameID)) return false;
 
-		//如果全局姿态不是单位阵，说明姿态已知，这里就不求了
-		if (frame->GlobalPose.matrix() != Eigen::Matrix4d::Identity())
+		//如果全局姿态已知，这里就不求了
+		if (frame->isGlobalPoseKnown())
 			return true;
 
 		auto result = this->SolveWithMappoint(frame, GlobalMap); //先用路点来求姿态
@@ -94,9 +96,10 @@ bool PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalM
 			}
 			
 			//计算在这个子地图中的全局坐标
-			frame->GlobalPose = std::get<Sophus::SE3d>(Frameid2ErrNPose[LeastErrorID]) 
-				* frame->getRelatedFrame(LeastErrorID)->getRelatedFrame()->GlobalPose;
-			
+			auto posetmp = std::get<Sophus::SE3d>(Frameid2ErrNPose[LeastErrorID]) 
+				* frame->getRelatedFrame(LeastErrorID)->getRelatedFrame()->getGlobalPose();
+			frame->setGlobalPose(posetmp);
+
 			//将该帧加入子地图
 			frame->MapID = frame->getRelatedFrame(LeastErrorID)->getRelatedFrame()->MapID;
 			GlobalMap->InitalFrames.at(frame->MapID) = LeastErrorID; //修改当前地图中的初始帧ID
@@ -175,18 +178,38 @@ bool PinholePoseReconstructor::SolveWithMappoint(FrameObject::Ptr current, Globa
 	if (cvMapPoint.size() < 4) //PnP最少需要3个点
 		return false;
 
-	cv::Mat1d K, rvec, R, t, T;
-	K = std::dynamic_pointer_cast<PinholeFrameObject>(current)->CameraMatrix;
-	cv::solvePnP(cvMapPoint, cvKeyPoint, K, cv::noArray(), R, t);
-	R = cv::Mat1d::zeros(3, 3);
-	cv::Rodrigues(rvec, R);
-	T = DataFlowObject::Rt2T(R, t);
-	Sophus::SE3d pose;
-	DataFlowObject::cvMat2Sophus(T, pose);
-	current->GlobalPose = pose;
+	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(current)->CameraMatrix;
+	current->setGlobalPose(this->SolvePNP(cvMapPoint, cvKeyPoint, K));
 	//int MapID = GlobalMap->getFrameObjectMapID(MappointNumber[LargestIndex].front()->getID());
 	//GlobalMap->updateFrameObject(current, MapID);
 	current->MapID = LargestIndex;
+	return true;
+}
+
+bool PinholePoseReconstructor::SolveWithMappoint(FrameObject::Ptr current, FrameObject::RelatedFrameInfo::Ptr related, GlobalMapObject::Ptr GlobalMap)
+{
+	auto referencePtr = related->getRelatedFrame();
+	std::vector<cv::Point3d> cvMapPoint;
+	std::vector<cv::Point2d> cvKeyPoint;
+	for (auto& item : related->KeyPointMatch)
+	{
+		if (current->hasMappoint(item.queryIdx))
+		{
+			auto MapPoint = current->getMapPoint(item.queryIdx)->Position;
+			auto KeyPoint = referencePtr->KeyPoints.at(item.trainIdx).pt;
+			cvMapPoint.emplace_back(MapPoint(0), MapPoint(1), MapPoint(2));
+			cvKeyPoint.emplace_back(KeyPoint);
+		}
+	}
+	
+	if (cvMapPoint.size() < 4) //PNP最低点数要求
+		return false;
+
+	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(referencePtr)->CameraMatrix;
+	auto pose = this->SolvePNP(cvMapPoint, cvKeyPoint, K);
+	referencePtr->setGlobalPose(pose);
+	referencePtr->MapID = current->MapID;
+
 	return true;
 }
 
@@ -259,5 +282,205 @@ double PinholePoseReconstructor::ComputeReprojectionError(std::vector<cv::Point2
 void PinholePoseReconstructor::ComputeMappoint(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
 {
 	//考虑计算新路点的问题和地图融合的问题
+	//计算路点思路：
+	/*
+	计算所有与已知全局坐标的关联帧间相对姿态(同一地图中)
+	根据相对姿态和特征点匹配信息计算新路点
+	
+	找出所有姿态未知的关联帧合集(单帧地图)
+	while 合集中帧数量减少
+		根据路点和匹配特征点计算姿态
+		计算新路点
+	end while
+	//TODO: 地图融合问题？ sim(3)?
+	*/
 
+	std::set<FrameObject::RelatedFrameInfo::Ptr> SameMapWithPose;
+	std::set<FrameObject::RelatedFrameInfo::Ptr> SameMapWithoutPose;
+	std::set<FrameObject::RelatedFrameInfo::Ptr> DifferentMap;
+
+	int CurrentMapID = frame->MapID;
+	std::set<int> RelatedFrameID;
+	frame->getAllRelatedFrames(RelatedFrameID);
+	for (auto& ID : RelatedFrameID)
+	{
+		auto RelatedFrameInfoPtr = frame->getRelatedFrame(ID);
+		auto RelatedFramePtr = RelatedFrameInfoPtr->getRelatedFrame();
+		if (RelatedFramePtr->MapID == CurrentMapID)
+		{
+			if (RelatedFramePtr->isGlobalPoseKnown())
+			{
+				SameMapWithPose.insert(RelatedFrameInfoPtr);
+			}
+			else
+			{
+				std::cout << this->type_name() << ": Error in same Map but known Pose, frame ID = "<<RelatedFramePtr->getID() << std::endl;
+				SameMapWithoutPose.insert(RelatedFrameInfoPtr);
+			}
+		}
+		else
+		{
+			//如果该关联帧没有关联帧，说明是单帧地图，可以直接先按照本地图的帧处理，计算出位姿后即可加入本地图，否则不能加入
+			if (!RelatedFramePtr->hasRelatedFrame())
+			{
+				SameMapWithoutPose.insert(RelatedFrameInfoPtr);
+			}
+			else
+			{
+				DifferentMap.insert(RelatedFrameInfoPtr);
+			}
+		}
+	}
+
+	int unknownPoseCount = SameMapWithoutPose.size();
+	while (true)
+	{
+		//计算新路点
+		this->GenNewMappoints(frame, SameMapWithPose, GlobalMap);
+
+		//根据新增路点计算其他帧姿态
+		for (auto iter = SameMapWithoutPose.begin(); iter != SameMapWithoutPose.end();)
+		{
+			//如果成功计算姿态，那么就加入到本地图中
+			if (this->SolveWithMappoint(frame, *iter, GlobalMap))
+			{
+				(*iter)->getRelatedFrame()->MapID = frame->MapID;
+				SameMapWithPose.insert(*iter);
+				iter = SameMapWithoutPose.erase(iter);
+			}
+			else
+			{
+				iter++;
+			}
+		}
+
+
+		//当不知道的姿态的帧为0或者不再减少时证明已经无法获得帧姿态信息了，退出
+		if (unknownPoseCount == 0)
+			break;
+		if (unknownPoseCount == SameMapWithoutPose.size())
+			break;
+
+		unknownPoseCount = SameMapWithoutPose.size();
+	}
+}
+
+void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<FrameObject::RelatedFrameInfo::Ptr>& Related, GlobalMapObject::Ptr GlobalMap)
+{
+	auto pinholeframe1 = std::dynamic_pointer_cast<PinholeFrameObject>(frame);
+	cv::Mat1d Pose1;
+	DataFlowObject::Sophus2cvMat(pinholeframe1->getGlobalPose().inverse(), Pose1);
+	cv::Mat1d P1 = pinholeframe1->CameraMatrix * Pose1; //计算投影矩阵
+
+	std::map<FrameObject::RelatedFrameInfo::Ptr, cv::Mat1d> FramePMap; //投影矩阵列表
+	std::map<int, std::list<std::tuple<FrameObject::RelatedFrameInfo::Ptr, int>>> MatchedPointsList; //未知路点列表
+	for (auto& item : Related)
+	{
+		auto PinholePointer = std::dynamic_pointer_cast<PinholeFrameObject>(item->getRelatedFrame());
+		cv::Mat1d Pose;
+		DataFlowObject::Sophus2cvMat(PinholePointer->getGlobalPose().inverse(), Pose);
+		cv::Mat1d P = PinholePointer->CameraMatrix * Pose;
+		FramePMap.insert({ item,P });
+
+		//std::set<int> MappointKeyID;
+		//PinholePointer->getAllMappointID(MappointKeyID);
+		
+		for (auto& match : item->KeyPointMatch)
+		{
+			if (MatchedPointsList.count(match.queryIdx) == 0)
+			{
+				MatchedPointsList.insert({ match.queryIdx,std::list<std::tuple<FrameObject::RelatedFrameInfo::Ptr, int>>() });
+			}
+			MatchedPointsList.at(match.queryIdx).push_back({ item,match.trainIdx });
+		}
+	}
+	
+	//删除已有路点的点
+	for (auto iter = MatchedPointsList.begin(); iter != MatchedPointsList.end();)
+	{
+		bool hasRoadPoint = false;
+		MapPointObject::Ptr EmptyPoint;
+		for (auto&[ptr,pointid] : iter->second)
+		{
+			if (ptr->getRelatedFrame()->hasMappoint(pointid))
+			{
+				hasRoadPoint = true;
+				EmptyPoint = ptr->getRelatedFrame()->getMapPoint(pointid);
+			}
+		}
+		if (hasRoadPoint)
+		{
+			pinholeframe1->addMapPoint(iter->first, EmptyPoint, pinholeframe1->getGlobalPose().inverse() * EmptyPoint->Position);
+			for (auto& [ptr,pointid] : iter->second)
+			{
+				ptr->getRelatedFrame()->addMapPoint(pointid, EmptyPoint,
+					ptr->getRelatedFrame()->getGlobalPose().inverse() * EmptyPoint->Position);
+			}
+			iter = MatchedPointsList.erase(iter);
+		}
+		else
+		{
+			iter++;
+		}
+	}
+
+	//使用多张图来更精确的计算路点
+	for (auto& [key,value] : MatchedPointsList)
+	{
+		cv::Mat1d X;
+		cv::Mat1d A = cv::Mat1d::zeros(value.size(), 4);
+		cv::Mat row1, row2;
+		auto Point1 = pinholeframe1->KeyPoints.at(key).pt;
+		row1 = Point1.x * Pose1.row(2) - Pose1.row(0);
+		row2 = Point1.y * Pose1.row(2) - Pose1.row(1);
+		row1.copyTo(A.row(0));
+		row2.copyTo(A.row(1));
+
+		int count = 2;
+		for (auto& item : value)
+		{
+			auto relatedptr = std::get<0>(item);
+			auto point = std::get<1>(item);
+			auto ptr = relatedptr->getRelatedFrame();
+
+			auto Point2 = ptr->KeyPoints.at(point).pt;
+			auto Pose2 = FramePMap.at(relatedptr);
+			row1 = Point2.x * Pose2.row(2) - Pose2.row(0);
+			row2 = Point2.y * Pose2.row(2) - Pose2.row(1);
+
+			row1.copyTo(A.row(count++));
+			row2.copyTo(A.row(count++));
+		}
+
+		cv::SVD::solveZ(A, X);
+		X = X / X(3);//TODO: 寻找一下更好的归一化方法
+
+		Eigen::Vector4d EigenPoint;
+		cv::cv2eigen(X, EigenPoint);
+		//终于产生一个路点了！！！！不容易啊！
+		auto MappointPtr = MapPointObject::Create(GlobalMap->AssignMappointID());
+		MappointPtr->Position = EigenPoint;
+		GlobalMap->addMapPoint(MappointPtr); //立即向全局地图中加入路点，不然指针就无了
+
+		pinholeframe1->addMapPoint(key, MappointPtr, pinholeframe1->getGlobalPose().inverse() * EigenPoint);
+		
+		for (auto& item : value)
+		{
+			auto ptr = std::get<0>(item)->getRelatedFrame();
+			auto pointid = std::get<1>(item);
+			ptr->addMapPoint(pointid, MappointPtr, ptr->getGlobalPose().inverse() * EigenPoint);
+		}
+	}
+}
+
+Sophus::SE3d PinholePoseReconstructor::SolvePNP(std::vector<cv::Point3d>& WorldPoints, std::vector<cv::Point2d>& CameraPoints, cv::Mat1d& Intrinsic)
+{
+	cv::Mat1d rvec, R, t, T;
+	cv::solvePnP(WorldPoints, CameraPoints, Intrinsic, cv::noArray(), R, t);
+	R = cv::Mat1d::zeros(3, 3);
+	cv::Rodrigues(rvec, R);
+	T = DataFlowObject::Rt2T(R, t);
+	Sophus::SE3d pose;
+	DataFlowObject::cvMat2Sophus(T, pose);
+	return pose;
 }

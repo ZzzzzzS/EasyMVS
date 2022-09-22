@@ -301,6 +301,11 @@ int GlobalMapObject::AssignMapID(int FrameID)
 	return this->MapIDCounter++;
 }
 
+int GlobalMapObject::AssignMappointID()
+{
+	return this->MapPointCount++;
+}
+
 void GlobalMapObject::CleanUnusedMapID()
 {
 	std::set<int> MapID;

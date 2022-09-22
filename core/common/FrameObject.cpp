@@ -22,14 +22,14 @@ FrameObject::Ptr FrameObject::Create(int ID,int MapID, const cv::Mat& RGBMat, ui
 FrameObject::FrameObject(int ID, uint32_t Timestamp)
     :FrameID(ID),
     Timestamp(Timestamp),
-    GlobalPose(Sophus::Matrix4d::Identity())
+    m_GlobalPose(Sophus::Matrix4d::Identity())
 {
 }
 
 FrameObject::FrameObject()
     :FrameID(-1),
     Timestamp(-1),
-    GlobalPose(Sophus::Matrix4d::Identity())
+    m_GlobalPose(Sophus::Matrix4d::Identity())
 {
 
 }
@@ -188,6 +188,15 @@ bool FrameObject::getAllRelatedFrames(std::set<int>& FrameID)
     return true;
 }
 
+bool FrameObject::hasRelatedFrame()
+{
+    // if this frame has no related frame and has not related by an other frames, then the frame has no related frame.
+    if (this->RelatedFrame.empty() && this->ReferencedCount == 0)
+        return false;
+    else
+        return true;
+}
+
 bool FrameObject::addMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)
 {
     try
@@ -301,6 +310,26 @@ bool FrameObject::getAllMappointID(std::set<int>& KeyPointID)
     return !KeyPointID.empty();
 }
 
+
+bool FrameObject::hasMappoint(int KeyPointID)
+{
+    if(this->ObservedMapPoints.count(KeyPointID)==0)
+        return false;
+    else
+    {
+        auto ptr = std::get<0>(this->ObservedMapPoints.at(KeyPointID)).lock();
+        if (ptr == nullptr)
+        {
+            throw std::exception("Weak Ptr is empty!");
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
 bool FrameObject::load(JsonNode& fs)
 {
     try
@@ -310,7 +339,8 @@ bool FrameObject::load(JsonNode& fs)
         this->Timestamp = fs.at("timestamp").get<int>();
         this->KeyPoints = fs.at("key-points");
         this->KeyPointsDescriptors = fs.at("key-points-descriptors");
-        this->GlobalPose = fs.at("global-pose");
+        this->m_GlobalPose = fs.at("global-pose");
+        this->KnownPose = fs.at("is-pose-known");
         this->MapID = fs.at("map-id");
 
         //read rgb mat
@@ -411,7 +441,8 @@ bool FrameObject::save(JsonNode& fs)
             fs["best-camera-id"] = JsonNode::value_t::null;
         }
 
-        fs["global-pose"] = this->GlobalPose;
+        fs["global-pose"] = this->m_GlobalPose;
+        fs["is-pose-known"]=this->KnownPose;
         fs["key-points"] = this->KeyPoints;
         fs["key-points-descriptors"] = this->KeyPointsDescriptors;
         fs["map-id"] = this->MapID;
@@ -574,6 +605,28 @@ bool PinholeFrameObject::save(JsonNode& fs)
     return false;
 }
 
+Sophus::SE3d FrameObject::getGlobalPose()
+{
+    return this->m_GlobalPose;
+}
+
+void FrameObject::setGlobalPose(Sophus::SE3d& pose)
+{
+    this->m_GlobalPose = pose;
+    this->KnownPose = true;
+}
+
+Sophus::SE3d& FrameObject::GlobalPose()
+{
+    return this->m_GlobalPose;
+}
+
+bool FrameObject::isGlobalPoseKnown()
+{
+    return this->KnownPose;
+}
+
+
 std::string PinholeFrameObject::type_name()
 {
     return std::string("pinhole-frame-object");
@@ -681,8 +734,13 @@ FrameObject::RelatedFrameInfo::RelatedFrameInfo(std::shared_ptr<FrameObject> Rel
     :sigma(0),
     RelatedFramePtr(RelatedFrame)
 {
+    RelatedFrame->ReferencedCount++;
 }
 
 FrameObject::RelatedFrameInfo::~RelatedFrameInfo()
 {
+    auto ptr = this->RelatedFramePtr.lock();
+    ptr->ReferencedCount--;
+    if (ptr->ReferencedCount < 0)
+        throw std::exception("Reference count error!");
 }

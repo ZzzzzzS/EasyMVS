@@ -58,6 +58,7 @@ public:
     int getMappointSize();
 
     int AssignMapID(int FrameID);
+    int AssignMappointID();
 
     /**
      * @brief get all related frame as a whole map, return different map frames, and Map Points.
@@ -96,5 +97,7 @@ private:
     int MapIDCounter = 0;
 
     void CleanUnusedMapID();
+
+    int MapPointCount = 0;
 };
 
