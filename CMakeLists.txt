@@ -29,6 +29,7 @@ find_package(DBoW2 CONFIG REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(argparse CONFIG REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/core)
 include_directories(${PROJECT_SOURCE_DIR}/core/common)

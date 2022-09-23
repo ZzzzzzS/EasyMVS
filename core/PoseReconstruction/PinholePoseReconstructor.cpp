@@ -64,13 +64,12 @@ bool PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalM
 			for (auto& i : relatedFrameID)
 			{
 				/*
-				只有关联帧没有关联帧的情况下才可以使用对极几何来初始化，
-				关联帧如果有关联帧，说明该关联帧肯定存在路点，那么肯定属于某一个地图中，
+				只有关联帧没有其他关联帧或者没有被其他帧关联的情况下才可以使用对极几何来初始化，
+				关联帧如果有其他关联帧，说明该关联帧肯定存在路点，那么肯定属于某一个地图中，
 				所以如果这里又用对极几何就会产生一个新的地图，将产生矛盾。
 				该函数只考虑计算当前帧的位姿的情况，多个地图的拼接问题由其他函数考虑。
 				*/
-				std::set<int> RelatedRelatedFrameID; 
-				if (frame->getRelatedFrame(i)->getRelatedFrame()->getAllRelatedFrames(RelatedRelatedFrameID))
+				if (frame->getRelatedFrame(i)->getRelatedFrame()->hasRelatedFrame())
 					continue; //关联帧存在关联帧，不能用来初始化，跳过
 
 				Sophus::SE3d tmp;
