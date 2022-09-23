@@ -163,6 +163,8 @@ public:
 		 */
 		std::vector<cv::DMatch> KeyPointMatch;
 
+		friend std::ostream& operator<<(std::ostream& os, FrameObject::RelatedFrameInfo& info);
+
 	private:
 		std::weak_ptr<FrameObject> RelatedFramePtr;
 	};
@@ -343,6 +345,8 @@ public:
 	virtual bool load(JsonNode& fs) override;
 
 	virtual bool save(JsonNode& fs) override;
+
+	friend std::ostream& operator<<(std::ostream& os, FrameObject& frame);
 
 	virtual std::string type_name() override;
 

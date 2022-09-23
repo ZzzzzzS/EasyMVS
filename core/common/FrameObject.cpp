@@ -744,3 +744,37 @@ FrameObject::RelatedFrameInfo::~RelatedFrameInfo()
     if (ptr->ReferencedCount < 0)
         throw std::exception("Reference count error!");
 }
+
+std::ostream& operator<<(std::ostream& os, FrameObject& frame)
+{
+    os << "ID:" << frame.FrameID << std::endl;
+	os << "Timestamp:" << frame.Timestamp << std::endl;
+	os << "Map ID: " << frame.MapID << std::endl;
+
+    if (frame.isGlobalPoseKnown())
+        os << "Global Pose:" << frame.m_GlobalPose.matrix() << std::endl;
+    else
+        os << "Global Pose: Unknown" << std::endl;
+	
+    os << "Relate Frame Count: " << frame.RelatedFrame.size() << std::endl;
+    os << "Related Frame Count:" << frame.ReferencedCount << std::endl;
+	os << "Map Point Count:" << frame.ObservedMapPoints.size() << std::endl;
+    os << "Key Points Number" << frame.KeyPoints.size() << std::endl;
+	
+    os << "Relate Frame List:" << std::endl;
+    for (auto& [key,value] : frame.RelatedFrame)
+    {
+        os << value << std::endl<<std::endl;
+    }
+	
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, FrameObject::RelatedFrameInfo& info)
+{
+    os << "Matched Frame ID: " << info.RelatedFramePtr.lock()->getID() << std::endl;
+	os << "Sigma: " << info.sigma << std::endl;
+	os << "Key Point Match: " << info.KeyPointMatch.size() << std::endl;
+	os << "Extrinsic Matrix: " << info.Pose->matrix() << std::endl;
+	return os;
+}

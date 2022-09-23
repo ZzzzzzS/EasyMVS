@@ -1,11 +1,38 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.5)
 
 set(NAME_POSTFIX PictureSFM)
 project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
-set(SOURCE_FILES main.cpp)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} DenseReconstruction_common)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(PROJECT_SOURCES
+        main.cpp
+        MainWindow.cpp
+        MainWindow.h
+        MainWindow.ui
+)
+
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+						DenseReconstruction_common 
+						DenseReconstruction_CameraModule
+						DenseReconstruction_FeatureExtraction
+						DenseReconstruction_PoseReconstruction
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+						Qt${QT_VERSION_MAJOR}::Core 
+						Qt${QT_VERSION_MAJOR}::Widgets
+)
+						
+target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENCV_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE Sophus::Sophus)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${DIVISIBLE_INSTALL_BIN_DIR})

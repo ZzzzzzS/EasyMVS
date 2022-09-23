@@ -138,8 +138,7 @@ public:
 	
 	virtual std::string type_name() override;
 
-	
-	int assignNewMapID();
+	friend std::ostream& operator<<(std::ostream& os, MapPointObject& obj);
 
 public:
 /**
@@ -157,7 +156,6 @@ public:
 	 * 
 	 */
 	Eigen::Vector3d Normal;
-	
 
 private:
 	int ID;
@@ -170,6 +168,4 @@ private:
 
 	std::map<int,ObservationInfo> ObservedFrame;
 	double quality;
-
-	int MapCounter = 1;
 };

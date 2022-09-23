@@ -75,6 +75,8 @@ public:
 
     virtual std::string type_name() override;
 
+	friend std::ostream& operator<<(std::ostream& os, GlobalMapObject& obj);
+
     /**
      * @brief initial frames of different map <MapID,FrameID>.
      */

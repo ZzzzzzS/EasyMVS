@@ -1,10 +1,5 @@
 #include "PoseReconstructor.h"
 
-PoseReconstructor::Ptr PoseReconstructor::Create(GlobalMapObject::Ptr GlobalMap)
-{
-	return PoseReconstructor::Ptr();
-}
-
 PoseReconstructor::PoseReconstructor()
 {
 }
@@ -19,12 +14,7 @@ PoseReconstructor::~PoseReconstructor()
 
 std::string PoseReconstructor::type_name()
 {
-	return std::string();
-}
-
-bool PoseReconstructor::clear()
-{
-	return false;
+	return std::string("Workflow-Pose-Reconstructor");
 }
 
 bool PoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
@@ -32,20 +22,40 @@ bool PoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr Glo
 	return false;
 }
 
-bool PoseReconstructor::save(JsonNode& fs)
-{
-	return false;
-}
-
-bool PoseReconstructor::load(JsonNode& fs)
-{
-	return false;
-}
 
 void PoseReconstructor::Trigger()
 {
+	emit this->Error("Can NOT triggered without input data");
 }
 
 void PoseReconstructor::Trigger(DataQueue data)
 {
+	DataQueue output;
+	while (true)
+	{
+		auto ptr = std::dynamic_pointer_cast<FrameObject>(output.front());
+		if (ptr)
+		{
+			if (this->Compute(ptr))
+			{
+				output.push(ptr);
+			}
+			else
+			{
+				emit this->Warning(this->type_name() + ": failed to compute pose of this frame");
+			}
+		}
+		else
+		{
+			emit this->Error(this->type_name() + ": Can NOT cast to FrameObject");
+		}
+		data.pop();
+		
+		if (data.empty())
+			break;
+	}
+	if (!output.empty())
+		this->Finished(output);
+	else
+		this->Warning(this->type_name() + ": no output data");
 }

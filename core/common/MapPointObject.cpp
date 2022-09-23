@@ -225,7 +225,16 @@ std::string MapPointObject::type_name()
 	return std::string("mappoint-object");
 }
 
-int MapPointObject::assignNewMapID()
+std::ostream& operator<<(std::ostream& os, MapPointObject& obj)
 {
-	return this->MapCounter++;
+	os << "MapPoint ID: " << obj.ID << std::endl;
+	os << "Position: " << obj.Position.transpose() << std::endl;
+	os << "Normal: " << obj.Normal.transpose() << std::endl;
+	os << "Quality: " << obj.quality << std::endl;
+	os << "Observed Frame: " << std::endl;
+	for (auto& item : obj.ObservedFrame)
+	{
+		os << "Frame ID: " << item.first << " KeyPoint ID: " << std::get<1>(item.second) << std::endl;
+	}
+	return os;
 }

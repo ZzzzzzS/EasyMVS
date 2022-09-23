@@ -322,3 +322,13 @@ void GlobalMapObject::CleanUnusedMapID()
 			it = this->InitalFrames.erase(it);
 	}
 }
+
+std::ostream& operator<<(std::ostream& os, GlobalMapObject& obj)
+{
+	os << "GlobalMapObject" << std::endl;
+	os << "Frame Size: " << obj.getFrameSize() << std::endl;
+	os << "Mappoint Size: " << obj.getMappointSize() << std::endl;
+	obj.CleanUnusedMapID();
+	os << "Map Number: " << obj.InitalFrames.size() << std::endl;
+	return os;
+}

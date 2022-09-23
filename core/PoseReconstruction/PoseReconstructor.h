@@ -18,19 +18,13 @@ class PoseReconstructor : public WorkFlowObject
 {
 public:
 	Q_OBJECT
+public:
     /**
      * @brief shared pointer type of PoseReconstructor
      * 
      */
 	using Ptr = std::shared_ptr<PoseReconstructor>;
 
-    /**
-     * @brief create shared pointer of PoseReconstructor
-     * 
-     * @param GlobalMap the global map pointer
-     * @return PoseReconstructor::Ptr the shared pointer type of PoseReconstructor
-     */
-	static PoseReconstructor::Ptr Create(GlobalMapObject::Ptr GlobalMap);
 public:
     /**
      * @brief Construct a new Pose Reconstructor object
@@ -57,8 +51,6 @@ public:
      */
 	std::string type_name() override;
 
-	bool clear() override;
-
     /**
      * @brief compute the pose of the current frame
      * 
@@ -68,11 +60,8 @@ public:
      * @return true calculate the global pose successfully.
      * @return false failed to calculate the global pose, or input parameter is incorrect.
      */
-	virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr());
+    virtual bool Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap = GlobalMapObject::Ptr()) = 0;
 
-    bool save(JsonNode& fs) override;
-
-    bool load(JsonNode& fs) override;
 
 public slots:
 /**

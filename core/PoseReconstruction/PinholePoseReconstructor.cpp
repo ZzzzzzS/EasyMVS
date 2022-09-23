@@ -39,7 +39,15 @@ bool PinholePoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::
 	//计算新姿态
 	//计算新路点（计算新路点+融合已知路点）
 	//局部优化
-    return false;
+	auto result1 = this->SolveNewFramePose(frame, GlobalMap);
+	if (!result1)
+	{
+		std::cout << this->type_name() << ": failed to solve new frame pose, frame ID=" << frame->getID() << std::endl;
+		return false;
+	}
+	
+	this->ComputeMappoint(frame, GlobalMap);
+	return true;
 }
 
 bool PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)

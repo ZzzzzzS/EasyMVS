@@ -40,4 +40,8 @@ endif(WIN32)
 
 add_subdirectory(core)
 add_subdirectory(app)
-add_subdirectory(doc)
+
+option(BUILD_DOC "Build documentation" OFF)
+if(BUILD_DOC)
+    add_subdirectory(doc)
+endif(BUILD_DOC)

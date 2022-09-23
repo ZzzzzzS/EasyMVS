@@ -16,6 +16,7 @@ class FeatureMatcher:public WorkFlowObject
 {
 public:
 	Q_OBJECT
+public:
     /**
      * @brief shared pointer type of FeatureMatcher
      */

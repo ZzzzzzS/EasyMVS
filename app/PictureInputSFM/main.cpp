@@ -1,25 +1,11 @@
-#include <iostream>
-#include <opencv2/opencv.hpp>
-#include "MVSObject.h"
-#include "JsonSaver.hpp"
+#include "MainWindow.h"
 
-/**
- * @brief 
- * 
- * @return int 
- */
-int main()
+#include <QApplication>
+
+int main(int argc, char *argv[])
 {
-	std::cout << cv::getBuildInformation();
-	
-	cv::Mat a(3, 3, CV_8UC1);
-	JsonNode j = a;
-	std::cout << j;
-
-	Eigen::Matrix4d b = Eigen::Matrix4d::Identity();
-	j = b;
-	std::cout << j;
-
-	
-	return 0;
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }
