@@ -34,7 +34,7 @@
            <item row="0" column="0">
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QLabel" name="label_CurrentImage">
+              <widget class="ScrollScale" name="label_CurrentImage">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
@@ -71,7 +71,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
-            <widget class="QOpenGLWidget" name="MapWidget"/>
+            <widget class="QPointCloudViewer" name="MapWidget"/>
            </item>
           </layout>
          </widget>
@@ -241,6 +241,18 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QPointCloudViewer</class>
+   <extends>QOpenGLWidget</extends>
+   <header>QPointCloudViewer.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ScrollScale</class>
+   <extends>QLabel</extends>
+   <header>ScrollScale.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

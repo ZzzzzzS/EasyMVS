@@ -16,6 +16,10 @@ set(PROJECT_SOURCES
         MainWindow.cpp
         MainWindow.h
         MainWindow.ui
+		ScrollScale.h
+		ScrollScale.cpp
+		QPointCloudViewer.h
+		QPointCloudViewer.cpp
 )
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
@@ -34,5 +38,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENCV_LIBS})
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PRIVATE Sophus::Sophus)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${DIVISIBLE_INSTALL_BIN_DIR})

@@ -9,6 +9,7 @@ class PinholePoseReconstructor: public PoseReconstructor
 {
 public:
 	Q_OBJECT
+public:
 	using Ptr = std::shared_ptr<PinholePoseReconstructor>;
 	static PinholePoseReconstructor::Ptr Create(GlobalMapObject::Ptr GlobalMap);
 

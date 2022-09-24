@@ -21,17 +21,17 @@ PinholePoseReconstructor::~PinholePoseReconstructor()
 
 bool PinholePoseReconstructor::save(JsonNode& fs)
 {
-    return false;
+    return true;
 }
 
 bool PinholePoseReconstructor::load(JsonNode& fs)
 {
-    return false;
+    return true;
 }
 
 bool PinholePoseReconstructor::clear()
 {
-    return false;
+    return true;
 }
 
 bool PinholePoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)

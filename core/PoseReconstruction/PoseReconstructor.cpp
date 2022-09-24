@@ -17,12 +17,6 @@ std::string PoseReconstructor::type_name()
 	return std::string("Workflow-Pose-Reconstructor");
 }
 
-bool PoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
-{
-	return false;
-}
-
-
 void PoseReconstructor::Trigger()
 {
 	emit this->Error("Can NOT triggered without input data");

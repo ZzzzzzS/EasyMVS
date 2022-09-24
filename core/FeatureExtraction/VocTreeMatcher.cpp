@@ -210,19 +210,22 @@ bool VocTreeMatcher::save(JsonNode& fs)
 		fs["voc-tree-path"] = this->VocPath;
 		fs["matcher-type"] = this->m_MatcherType;
 		
-		switch (this->m_KeyPointType)
+		if (!this->VocPath.empty())
 		{
-		case KeyPointType_e::ORB:
-			this->m_Orbdb->save(this->VocPath);
-			//std::get<OrbDatabase>(this->Voc_DB)->save(this->VocPath);
-			break;
-		case KeyPointType_e::SIFT:
-			this->m_Siftdb->save(this->VocPath);
-			//std::get<Sift128Database>(this->Voc_DB)->save(this->VocPath);
-			break;
-		default:
-			std::cout << this->type_name() << ": failed to save database type error" << std::endl;
-			break;
+			switch (this->m_KeyPointType)
+			{
+			case KeyPointType_e::ORB:
+				this->m_Orbdb->save(this->VocPath);
+				//std::get<OrbDatabase>(this->Voc_DB)->save(this->VocPath);
+				break;
+			case KeyPointType_e::SIFT:
+				this->m_Siftdb->save(this->VocPath);
+				//std::get<Sift128Database>(this->Voc_DB)->save(this->VocPath);
+				break;
+			default:
+				std::cout << this->type_name() << ": failed to save database type error" << std::endl;
+				break;
+			}
 		}
 
 		fs["least-matching-points"] = this->LeastMatchingPoint;

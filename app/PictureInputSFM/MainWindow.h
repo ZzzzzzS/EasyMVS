@@ -32,6 +32,7 @@ public:
 private:
 	void InitSystem(std::string path);
 	void SaveSystem(std::string path);
+	void SaveData(std::string path);
 	
 private: //slot
 	void LoadConfigSlot();
@@ -43,6 +44,7 @@ private: //slot
 	void FrameChangedSlot(QString index);
 	void MappointChangedSlot(QString index);
 
+	void UpdateMap(WorkFlowObject::DataQueue data);
 private:
 	CameraObject::Ptr Camera1;
 	Photographer::Ptr Photographer1;
@@ -54,5 +56,6 @@ private:
 	
 private:
     Ui::MainWindow *ui;
+	bool isInit = false;
 };
 #endif // MAINWINDOW_H
