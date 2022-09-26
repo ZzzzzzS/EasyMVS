@@ -6,6 +6,7 @@ FeatureMatcher::Ptr FeatureMatcher::Create(GlobalMapObject::Ptr GlobalMap)
 }
 
 FeatureMatcher::FeatureMatcher(GlobalMapObject::Ptr GlobalMap)
+    :GlobalMap(GlobalMap)
 {
 }
 

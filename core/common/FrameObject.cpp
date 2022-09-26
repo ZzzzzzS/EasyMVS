@@ -188,13 +188,13 @@ bool FrameObject::getAllRelatedFrames(std::set<int>& FrameID)
     return true;
 }
 
-bool FrameObject::hasRelatedFrame()
+int FrameObject::hasRelatedFrame()
 {
     // if this frame has no related frame and has not related by an other frames, then the frame has no related frame.
     if (this->RelatedFrame.empty() && this->ReferencedCount == 0)
-        return false;
+        return 0;
     else
-        return true;
+        return this->ReferencedCount + this->RelatedFrame.size();
 }
 
 bool FrameObject::addMapPoint(int KeyPointID, std::shared_ptr<MapPointObject> MapPoint, const Eigen::Vector4d& LocalCoordinate)

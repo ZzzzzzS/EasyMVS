@@ -77,7 +77,7 @@ bool PinholePoseReconstructor::SolveNewFramePose(FrameObject::Ptr frame, GlobalM
 				所以如果这里又用对极几何就会产生一个新的地图，将产生矛盾。
 				该函数只考虑计算当前帧的位姿的情况，多个地图的拼接问题由其他函数考虑。
 				*/
-				if (frame->getRelatedFrame(i)->getRelatedFrame()->hasRelatedFrame())
+				if (frame->getRelatedFrame(i)->getRelatedFrame()->hasRelatedFrame()!=1)
 					continue; //关联帧存在关联帧，不能用来初始化，跳过
 
 				Sophus::SE3d tmp;
@@ -168,7 +168,7 @@ bool PinholePoseReconstructor::SolveWithMappoint(FrameObject::Ptr current, Globa
 			LargestIndex = key;
 		}
 	}
-	assert(LargestValue !=0);
+	//assert(LargestValue !=0);
 
 	//找出对应的关联路点和特征点，转换数据格式，准备计算PnP
 	std::vector<cv::Point3d> cvMapPoint;
@@ -244,10 +244,10 @@ double PinholePoseReconstructor::SolveWithEHMat(FrameObject::Ptr current, FrameO
 	double H_Error = DBL_MAX; //HACK: 没有H到rt的函数，临时先这么干
 	cv::Mat H_T;
 
-	cv::Mat E_Mat, E_R, E_t, E_T;
+	cv::Mat1d E_Mat, E_R, E_t, E_T;
 	cv::recoverPose(SrcPoints, DstPoints, PinholeCurrent->CameraMatrix, cv::noArray(),
 		ReferencedFrame->CameraMatrix, cv::noArray(), E_Mat, E_R, E_t, cv::RANSAC);
-	E_T = DataFlowObject::Rt2T(E_R, E_T);
+	E_T = DataFlowObject::Rt2T(E_R, E_t);
 	double E_Error = this->ComputeReprojectionError(SrcPoints, DstPoints,
 		PinholeCurrent->CameraMatrix, ReferencedFrame->CameraMatrix, E_T);
 	
@@ -262,18 +262,18 @@ double PinholePoseReconstructor::ComputeReprojectionError(std::vector<cv::Point2
 	cv::Mat1d K1_inv = cv::Mat1d::zeros(4, 3);
 	K1_inv(3, 2) = 1;
 	cv::Mat1d K1_invtmp = CameraMat1.inv();
-	K1_invtmp.copyTo(K1_inv.colRange(0, 2).rowRange(0, 2));
+	K1_invtmp.copyTo(K1_inv.colRange(0, 3).rowRange(0, 3));
 	
 	cv::Mat1d K2 = cv::Mat1d::zeros(3, 4);
-	CameraMat2.copyTo(K2.colRange(0, 2).rowRange(0, 2));
+	CameraMat2.copyTo(K2.colRange(0, 3).rowRange(0, 3));
 	
-	cv::Mat H_Mat = K2 * T * K1_inv;
+	cv::Mat H_Mat = K2 * T.inv() * K1_inv;
 	
 	double Error = 0;
 	for (size_t i = 0; i < src.size(); i++)
 	{
-		cv::Vec3f p1(src[i].x, src[i].y, 1);
-		cv::Vec3f p2(dst[1].x, dst[i].y, 1);
+		cv::Vec3d p1(src[i].x, src[i].y, 1);
+		cv::Vec3d p2(dst[1].x, dst[i].y, 1);
 		
 		cv::Mat1d project = H_Mat * p1;
 		
@@ -282,7 +282,7 @@ double PinholePoseReconstructor::ComputeReprojectionError(std::vector<cv::Point2
 		
 		Error += localerror;
 	}
-
+	Error /= src.size();
 	return Error;
 }
 
@@ -328,7 +328,7 @@ void PinholePoseReconstructor::ComputeMappoint(FrameObject::Ptr frame, GlobalMap
 		else
 		{
 			//如果该关联帧没有关联帧，说明是单帧地图，可以直接先按照本地图的帧处理，计算出位姿后即可加入本地图，否则不能加入
-			if (!RelatedFramePtr->hasRelatedFrame())
+			if (RelatedFramePtr->hasRelatedFrame()==1)
 			{
 				SameMapWithoutPose.insert(RelatedFrameInfoPtr);
 			}

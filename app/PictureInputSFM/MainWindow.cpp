@@ -265,4 +265,3 @@ void MainWindow::UpdateMap(WorkFlowObject::DataQueue data)
     auto currentid = std::dynamic_pointer_cast<FrameObject>(data.front())->getID();
     this->FrameChangedSlot(QString::number(currentid));
 }
-

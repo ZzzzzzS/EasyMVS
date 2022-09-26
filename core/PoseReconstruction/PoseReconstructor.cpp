@@ -5,6 +5,7 @@ PoseReconstructor::PoseReconstructor()
 }
 
 PoseReconstructor::PoseReconstructor(GlobalMapObject::Ptr GlobalMap)
+	:GlobalMap(GlobalMap)
 {
 }
 
@@ -27,7 +28,7 @@ void PoseReconstructor::Trigger(DataQueue data)
 	DataQueue output;
 	while (true)
 	{
-		auto ptr = std::dynamic_pointer_cast<FrameObject>(output.front());
+		auto ptr = std::dynamic_pointer_cast<FrameObject>(data.front());
 		if (ptr)
 		{
 			if (this->Compute(ptr))

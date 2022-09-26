@@ -252,15 +252,14 @@ bool BuildTreeORB(std::string OutPath, std::vector<cv::Mat>& Features, OrbVocabu
 		<< ORBtree << std::endl << std::endl;
 	
 	std::cout << "Saving vocabulary..." << std::endl;
+	ORBtree.save(OutPath);
 	OrbDatabase db(ORBtree, false, 0);
+	std::cout << "... done!" << std::endl;
+	std::cout << "Database information: " << std::endl << db << std::endl;
 	for (int i = 0; i < FeaturesVec.size(); i++)
 	{
 		db.add(FeaturesVec[i]);
 	}
-	db.save(OutPath);
-	std::cout << "... done!" << std::endl;
-	
-	std::cout << "Database information: " << std::endl << db << std::endl;
 	DBoW2::QueryResults ret;
 	for (int i = 0; i < FeaturesVec.size(); i++)
 	{
@@ -296,15 +295,16 @@ bool BuildTreeSift(std::string OutPath, std::vector<cv::Mat>& Features, Sift128V
 		<< Sifttree << std::endl << std::endl;
 
 	std::cout << "Saving vocabulary..." << std::endl;
+	Sifttree.save(OutPath);
 	Sift128Database db(Sifttree, false, 0);
+	std::cout << "... done!" << std::endl;
+
+	std::cout << "Database information: " << std::endl << db << std::endl;
 	for (int i = 0; i < FeaturesVec.size(); i++)
 	{
 		db.add(FeaturesVec[i]);
 	}
-	db.save(OutPath);
-	std::cout << "... done!" << std::endl;
 
-	std::cout << "Database information: " << std::endl << db << std::endl;
 	DBoW2::QueryResults ret;
 	for (int i = 0; i < FeaturesVec.size(); i++)
 	{

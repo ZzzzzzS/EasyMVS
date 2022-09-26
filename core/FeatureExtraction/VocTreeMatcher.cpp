@@ -66,7 +66,7 @@ bool VocTreeMatcher::MatchRelatedFrame(FrameObject::Ptr frame, std::list<FrameOb
 		}
 		else if (map->getFrameSize() == 1) //initial frame
 		{
-			switch (KeyPointType_e::ORB)
+			switch (this->m_KeyPointType)
 			{
 			case VocTreeMatcher::KeyPointType_e::ORB:
 			{
@@ -92,7 +92,7 @@ bool VocTreeMatcher::MatchRelatedFrame(FrameObject::Ptr frame, std::list<FrameOb
 		else
 		{
 			DBoW2::QueryResults ret;
-			switch (KeyPointType_e::ORB)
+			switch (this->m_KeyPointType)
 			{
 			case VocTreeMatcher::KeyPointType_e::ORB:
 			{

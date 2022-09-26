@@ -269,7 +269,7 @@ public:
 	 */
 	bool getAllRelatedFrames(std::set<int>& FrameID);
 
-	bool hasRelatedFrame();
+	int hasRelatedFrame();
 
 /**
  * @brief add frame observed map point

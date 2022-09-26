@@ -19,3 +19,4 @@ out/
 CMakeSettings.json
 build/
 .VSCodeCounter/
+data/
