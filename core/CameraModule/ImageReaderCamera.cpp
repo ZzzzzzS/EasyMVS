@@ -1,6 +1,7 @@
 #include "ImageReaderCamera.h"
 #include <opencv2/core/utils/filesystem.hpp>
 #include <filesystem>
+#include <regex>
 
 PinholeImageReader::Ptr PinholeImageReader::Create(const cv::Mat1d& CameraMatrix, const cv::Mat1d& DistCoeff)
 {
@@ -21,6 +22,8 @@ bool PinholeImageReader::save(JsonNode& fs)
 		return false;
 	try
 	{
+		fs["prefix-zeros"]	= this->PrefixZeros;
+		fs["regex"]			= this->regex;
 		fs["type-id"]		= this->type_name();
 		fs["recursive"]		= this->recursive;
 		fs["order"]			= this->order;
@@ -45,6 +48,8 @@ bool PinholeImageReader::load(JsonNode& fs)
 		return false;
 	try
 	{
+		this->regex			= fs.at("regex");
+		this->PrefixZeros	= fs.at("prefix-zeros");
 		this->recursive		= fs.at("recursive");
 		this->order			= fs.at("order");
 		this->FilePrefix	= fs.at("file-prefix");
@@ -70,7 +75,21 @@ bool PinholeImageReader::open()
 	{
 		for (size_t i = this->BeginNumber; i <= this->EndNumber; i++)
 		{
-			auto string = this->CameraName + "/" + this->FilePrefix + std::to_string(i) + this->FilePostfix + this->FileType;
+			auto string = this->CameraName + "/" + this->FilePrefix;
+			
+			int lenthcount = 0;
+			int temp = i;
+			while (temp)
+			{
+				temp /= 10;
+				lenthcount++;
+			}
+			for (size_t j = 0; j < this->PrefixZeros - lenthcount; j++)
+			{
+				string += "0";
+			}
+			
+			string += std::to_string(i) + this->FilePostfix + this->FileType;
 			if(std::filesystem::exists(string))
 				this->FileList.push_back(string);
 			else
@@ -83,8 +102,12 @@ bool PinholeImageReader::open()
 	{
 		std::vector<cv::String> files;
 		glob(this->CameraName, cv::String(), files, this->recursive);
+		std::regex reg(this->regex);
 		for (auto&& file : files)
 		{
+			if(!std::regex_match(std::string(file),reg))
+				continue;
+
 			if (file.rfind(this->FileType) != std::string::npos)
 			{
 				this->FileList.push_back(file);

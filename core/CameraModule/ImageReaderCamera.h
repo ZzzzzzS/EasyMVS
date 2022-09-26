@@ -44,6 +44,8 @@ private:
 	std::string FilePrefix;
 	std::string FilePostfix;
 	std::string FileType = ".bmp";
+	std::string regex = "*";
+	int PrefixZeros = 0;
 	int BeginNumber = 0;
 	int EndNumber = 0;
 	int ImreadFlag = cv::IMREAD_COLOR;
