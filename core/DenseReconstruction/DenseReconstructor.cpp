@@ -51,8 +51,47 @@ bool DenseReconstructor::Compute(std::vector<FrameObject::Ptr>& frames)
 
 void DenseReconstructor::Trigger()
 {
+    std::cout << this->type_name() << ": this node can NOT be triggered without input data!" << std::endl;
 }
 
 void DenseReconstructor::Trigger(DataQueue data)
 {
+    if (data.empty())
+    {
+        std::cout << this->type_name() << ": this node can NOT be triggered without input data!" << std::endl;
+        return;
+    }
+	
+    DataQueue out;
+    while (true)
+    {
+        auto frame = std::dynamic_pointer_cast<FrameObject>(data.front());
+		data.pop();
+        if (frame == nullptr)
+        {
+			std::cout << this->type_name() << ": input data is not a frame object!" << std::endl;
+			break;
+        }
+        if (this->Compute(frame))
+        {
+			out.push(frame);
+		}
+		else
+		{
+			std::cout << this->type_name() << ": compute failed!" << std::endl;
+		}
+		if (data.empty())
+		{
+			break;
+        }
+    }
+	
+    if (!out.empty())
+    {
+        this->Finished(out);
+    }
+    else
+    {
+        std::cout << this->type_name() << ": No output data" << std::endl;
+    }
 }

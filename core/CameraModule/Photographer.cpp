@@ -250,8 +250,8 @@ bool PinholePhotographer::Compute(std::vector<FrameObject::Ptr>& Frames)
 				emit this->Warning(this->type_name() + ": frame is not pinhole frame");
 			}
 			auto [CameraMatrix, distcoeff] = std::dynamic_pointer_cast<PinholeCamera>(std::get<CameraObject::Ptr>(this->CamerasMap.at(i)))->getCameraParameters();
-			tmpframe->CameraMatrix = CameraMatrix;
-			tmpframe->DistCoeff = distcoeff;
+			tmpframe->CameraMatrix = CameraMatrix.clone();
+			tmpframe->DistCoeff = distcoeff.clone();
 		}
 
 		return true;

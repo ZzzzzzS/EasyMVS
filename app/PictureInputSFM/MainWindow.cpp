@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include "./ui_MainWindow.h"
-#include "ScrollScale.h"
+#include "visualization/ScrollScale.h"
 #include <iostream>
 #include <sstream>
 #include <QFileDialog>

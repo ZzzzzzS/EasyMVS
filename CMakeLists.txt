@@ -33,6 +33,7 @@ find_package(argparse CONFIG REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/core)
 include_directories(${PROJECT_SOURCE_DIR}/core/common)
+include_directories(${PROJECT_SOURCE_DIR})
 
 if(WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -40,8 +41,6 @@ endif(WIN32)
 
 add_subdirectory(core)
 add_subdirectory(app)
-
+add_subdirectory(doc)
+add_subdirectory(visualization)
 option(BUILD_DOC "Build documentation" OFF)
-if(BUILD_DOC)
-    add_subdirectory(doc)
-endif(BUILD_DOC)

@@ -87,6 +87,8 @@ bool PinholeImageReader::open()
 			for (size_t j = 0; j < this->PrefixZeros - lenthcount; j++)
 			{
 				string += "0";
+				if (this->PrefixZeros < lenthcount)
+					break;
 			}
 			
 			string += std::to_string(i) + this->FilePostfix + this->FileType;
@@ -105,7 +107,18 @@ bool PinholeImageReader::open()
 		std::regex reg(this->regex);
 		for (auto&& file : files)
 		{
-			if(!std::regex_match(std::string(file),reg))
+			#ifdef _WIN32
+			auto index = file.rfind('\\');
+			#elif __linux__
+			auto index = file.rfind('/');
+			#elif __APPLE__
+			auto index = file.rfind('/');
+			#else
+			auto index = file.rfind('/');
+			#endif 
+			auto sub = file.substr(index+1);
+			
+			if(!std::regex_match(std::string(sub),reg))
 				continue;
 
 			if (file.rfind(this->FileType) != std::string::npos)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(NAME_POSTFIX PictureSFM)
+set(NAME_POSTFIX PictureMVS)
 project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -12,18 +12,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(PROJECT_SOURCES
-        main.cpp
-        MainWindow.cpp
-        MainWindow.h
-        MainWindow.ui
+	main.cpp
 )
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE 
 						DenseReconstruction_common 
 						DenseReconstruction_CameraModule
-						DenseReconstruction_FeatureExtraction
-						DenseReconstruction_PoseReconstruction
+						DenseReconstruction_DenseReconstruction
 						DenseReconstruction_Visualization
 )
 

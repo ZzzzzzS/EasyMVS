@@ -245,12 +245,12 @@
   <customwidget>
    <class>QPointCloudViewer</class>
    <extends>QOpenGLWidget</extends>
-   <header>QPointCloudViewer.h</header>
+   <header>visualization/QPointCloudViewer.h</header>
   </customwidget>
   <customwidget>
    <class>ScrollScale</class>
    <extends>QLabel</extends>
-   <header>ScrollScale.h</header>
+   <header>visualization/ScrollScale.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
