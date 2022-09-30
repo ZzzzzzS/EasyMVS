@@ -740,9 +740,12 @@ FrameObject::RelatedFrameInfo::RelatedFrameInfo(std::shared_ptr<FrameObject> Rel
 FrameObject::RelatedFrameInfo::~RelatedFrameInfo()
 {
     auto ptr = this->RelatedFramePtr.lock();
-    ptr->ReferencedCount--;
-    if (ptr->ReferencedCount < 0)
-        throw std::exception("Reference count error!");
+	if (ptr != nullptr)
+	{
+		ptr->ReferencedCount--;
+        if (ptr->ReferencedCount < 0)
+            throw std::exception("Reference count error!");
+	}
 }
 
 std::ostream& operator<<(std::ostream& os, FrameObject& frame)

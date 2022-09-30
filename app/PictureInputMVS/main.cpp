@@ -7,6 +7,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/filters/filter.h>
 
 
 int main(int argc, char* argv[])
@@ -63,12 +64,12 @@ int main(int argc, char* argv[])
 	DenseReconstructor1->Compute(frames[1]);
 	
 	pcl::PointCloud<pcl::PointXYZRGB> Cloud;
-	Cloud.reserve(frames[1]->XYZMat.cols * frames[1]->XYZMat.rows);
+	//Cloud.reserve(frames[1]->XYZMat.cols * frames[1]->XYZMat.rows);
 	for (int i = 0; i < frames[1]->XYZMat.cols; i++)
 	{
 		for (int j = 0; j < frames[1]->XYZMat.rows; j++)
 		{
-			if (frames[1]->XYZMat.at<cv::Vec3f>(j, i)[2] > -1000 || frames[1]->XYZMat.at<cv::Vec3f>(j, i)[2] < 1000)
+			if (frames[1]->XYZMat.at<cv::Vec3f>(j, i)[2] > 0)
 			{
 				pcl::PointXYZRGB Point;
 				Point.x = frames[1]->XYZMat.at<cv::Vec3f>(j, i)[0];
@@ -82,11 +83,15 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	pcl::PointCloud<pcl::PointXYZRGB> Cloudfilter;
+	pcl::Indices index;
+	pcl::removeNaNFromPointCloud(Cloud, Cloudfilter, index);
+	
 	//save pointcloud
 	pcl::PLYWriter Writer;
-	Writer.write("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/data/gxrdata/DTUDense.ply", Cloud);
+	Writer.write("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/data/gxrdata/DTUDense.ply", Cloudfilter);
 	
-	//std::cout << "please manually check if rebuild success." << std::endl;
+	std::cout << "please manually check if rebuild success." << std::endl;
 
-    return a.exec();
+    return 0;
 }
