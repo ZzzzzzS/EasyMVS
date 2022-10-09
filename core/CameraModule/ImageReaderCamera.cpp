@@ -84,7 +84,7 @@ bool PinholeImageReader::open()
 				temp /= 10;
 				lenthcount++;
 			}
-			for (size_t j = 0; j < this->PrefixZeros - lenthcount; j++)
+			for (int j=0;j<(this->PrefixZeros - lenthcount);j++)
 			{
 				string += "0";
 				if (this->PrefixZeros < lenthcount)
