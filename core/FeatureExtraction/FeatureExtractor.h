@@ -47,7 +47,7 @@ public:
 	 * @return true detect success
 	 * @return false detect failed
 	 */
-	bool Compute(FrameObject::Ptr frame);
+	virtual bool Compute(FrameObject::Ptr frame);
 
 public slots:
 

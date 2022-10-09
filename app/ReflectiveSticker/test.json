@@ -1,0 +1,104 @@
+{
+    "CameraRight": {
+        "begin-number": 1,
+        "camera-index": -1,
+        "camera-matrix": {
+            "cols": 3,
+            "data": [1.1670977390909036e+04, 0, 1.2187842396606427e+03, 0,
+            1.1657034542293040e+04, 8.6843476385124518e+02, 0, 0, 1],
+            "dt": "d",
+            "rows": 3,
+            "type_id": "opencv-matrix"
+        },
+        "camera-name": "C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/app/ReflectiveSticker/data",
+        "dist-coeff": {
+            "cols": 5,
+            "data": [6.4323507103415459e-02, -6.0958077277476503e+00,
+            -5.7739513394183851e-03, 1.9294583976133433e-03,
+            1.6073697176809840e-01 ],
+            "dt": "d",
+            "rows": 1,
+            "type_id": "opencv-matrix"
+        },
+        "end-number": 4,
+        "file-postfix": "",
+        "file-prefix": "Image1_",
+        "file-type": ".bmp",
+        "image-size": [
+            2448,
+            2048
+        ],
+        "imread-flag": 1,
+        "order": true,
+        "recursive": false,
+        "type-id": "pinhole-image-reader",
+        "prefix-zeros":0,
+        "regex":"*"
+    },
+    "CameraLeft": {
+        "begin-number": 1,
+        "camera-index": -1,
+        "camera-matrix": {
+            "cols": 3,
+            "data": [1.1684450964796217e+04, 0, 1.2955290056307338e+03, 0,
+            1.1678792441801261e+04, 9.2213047656912238e+02, 0, 0, 1 ],
+            "dt": "d",
+            "rows": 3,
+            "type_id": "opencv-matrix"
+        },
+        "camera-name": "C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/app/ReflectiveSticker/data",
+        "dist-coeff": {
+            "cols": 5,
+            "data": [ -3.2512609794089972e-02, 1.7828542380812253e+00,
+            -4.4199464868983872e-03, 2.4448796792564558e-03,
+            8.3084991106102013e-02],
+            "dt": "d",
+            "rows": 1,
+            "type_id": "opencv-matrix"
+        },
+        "end-number": 4,
+        "file-postfix": "",
+        "file-prefix": "Image2_",
+        "file-type": ".bmp",
+        "image-size": [
+            2448,
+            2048
+        ],
+        "imread-flag": 1,
+        "order": true,
+        "recursive": false,
+        "type-id": "pinhole-image-reader",
+        "prefix-zeros":0,
+        "regex":"*"
+    },
+    "Photographer1": {
+        "camera-extrinsics": [
+            {
+                "cols": 4,
+                "data": [
+                    1.0,    0.0,    0.0,    0.0,
+                    0.0,    1.0,    0.0,    0.0,
+                    0.0,    0.0,    1.0,    0.0,
+                    0.0,    0.0,    0.0,    1.0
+                ],
+                "dt": "double",
+                "rows": 4,
+                "type-id": "sophus-se3matrix"
+            },
+            {
+                "cols": 4,
+                "data": [
+                    8.4038443786903572e-01,	8.4453462180347494e-03, 5.4192496963583658e-01, -1.3141599585709790e+02,
+                    2.2503111028802144e-04,	9.9987306882652915e-01, -1.5930963449152097e-02, 1.9025151699909093e-01,
+                    -5.4199072496542255e-01, 1.3510083740537793e-02, 8.4027586642053420e-01, 4.0277183627613397e+01,
+                    0,0,0,1
+                ],
+                "dt": "double",
+                "rows": 4,
+                "type-id": "sophus-se3matrix"
+            }
+        ],
+        "type-id": "workflow-photographer"
+    },
+    "FeatureExtractor1":{}
+}
