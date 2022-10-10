@@ -41,6 +41,7 @@ public:
     static void Sophus2cvMat(const Sophus::SE3d& pose, cv::Mat1d& Mat);
     static cv::Mat1d Rt2T(const cv::Mat1d& R, const cv::Mat1d& t);
     static std::tuple<cv::Mat1d, cv::Mat1d> T2Rt(const cv::Mat1d& T);
+    static cv::Mat1d TK2F(const cv::Mat1d& K2, const cv::Mat1d& K1, const cv::Mat1d& T);
 
 private:
     /* data */

@@ -9,6 +9,7 @@ set(SOURCE_FILES FeatureExtractor.cpp
                 VocTreeMatcher.cpp
                 FSift128.cpp
                 ReflectiveStickerExtractor.cpp
+                ReflectiveStickerMatcher.cpp
 )
 
 set(HEADER_FILES FeatureExtractor.h
@@ -16,6 +17,7 @@ set(HEADER_FILES FeatureExtractor.h
                 VocTreeMatcher.h
                 FSift128.h
                 ReflectiveStickerExtractor.h
+                ReflectiveStickerMatcher.h
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

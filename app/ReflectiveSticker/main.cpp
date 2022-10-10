@@ -1,4 +1,4 @@
-#include <QObject>
+﻿#include <QObject>
 #include <QCoreApplication>
 #include <QApplication>
 #include <opencv2/opencv.hpp>
@@ -14,6 +14,7 @@
 #include "FeatureExtraction/FeatureExtractor.h"
 #include "CameraModule/ImageReaderCamera.h"
 #include "FeatureExtraction/ReflectiveStickerExtractor.h"
+#include "FeatureExtraction/ReflectiveStickerMatcher.h"
 
 
 int main(int argc, char *argv[])
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
     auto CameraRight = PinholeImageReader::Create();
     auto Photographer1 = PinholePhotographer::Create(GlobalMap, { CameraLeft,CameraRight });
     auto FeatureExtractor1 = ReflectiveStickerExtractor::Create();
+	auto FeatureMatcher1 = ReflectiveStickerMatcher::Create(GlobalMap);
 
     //load settings
     std::ifstream settings("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/app/ReflectiveSticker/test.json");
@@ -35,6 +37,7 @@ int main(int argc, char *argv[])
     CameraRight->load(Json["CameraRight"]);
     Photographer1->load(Json["Photographer1"]);
     FeatureExtractor1->load(Json["FeatureExtractor1"]);
+	FeatureMatcher1->load(Json["FeatureMatcher1"]);
 
     if (!CameraLeft->open())
     {
@@ -47,10 +50,11 @@ int main(int argc, char *argv[])
 
     std::vector<FrameObject::Ptr> frames = { PinholeFrameObject::Create(0,0),PinholeFrameObject::Create(1,0) };
 	Photographer1->Compute(frames);
-
+	//frame0 是左相机，frame1是右相机
     FeatureExtractor1->Compute(frames[0]);
     FeatureExtractor1->Compute(frames[1]);
 
+    FeatureMatcher1->Compute(frames[1]);
 
     return a.exec();
 }
