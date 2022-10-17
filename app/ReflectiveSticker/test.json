@@ -151,5 +151,6 @@
     "type-id": "workflow-photographer"
   },
   "FeatureExtractor1": {},
-  "FeatureMatcher1": {}
+  "FeatureMatcher1": {},
+  "PoseReconstructor1":{}
 }

@@ -10,6 +10,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 						DenseReconstruction_common 
 						DenseReconstruction_CameraModule
 						DenseReconstruction_FeatureExtraction
+						DenseReconstruction_PoseReconstruction
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENCV_LIBS} Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)

@@ -57,3 +57,10 @@ cv::Mat1d DataFlowObject::TK2F(const cv::Mat1d& K2, const cv::Mat1d& K1, const c
     F = F / F(2, 2);
 	return F;
 }
+
+cv::Mat1d DataFlowObject::CameraMatrix3x4(const cv::Mat1d& K)
+{
+	cv::Mat1d P = cv::Mat1d::eye(3, 4);
+	K.copyTo(P(cv::Rect(0, 0, 3, 3)));
+	return P;
+}

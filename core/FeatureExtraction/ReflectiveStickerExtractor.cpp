@@ -125,7 +125,7 @@ void ReflectiveStickerExtractor::ComputeReflectiveSticker(cv::Mat& img,std::vect
                 
         }
 
-        std::cout << item2 << "mindist" << MinDistance<<std::endl;
+        //std::cout << item2 << "mindist" << MinDistance<<std::endl;
         if (MinDistance < 100)
             PotentialPoints3.push_back(item2);
     }

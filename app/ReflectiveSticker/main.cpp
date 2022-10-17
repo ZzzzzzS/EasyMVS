@@ -15,6 +15,7 @@
 #include "CameraModule/ImageReaderCamera.h"
 #include "FeatureExtraction/ReflectiveStickerExtractor.h"
 #include "FeatureExtraction/ReflectiveStickerMatcher.h"
+#include "PoseReconstruction/PinholePoseReconstructor.h"
 
 
 int main(int argc, char *argv[])
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
     auto Photographer1 = PinholePhotographer::Create(GlobalMap, { CameraLeft,CameraRight });
     auto FeatureExtractor1 = ReflectiveStickerExtractor::Create();
 	auto FeatureMatcher1 = ReflectiveStickerMatcher::Create(GlobalMap);
+    auto PoseReconstructor1 = PinholePoseReconstructor::Create(GlobalMap);
 
     //load settings
     std::ifstream settings("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/app/ReflectiveSticker/test.json");
@@ -38,6 +40,7 @@ int main(int argc, char *argv[])
     Photographer1->load(Json["Photographer1"]);
     FeatureExtractor1->load(Json["FeatureExtractor1"]);
 	FeatureMatcher1->load(Json["FeatureMatcher1"]);
+    PoseReconstructor1->load(Json["PoseReconstructor1"]);
 
     if (!CameraLeft->open())
     {
@@ -55,6 +58,15 @@ int main(int argc, char *argv[])
     FeatureExtractor1->Compute(frames[1]);
 
     FeatureMatcher1->Compute(frames[1]);
+    PoseReconstructor1->Compute(frames[1]);
+	
+    std::cout << *GlobalMap;
+    std::set<int> MappointID;
+    GlobalMap->getAllMapPointID(MappointID);
+    for (auto& i : MappointID)
+    {
+        std::cout << *(GlobalMap->getMapPoint(i)) << std::endl;
+    }
 
     return a.exec();
 }

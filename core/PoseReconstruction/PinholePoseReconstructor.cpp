@@ -39,6 +39,9 @@ bool PinholePoseReconstructor::Compute(FrameObject::Ptr frame, GlobalMapObject::
 	//计算新姿态
 	//计算新路点（计算新路点+融合已知路点）
 	//局部优化
+	if (GlobalMap == nullptr)
+		GlobalMap = this->GlobalMap;
+
 	auto result1 = this->SolveNewFramePose(frame, GlobalMap);
 	if (!result1)
 	{
@@ -377,16 +380,19 @@ void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<
 	auto pinholeframe1 = std::dynamic_pointer_cast<PinholeFrameObject>(frame);
 	cv::Mat1d Pose1;
 	DataFlowObject::Sophus2cvMat(pinholeframe1->getGlobalPose().inverse(), Pose1);
-	cv::Mat1d P1 = pinholeframe1->CameraMatrix * Pose1; //计算投影矩阵
+	cv::Mat1d P1 = DataFlowObject::CameraMatrix3x4(pinholeframe1->CameraMatrix) * Pose1; //计算投影矩阵
 
+	//<关联帧信息，投影矩阵>
 	std::map<FrameObject::RelatedFrameInfo::Ptr, cv::Mat1d> FramePMap; //投影矩阵列表
+	
+	//<本帧特征点编号，list<关联帧信息,对应特征点编号>>
 	std::map<int, std::list<std::tuple<FrameObject::RelatedFrameInfo::Ptr, int>>> MatchedPointsList; //未知路点列表
 	for (auto& item : Related)
 	{
 		auto PinholePointer = std::dynamic_pointer_cast<PinholeFrameObject>(item->getRelatedFrame());
 		cv::Mat1d Pose;
-		DataFlowObject::Sophus2cvMat(PinholePointer->getGlobalPose().inverse(), Pose);
-		cv::Mat1d P = PinholePointer->CameraMatrix * Pose;
+		DataFlowObject::Sophus2cvMat(PinholePointer->getGlobalPose().inverse()  , Pose);
+		cv::Mat1d P = DataFlowObject::CameraMatrix3x4(PinholePointer->CameraMatrix) * Pose;
 		FramePMap.insert({ item,P });
 
 		//std::set<int> MappointKeyID;
@@ -435,15 +441,19 @@ void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<
 	for (auto& [key,value] : MatchedPointsList)
 	{
 		cv::Mat1d X;
-		cv::Mat1d A = cv::Mat1d::zeros(value.size(), 4);
+		cv::Mat1d A = cv::Mat1d::zeros(value.size() * 2 + 2, 4);
 		cv::Mat row1, row2;
 		auto Point1 = pinholeframe1->KeyPoints.at(key).pt;
-		row1 = Point1.x * Pose1.row(2) - Pose1.row(0);
-		row2 = Point1.y * Pose1.row(2) - Pose1.row(1);
+		row1 = Point1.x * P1.row(2) - P1.row(0);
+		row2 = Point1.y * P1.row(2) - P1.row(1);
 		row1.copyTo(A.row(0));
 		row2.copyTo(A.row(1));
 
 		int count = 2;
+
+		cv::Mat1d P2_;
+		cv::Point2f p2testreal;
+
 		for (auto& item : value)
 		{
 			auto relatedptr = std::get<0>(item);
@@ -451,16 +461,27 @@ void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<
 			auto ptr = relatedptr->getRelatedFrame();
 
 			auto Point2 = ptr->KeyPoints.at(point).pt;
-			auto Pose2 = FramePMap.at(relatedptr);
-			row1 = Point2.x * Pose2.row(2) - Pose2.row(0);
-			row2 = Point2.y * Pose2.row(2) - Pose2.row(1);
+			auto P2 = FramePMap.at(relatedptr);
+			row1 = Point2.x * P2.row(2) - P2.row(0);
+			row2 = Point2.y * P2.row(2) - P2.row(1);
 
 			row1.copyTo(A.row(count++));
 			row2.copyTo(A.row(count++));
+
+			P2_ = P2;
+			p2testreal = Point2;
 		}
 
 		cv::SVD::solveZ(A, X);
+		//TODO: 解决值为负数的情况
 		X = X / X(3);//TODO: 寻找一下更好的归一化方法
+
+		/** *******/
+		cv::Mat1d p1test = P1 * X;
+		p1test = p1test / p1test(2);
+		cv::Mat1d p2test = P2_ * X;
+		p2test = p2test / p2test(2);
+		/** **************/
 
 		Eigen::Vector4d EigenPoint;
 		cv::cv2eigen(X, EigenPoint);
