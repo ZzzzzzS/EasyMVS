@@ -488,6 +488,17 @@ void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<
 		//终于产生一个路点了！！！！不容易啊！
 		auto MappointPtr = MapPointObject::Create(GlobalMap->AssignMappointID());
 		MappointPtr->Position = EigenPoint;
+		
+		//向路点添加观测的帧
+		MappointPtr->addObservation(pinholeframe1, key);
+		for (auto& item : value)
+		{
+			auto relatedptr = std::get<0>(item);
+			auto point = std::get<1>(item);
+			auto ptr = relatedptr->getRelatedFrame();
+			MappointPtr->addObservation(ptr, point);
+		}
+		
 		GlobalMap->addMapPoint(MappointPtr); //立即向全局地图中加入路点，不然指针就无了
 
 		pinholeframe1->addMapPoint(key, MappointPtr, pinholeframe1->getGlobalPose().inverse() * EigenPoint);

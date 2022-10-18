@@ -150,7 +150,19 @@
     ],
     "type-id": "workflow-photographer"
   },
-  "FeatureExtractor1": {},
-  "FeatureMatcher1": {},
+  "FeatureExtractor1": {
+    "algorithm-name":"opencv-sift",
+    "parameters":null
+  },
+  "FeatureMatcher1": {
+    "gms-threshold": 6.0,
+    "keypoint-type": 1,
+    "large-rotation": false,
+    "large-scale": false,
+    "least-matching-points": 0,
+    "matcher-type": 1,
+    "voc-tree-path": "C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/data/DTU_scan6.yml.gz",
+    "total-frame-number":4
+  },
   "PoseReconstructor1":{}
 }

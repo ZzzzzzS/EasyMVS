@@ -7,7 +7,9 @@ ReflectiveStickerMatcher::Ptr ReflectiveStickerMatcher::Create(GlobalMapObject::
 }
 
 ReflectiveStickerMatcher::ReflectiveStickerMatcher(GlobalMapObject::Ptr GlobalMap)
-    :FeatureMatcher(GlobalMap)
+    :VocTreeMatcher(GlobalMap),
+	CurrentFrameIndex(0),
+	TotalFrameNumber(0)
 {
 }
 
@@ -29,13 +31,17 @@ bool ReflectiveStickerMatcher::clear()
 
 bool ReflectiveStickerMatcher::save(JsonNode& fs)
 {
-    return true;
+    auto result = VocTreeMatcher::save(fs);
+    fs.at("total-frame-number") = this->TotalFrameNumber;
+    return result;
 }
 
 bool ReflectiveStickerMatcher::load(JsonNode& fs)
 {
-    this->m_isInit=true;
-    return true;
+    auto result = VocTreeMatcher::load(fs);
+    this->TotalFrameNumber = fs.at("total-frame-number");
+    this->m_isInit = result;
+    return result;
 }
 
 bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::Ptr GlobalMap)
@@ -48,13 +54,19 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
     
 	//找到位姿已知的关联帧，即双目产生帧
     std::set<int> RelatedFramesID;
-    std::set<FrameObject::RelatedFrameInfo::Ptr> FramePtrWithKnownPos;
+    std::set<FrameObject::RelatedFrameInfo::Ptr> FramePtrWithKnownPos; //已知位姿的帧(双目产生)
+    std::set<FrameObject::RelatedFrameInfo::Ptr> FranePtrWithoutPos; //未知位姿的帧(运动产生)
+
     frame->getAllRelatedFrames(RelatedFramesID);
     for (auto& item : RelatedFramesID)
     {
         auto RelatedPtr = frame->getRelatedFrame(item);
         if (RelatedPtr->getRelatedFrame()->isGlobalPoseKnown())
-            FramePtrWithKnownPos.insert(RelatedPtr);
+            //FranePtrWithoutPos.insert(RelatedPtr);
+            FramePtrWithKnownPos.insert(RelatedPtr); //HACK:
+        else 
+            FranePtrWithoutPos.insert(RelatedPtr);
+		
     }
 	
 	
@@ -66,96 +78,76 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
 
         cv::Mat1d T;
         DataFlowObject::Sophus2cvMat(*RelatedPtr->Pose, T);
-		//
-  //      cv::Mat1d K1_inv = cv::Mat1d::zeros(4, 3);
-  //      K1_inv(3, 2) = 1;
-  //      cv::Mat1d K1_invtmp = CameraMat1.inv();
-  //      K1_invtmp.copyTo(K1_inv.colRange(0, 3).rowRange(0, 3));
-
-  //      cv::Mat1d K2 = cv::Mat1d::zeros(3, 4);
-  //      CameraMat2.copyTo(K2.colRange(0, 3).rowRange(0, 3));
-
-  //      //cv::Mat1d H_Mat = K2 * T.inv() * K1_inv;
-  //      cv::Mat1d H_Mat = CameraMat2 * T(cv::Rect(0, 0, 3, 3)) * (CameraMat1.inv());
-  //      H_Mat = H_Mat / H_Mat(2, 2);
-
-		////test
-  //      cv::Mat TransMat;
-  //      cv::warpPerspective(frame->RGBMat, TransMat, H_Mat, frame->RGBMat.size() * 5);
-  //      __nop();
-
-  //      RelatedPtr->getRelatedFrame()->RGBMat.copyTo(TransMat(cv::Rect(0, 0, 2448, 2048)));
-        /*cv::Mat R1, R2, P1, P2, Q;
-        auto [R, t] = DataFlowObject::T2Rt(T);
-        cv::stereoRectify(CameraMat1, std::static_pointer_cast<PinholeFrameObject>(frame)->DistCoeff,
-            CameraMat2, std::static_pointer_cast<PinholeFrameObject>(RelatedPtr->getRelatedFrame())->DistCoeff,
-            frame->RGBMat.size(), R, t, R1, R2, P1, P2, Q, 0, -1);
-		
-        cv::Mat map1x, map1y, map2x, map2y;
-        cv::initUndistortRectifyMap(CameraMat1, std::static_pointer_cast<PinholeFrameObject>(frame)->DistCoeff, R1, P1, frame->RGBMat.size(), CV_32FC2, map1x, map1y);
-        cv::initUndistortRectifyMap(CameraMat2, std::static_pointer_cast<PinholeFrameObject>(RelatedPtr->getRelatedFrame())->DistCoeff, R2, P2, frame->RGBMat.size(), CV_32FC2, map2x, map2y);
-
-        cv::Mat Pinhole1Rectified, Pinhole2Rectified;
-        cv::remap(frame->RGBMat, Pinhole1Rectified, map1x, map1y, cv::INTER_LINEAR);
-        cv::remap(RelatedPtr->getRelatedFrame()->RGBMat, Pinhole2Rectified, map2x, map2y, cv::INTER_LINEAR);
-		*/
-		
-        cv::Mat1d F = DataFlowObject::TK2F(CameraMat2, CameraMat1, T);
-		
-		//test
-  //      std::vector<cv::Point2f> tmp;
-  //      for (auto& item : frame->KeyPoints)
-  //      {
-  //          tmp.push_back(item.pt);
-  //      }
-  //      cv::Mat lines;
-		//cv::computeCorrespondEpilines(tmp, 2, F, lines);
-		////draw lines
-		//cv::Mat img1 = frame->RGBMat.clone();
-		//cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
-  //      for (int i = 0; i < lines.rows; i++)
-  //      {
-  //          float a = lines.at<float>(i, 0);
-  //          float b = lines.at<float>(i, 1);
-  //          float c = lines.at<float>(i, 2);
-  //          cv::Point pt1, pt2;
-  //          pt1.x = 0;
-  //          pt1.y = a * pt1.x + c;
-  //          pt1.y /= -b;
-		//	
-  //          pt2.x = 2000;
-  //          pt2.y = a * pt2.x + c;
-  //          pt2.y /= -b;
-		//	
-  //          cv::line(img2, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
-  //      }
+        cv::Mat1d F = DataFlowObject::TK2F(CameraMat2, CameraMat1, T);		
         this->ComputeWithF(frame->KeyPoints, RelatedPtr->getRelatedFrame()->KeyPoints, F, RelatedPtr->KeyPointMatch);
-        cv::Mat look;
-        cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
-            RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
+        //cv::Mat look;
+        //cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
+        //    RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
+    }
+
+    for (auto& RelatedPtr : FranePtrWithoutPos)
+    {
+        cv::Mat CameraMat1, CameraMat2;
+        CameraMat1 = std::static_pointer_cast<PinholeFrameObject>(frame)->CameraMatrix;
+        CameraMat2 = std::static_pointer_cast<PinholeFrameObject>(RelatedPtr->getRelatedFrame())->CameraMatrix;
+        cv::Mat1d F;
+        this->MatchAndFindF(frame, RelatedPtr->getRelatedFrame(), F);
+
+      //  //test
+      //std::vector<cv::Point2f> tmp;
+      //for (auto& item : frame->KeyPoints)
+      //{
+      //    if (item.class_id != MarkerPointType)
+      //        continue;
+      //    tmp.push_back(item.pt);
+      //}
+      //cv::Mat lines;
+      //cv::computeCorrespondEpilines(tmp, 2, F, lines);
+      ////draw lines
+      //cv::Mat img1 = frame->RGBMat.clone();
+      //cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
+      //for (int i = 0; i < lines.rows; i++)
+      //{
+      //    float a = lines.at<float>(i, 0);
+      //    float b = lines.at<float>(i, 1);
+      //    float c = lines.at<float>(i, 2);
+      //    cv::Point pt1, pt2;
+      //    pt1.x = 0;
+      //    pt1.y = a * pt1.x + c;
+      //    pt1.y /= -b;
+      //	
+      //    pt2.x = 2000;
+      //    pt2.y = a * pt2.x + c;
+      //    pt2.y /= -b;
+      //	
+      //    cv::line(img2, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+      //}
+
+		this->ComputeWithF(frame->KeyPoints, RelatedPtr->getRelatedFrame()->KeyPoints, F, RelatedPtr->KeyPointMatch);
+        //cv::Mat look;
+        //cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
+        //    RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
     }
 
 	return true;
 }
 
-bool ReflectiveStickerMatcher::MatchWithKnownH(const std::vector<cv::KeyPoint>& Points1, const std::vector<cv::KeyPoint>& Point2, cv::InputArray H, std::vector<cv::DMatch>& Matches)
-{
-	//计算反射贴纸的特征点在另一帧图像中的投影
-	
-    return false;
-}
 
-void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Points1, const std::vector<cv::KeyPoint>& Points2, const cv::Mat1d& F, std::vector<cv::DMatch>& Matches)
+void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& KeyPoints1, const std::vector<cv::KeyPoint>& KeyPoints2, const cv::Mat1d& F, std::vector<cv::DMatch>& Matches)
 {
     std::vector<cv::Point2f> tmp1;
-    for (auto& item : Points1)
+    for (auto& item : KeyPoints1)
     {
+        if (item.class_id != MarkerPointType)
+            continue;
         tmp1.push_back(item.pt);
     }
 
     std::vector<cv::Point2f> tmp2;
-    for (auto& item : Points2)
+    for (auto& item : KeyPoints2)
     {
+        if (item.class_id != MarkerPointType)
+            continue;
         tmp2.push_back(item.pt);
     }
 
@@ -164,28 +156,47 @@ void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Poi
     cv::computeCorrespondEpilines(tmp2, 1, F, Line2);
 	
     int index = 0;
+	int count1 = -1; //因为在continue之前++了，所以是-1
+    int count2 = -1; //解决特征点的编号问题，非常讨厌的补丁式编程，就这样吧
     std::vector<cv::DMatch> tmpMatches;
-    for (auto& Point1 : tmp1)
+    for (auto& Point1 : KeyPoints1)
     {
         int index2 = 0;
-        for (auto& Points2 : tmp2)
+        count2 = -1;
+        count1++;
+        if (Point1.class_id != MarkerPointType)
         {
+            continue;
+        }
+
+		
+        for (auto& Points2 : KeyPoints2)
+        {
+			count2++;
+            if (Points2.class_id != MarkerPointType)
+            {
+				continue;
+            }
+
 			double a = Line1.at<float>(index, 0);
             double b = Line1.at<float>(index, 1);
             double c = Line1.at<float>(index, 2);
 			
-            double distance = abs(a * Points2.x + b * Points2.y + c) / sqrt(a * a + b * b);
+            double distance = abs(a * Points2.pt.x + b * Points2.pt.y + c) / sqrt(a * a + b * b);
 
-            double PointDistance = pow(Point1.x - Points2.x, 2) + pow(Point1.y - Points2.y, 2);
-            if (distance < 10)
+            double PointDistance = pow(Point1.pt.x - Points2.pt.x, 2) + pow(Point1.pt.y - Points2.pt.y, 2);
+            if (distance < 100)
             {
-                tmpMatches.emplace_back(index, index2,PointDistance);
+                tmpMatches.emplace_back(count1, count2,PointDistance);
             }
             index2++;
         }
         index++;
     }
 	
+    if (tmpMatches.empty())
+        return;
+
     double AvgDistance = 0;
     std::sort(tmpMatches.begin(), tmpMatches.end(), [](cv::DMatch A, cv::DMatch B) {
         return A.distance > B.distance;
@@ -226,4 +237,32 @@ void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Poi
             Matches.push_back(item.second.front());
         }
 	}
+}
+
+bool ReflectiveStickerMatcher::MatchAndFindF(FrameObject::Ptr frame1, FrameObject::Ptr frame2, cv::Mat1d& F)
+{
+    std::vector<cv::DMatch> matches;
+    auto result = VocTreeMatcher::MatchKeyPoints(frame1, frame2, matches);
+    if (!result) return false;
+	
+    //cv::Mat look;
+    //cv::drawMatches(frame1->RGBMat, frame1->KeyPoints, frame2->RGBMat,
+    //    frame2->KeyPoints, matches, look);
+
+    std::vector<cv::Point2f> MatchedPoint1, MatchedPoint2;
+    MatchedPoint1.reserve(matches.size());
+    MatchedPoint2.reserve(matches.size());
+	for (auto& item : matches)
+	{
+		MatchedPoint1.push_back(frame1->KeyPoints[item.queryIdx].pt);
+		MatchedPoint2.push_back(frame2->KeyPoints[item.trainIdx].pt);
+	}
+	
+    auto F_Matrix = cv::findFundamentalMat(MatchedPoint2, MatchedPoint1); //使用ransac方法+默认参数
+	
+	if (F_Matrix.empty())
+		return false;
+
+	F = F_Matrix;
+	return true;
 }

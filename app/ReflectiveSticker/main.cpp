@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     FeatureExtractor1->Compute(frames[0]);
     FeatureExtractor1->Compute(frames[1]);
 
-    FeatureMatcher1->Compute(frames[1]);
+    FeatureMatcher1->Compute(frames[1]);    
     PoseReconstructor1->Compute(frames[1]);
 	
     std::cout << *GlobalMap;

@@ -1,4 +1,5 @@
 ﻿#include "ReflectiveStickerExtractor.h"
+#include <nlohmann/json.hpp>
 
 
 void MaxFilter(cv::Mat& src_image, cv::Mat& dst_image, int k_size);
@@ -20,20 +21,22 @@ bool ReflectiveStickerExtractor::Compute(FrameObject::Ptr frame)
         std::cout<<this->type_name() << ": RGBMat is empty" << std::endl;
         return false;
     }
-
+    CVFeatureExtractor::Compute(frame); //先进行特征点识别
     this->ComputeReflectiveSticker(frame->RGBMat,frame->KeyPoints);
     return frame->KeyPoints.empty() ? false : true;
 }
 
 bool ReflectiveStickerExtractor::load(JsonNode& fs)
 {
-    this->m_isInit=true;
-    return true;
+    bool result = CVFeatureExtractor::load(fs);
+    //this->m_isInit=true;
+    return result;
 }
 
 bool ReflectiveStickerExtractor::save(JsonNode& fs)
 {
-    return true;
+	return CVFeatureExtractor::save(fs);
+    //return true;
 }
 
 std::string ReflectiveStickerExtractor::type_name()
@@ -136,10 +139,10 @@ void ReflectiveStickerExtractor::ComputeReflectiveSticker(cv::Mat& img,std::vect
         cv::circle(show, cv::Point(centroids2(item, 0), centroids2(item, 1)), 10, cv::Scalar(128), 3);
     }
 
-    KeyPoints.reserve(PotentialPoints3.size());
+    KeyPoints.reserve(PotentialPoints3.size()+KeyPoints.size());
     for (auto& item : PotentialPoints3)
     {
-        KeyPoints.emplace_back(centroids2(item, 0), centroids2(item, 1), stats2(item, cv::CC_STAT_AREA));
+        KeyPoints.emplace_back(centroids2(item, 0), centroids2(item, 1), stats2(item, cv::CC_STAT_AREA), -1, 0, 0, MarkerPointType);
     }
 }
 

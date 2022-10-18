@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <QObject>
 
-class ReflectiveStickerExtractor : public FeatureExtractor
+class ReflectiveStickerExtractor : public CVFeatureExtractor
 {
 public:
 	Q_OBJECT
