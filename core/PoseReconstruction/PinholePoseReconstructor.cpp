@@ -373,6 +373,8 @@ void PinholePoseReconstructor::ComputeMappoint(FrameObject::Ptr frame, GlobalMap
 
 		unknownPoseCount = SameMapWithoutPose.size();
 	}
+
+	
 }
 
 void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<FrameObject::RelatedFrameInfo::Ptr>& Related, GlobalMapObject::Ptr GlobalMap)
@@ -482,6 +484,22 @@ void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<
 		cv::Mat1d p2test = P2_ * X;
 		p2test = p2test / p2test(2);
 		/** **************/
+		cv::Mat1d ThreeDP(4, 1);
+		cv::Mat1d PointLeft(2, 1);
+		cv::Mat1d PointRight(2, 1);
+		PointLeft(0) = Point1.x;
+		PointLeft(1) = Point1.y;
+		PointRight(0) = p2testreal.x;
+		PointRight(1) = p2testreal.y;
+		cv::triangulatePoints(P1, P2_, PointLeft, PointRight, ThreeDP);
+		ThreeDP = ThreeDP / ThreeDP(3);
+		cv::Mat1d P3test = P1 * ThreeDP;
+		P3test = P3test / P3test(2);
+		cv::Mat1d P4test = P2_ * ThreeDP;
+		P4test = P4test / P4test(2);
+
+
+		/** ****************/
 
 		Eigen::Vector4d EigenPoint;
 		cv::cv2eigen(X, EigenPoint);

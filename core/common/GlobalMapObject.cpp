@@ -182,7 +182,7 @@ bool GlobalMapObject::addFrameObject(FrameObject::Ptr frame)
 
 bool GlobalMapObject::addMapPoint(MapPointObject::Ptr mappoint)
 {
-	if (this->Frames.count(mappoint->getID()) != 0)
+	if (this->MapPoints.count(mappoint->getID()) != 0)
 		return false;
 
 	this->MapPoints.insert(std::pair(mappoint->getID(), mappoint));

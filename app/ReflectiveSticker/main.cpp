@@ -16,6 +16,7 @@
 #include "FeatureExtraction/ReflectiveStickerExtractor.h"
 #include "FeatureExtraction/ReflectiveStickerMatcher.h"
 #include "PoseReconstruction/PinholePoseReconstructor.h"
+#include "PoseReconstruction/ReflectiveReconstructor.h"
 
 
 int main(int argc, char *argv[])
@@ -28,7 +29,7 @@ int main(int argc, char *argv[])
     auto Photographer1 = PinholePhotographer::Create(GlobalMap, { CameraLeft,CameraRight });
     auto FeatureExtractor1 = ReflectiveStickerExtractor::Create();
 	auto FeatureMatcher1 = ReflectiveStickerMatcher::Create(GlobalMap);
-    auto PoseReconstructor1 = PinholePoseReconstructor::Create(GlobalMap);
+    auto PoseReconstructor1 = ReflectiveReconstructor::Create(GlobalMap);
 
     //load settings
     std::ifstream settings("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/app/ReflectiveSticker/test.json");
@@ -52,6 +53,8 @@ int main(int argc, char *argv[])
     }
 
     std::vector<FrameObject::Ptr> frames = { PinholeFrameObject::Create(0,0),PinholeFrameObject::Create(1,0) };
+    GlobalMap->addFrameObject(frames[0]);
+    GlobalMap->addFrameObject(frames[1]);
 	Photographer1->Compute(frames);
 	//frame0 是左相机，frame1是右相机
     FeatureExtractor1->Compute(frames[0]);
@@ -59,6 +62,16 @@ int main(int argc, char *argv[])
 
     FeatureMatcher1->Compute(frames[1]);    
     PoseReconstructor1->Compute(frames[1]);
+	
+	std::vector<FrameObject::Ptr> frames2 = { PinholeFrameObject::Create(2,1),PinholeFrameObject::Create(3,1) };
+    GlobalMap->addFrameObject(frames2[0]);
+    GlobalMap->addFrameObject(frames2[1]);
+    Photographer1->Compute(frames2);
+    FeatureExtractor1->Compute(frames2[0]);
+	FeatureExtractor1->Compute(frames2[1]);
+    FeatureMatcher1->Compute(frames2[1]);
+    PoseReconstructor1->Compute(frames2[1]);
+
 	
     std::cout << *GlobalMap;
     std::set<int> MappointID;
