@@ -472,7 +472,12 @@ void PinholePoseReconstructor::GenNewMappoints(FrameObject::Ptr frame, std::set<
 			p2testreal = Point2;
 		}
 
-		cv::SVD::solveZ(A, X);
+		cv::Mat1d Atest(A.size());
+		A.copyTo(Atest);
+		A.row(3).copyTo(Atest.row(1));
+		A.row(1).copyTo(Atest.row(3));
+
+		cv::SVD::solveZ(Atest, X);
 		//TODO: 解决值为负数的情况
 		X = X / X(3);//TODO: 寻找一下更好的归一化方法
 

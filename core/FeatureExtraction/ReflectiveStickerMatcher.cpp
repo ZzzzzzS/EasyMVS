@@ -41,6 +41,7 @@ bool ReflectiveStickerMatcher::load(JsonNode& fs)
     auto result = VocTreeMatcher::load(fs);
     this->TotalFrameNumber = fs.at("total-frame-number");
     this->m_isInit = result;
+    this->CurrentFrameIndex = 0;
     return result;
 }
 
@@ -57,11 +58,24 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
     std::set<FrameObject::RelatedFrameInfo::Ptr> FramePtrWithKnownPos; //已知位姿的帧(双目产生)
     std::set<FrameObject::RelatedFrameInfo::Ptr> FranePtrWithoutPos; //未知位姿的帧(运动产生)
 
+    if (this->CurrentFrameIndex != 0)
+    {
+        auto RelatedPtr = FrameObject::RelatedFrameInfo::Create(LastFrame);
+        frame->addRelatedFrame(RelatedPtr);
+    }
+	
+    if (this->CurrentFrameIndex == this->TotalFrameNumber)
+    {
+		auto RelatedPtr = FrameObject::RelatedFrameInfo::Create(FirstFrame);
+		frame->addRelatedFrame(RelatedPtr);
+    }
+		
+	
     frame->getAllRelatedFrames(RelatedFramesID);
     for (auto& item : RelatedFramesID)
     {
         auto RelatedPtr = frame->getRelatedFrame(item);
-        if (RelatedPtr->getRelatedFrame()->isGlobalPoseKnown())
+        if (RelatedPtr->getRelatedFrame()->MapID==frame->MapID) // 根据地图ID来判断是否是双目产生的
             //FranePtrWithoutPos.insert(RelatedPtr);
             FramePtrWithKnownPos.insert(RelatedPtr); //HACK:
         else 
@@ -128,6 +142,12 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
         //cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
         //    RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
     }
+
+    this->LastFrame = frame;
+    if (this->CurrentFrameIndex == 0)
+        this->FirstFrame = frame;
+	
+	this->CurrentFrameIndex++;
 
 	return true;
 }
