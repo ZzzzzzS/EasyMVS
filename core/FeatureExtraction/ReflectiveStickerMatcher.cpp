@@ -53,6 +53,11 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
         return false;
     }
     
+    std::set<int> temp;
+    frame->getAllRelatedFrames(temp);
+    if (temp.size() == 0)
+        return false;
+
 	//找到位姿已知的关联帧，即双目产生帧
     std::set<int> RelatedFramesID;
     std::set<FrameObject::RelatedFrameInfo::Ptr> FramePtrWithKnownPos; //已知位姿的帧(双目产生)
@@ -92,11 +97,43 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
 
         cv::Mat1d T;
         DataFlowObject::Sophus2cvMat(*RelatedPtr->Pose, T);
-        cv::Mat1d F = DataFlowObject::TK2F(CameraMat2, CameraMat1, T);		
+        cv::Mat1d F = DataFlowObject::TK2F(CameraMat2, CameraMat1, T);	
+
+          //test
+      std::vector<cv::Point2f> tmp;
+      for (auto& item : frame->KeyPoints)
+      {
+          if (item.class_id != MarkerPointType)
+              continue;
+          tmp.push_back(item.pt);
+      }
+      cv::Mat lines;
+      cv::computeCorrespondEpilines(tmp, 2, F, lines);
+      //draw lines
+      cv::Mat img1 = frame->RGBMat.clone();
+      cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
+      for (int i = 0; i < lines.rows; i++)
+      {
+          float a = lines.at<float>(i, 0);
+          float b = lines.at<float>(i, 1);
+          float c = lines.at<float>(i, 2);
+          cv::Point pt1, pt2;
+          pt1.x = 0;
+          pt1.y = a * pt1.x + c;
+          pt1.y /= -b;
+      	
+          pt2.x = 2000;
+          pt2.y = a * pt2.x + c;
+          pt2.y /= -b;
+      	
+          cv::line(img2, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+      }
+
+		
         this->ComputeWithF(frame->KeyPoints, RelatedPtr->getRelatedFrame()->KeyPoints, F, RelatedPtr->KeyPointMatch);
-        //cv::Mat look;
-        //cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
-        //    RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
+        cv::Mat look;
+        cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
+            RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
     }
 
     for (auto& RelatedPtr : FranePtrWithoutPos)
@@ -107,40 +144,40 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
         cv::Mat1d F;
         this->MatchAndFindF(frame, RelatedPtr->getRelatedFrame(), F);
 
-      //  //test
-      //std::vector<cv::Point2f> tmp;
-      //for (auto& item : frame->KeyPoints)
-      //{
-      //    if (item.class_id != MarkerPointType)
-      //        continue;
-      //    tmp.push_back(item.pt);
-      //}
-      //cv::Mat lines;
-      //cv::computeCorrespondEpilines(tmp, 2, F, lines);
-      ////draw lines
-      //cv::Mat img1 = frame->RGBMat.clone();
-      //cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
-      //for (int i = 0; i < lines.rows; i++)
-      //{
-      //    float a = lines.at<float>(i, 0);
-      //    float b = lines.at<float>(i, 1);
-      //    float c = lines.at<float>(i, 2);
-      //    cv::Point pt1, pt2;
-      //    pt1.x = 0;
-      //    pt1.y = a * pt1.x + c;
-      //    pt1.y /= -b;
-      //	
-      //    pt2.x = 2000;
-      //    pt2.y = a * pt2.x + c;
-      //    pt2.y /= -b;
-      //	
-      //    cv::line(img2, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
-      //}
+        //test
+      std::vector<cv::Point2f> tmp;
+      for (auto& item : frame->KeyPoints)
+      {
+          if (item.class_id != MarkerPointType)
+              continue;
+          tmp.push_back(item.pt);
+      }
+      cv::Mat lines;
+      cv::computeCorrespondEpilines(tmp, 2, F, lines);
+      //draw lines
+      cv::Mat img1 = frame->RGBMat.clone();
+      cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
+      for (int i = 0; i < lines.rows; i++)
+      {
+          float a = lines.at<float>(i, 0);
+          float b = lines.at<float>(i, 1);
+          float c = lines.at<float>(i, 2);
+          cv::Point pt1, pt2;
+          pt1.x = 0;
+          pt1.y = a * pt1.x + c;
+          pt1.y /= -b;
+      	
+          pt2.x = 2000;
+          pt2.y = a * pt2.x + c;
+          pt2.y /= -b;
+      	
+          cv::line(img2, pt1, pt2, cv::Scalar(0, 0, 255), 3, cv::LINE_AA);
+      }
 
 		this->ComputeWithF(frame->KeyPoints, RelatedPtr->getRelatedFrame()->KeyPoints, F, RelatedPtr->KeyPointMatch);
-        //cv::Mat look;
-        //cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
-        //    RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
+        cv::Mat look;
+        cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
+            RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
     }
 
     this->LastFrame = frame;
@@ -204,8 +241,8 @@ void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Key
 			
             double distance = abs(a * Points2.pt.x + b * Points2.pt.y + c) / sqrt(a * a + b * b);
 
-            double PointDistance = pow(Point1.pt.x - Points2.pt.x, 2) + pow(Point1.pt.y - Points2.pt.y, 2);
-            if (distance < 100)
+            double PointDistance = sqrt(pow(Point1.pt.x - Points2.pt.x, 2) + pow(Point1.pt.y - Points2.pt.y, 2));
+            if (distance < 50)
             {
                 tmpMatches.emplace_back(count1, count2,PointDistance);
             }
@@ -228,13 +265,14 @@ void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Key
     std::vector<cv::DMatch> tmpMatches2;
 	for (auto& item : tmpMatches)
 	{
-		if (item.distance < AvgDistance * 2 && item.distance > AvgDistance / 2)
+		if (item.distance < AvgDistance * 3 && item.distance > AvgDistance / 4)
 		{
             tmpMatches2.push_back(item);
             matchCount[item.queryIdx].push_back(item);
 		}
 	}
 	
+    std::map<int, std::list<cv::DMatch>> matchCount2;
 	for (auto& item : matchCount)
 	{
 		if (item.second.size() > 1)
@@ -250,12 +288,37 @@ void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Key
                     avg = i;
                 }
             }
-            Matches.push_back(avg);
+            //MatchesList.push_back(avg);
+			matchCount2[avg.trainIdx].push_back(avg);
 		}
         else
         {
-            Matches.push_back(item.second.front());
+            //MatchesList.push_back(item.second.front());
+            matchCount2[item.second.front().trainIdx].push_back(item.second.front());
         }
+	}
+
+	for (auto& item : matchCount2)
+	{
+		if (item.second.size() > 1)
+		{
+			double distance = DBL_MAX;
+			cv::DMatch avg;
+			for (auto& i : item.second)
+			{
+				double localdistance = abs(i.distance - AvgDistance);
+				if (localdistance < distance)
+				{
+					distance = localdistance;
+					avg = i;
+				}
+			}
+			Matches.push_back(avg);
+		}
+		else
+		{
+			Matches.push_back(item.second.front());
+		}
 	}
 }
 
@@ -265,9 +328,9 @@ bool ReflectiveStickerMatcher::MatchAndFindF(FrameObject::Ptr frame1, FrameObjec
     auto result = VocTreeMatcher::MatchKeyPoints(frame1, frame2, matches);
     if (!result) return false;
 	
-    //cv::Mat look;
-    //cv::drawMatches(frame1->RGBMat, frame1->KeyPoints, frame2->RGBMat,
-    //    frame2->KeyPoints, matches, look);
+    cv::Mat look;
+    cv::drawMatches(frame1->RGBMat, frame1->KeyPoints, frame2->RGBMat,
+        frame2->KeyPoints, matches, look);
 
     std::vector<cv::Point2f> MatchedPoint1, MatchedPoint2;
     MatchedPoint1.reserve(matches.size());

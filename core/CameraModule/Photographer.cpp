@@ -271,6 +271,7 @@ void PinholePhotographer::Trigger()
 	{
 		auto tmpframe = PinholeFrameObject::Create(this->FrameIDCounter++, MapID);
 		data.push(tmpframe);
+		this->GlobalMap->addFrameObject(tmpframe);
 	}
 	
 	this->Trigger(data);

@@ -134,12 +134,15 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 	//<老地图的路点,新地图的路点>
 	std::list<std::tuple<MapPointObject::Ptr, MapPointObject::Ptr>> MapPointMatch;
 	
+	std::vector<cv::DMatch> MappointMatch;
+
 	for (auto& item : related->KeyPointMatch)
 	{
 		if (referencePtr->hasMappoint(item.trainIdx))
 		{
+			MappointMatch.push_back(item);
 			auto MapPoint = referencePtr->getMapPoint(item.trainIdx)->Position;
-			auto KeyPoint = current->KeyPoints.at(item.trainIdx).pt;
+			auto KeyPoint = current->KeyPoints.at(item.queryIdx).pt;
 			cvMapPoint.emplace_back(MapPoint(0), MapPoint(1), MapPoint(2));
 			cvKeyPoint.emplace_back(KeyPoint);
 			if (current->hasMappoint(item.queryIdx))
@@ -149,32 +152,35 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 		}
 	}
 
+	cv::Mat look;
+	cv::drawMatches(current->RGBMat, current->KeyPoints, referencePtr->RGBMat, referencePtr->KeyPoints, MappointMatch, look);
+	
 	if (cvMapPoint.size() < 4) //PNP最低点数要求
 		return false;
 
-	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(referencePtr)->CameraMatrix;
+	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(current)->CameraMatrix;
 	auto pose = this->SolvePNP(cvMapPoint, cvKeyPoint, K);
 	
-	auto CurrentFrameCurrentPose = referencePtr->getGlobalPose();
+	auto CurrentFrameCurrentPose = current->getGlobalPose();
 	auto PoseTrans = pose * (CurrentFrameCurrentPose.inverse());
 	
 
 	/**ID的合并********/
 	std::set<int> relatedID;
-	referencePtr->getAllRelatedFrames(relatedID);
+	current->getAllRelatedFrames(relatedID);
 	for (auto&& id : relatedID)
 	{
-		auto RelatedFramePtr = referencePtr->getRelatedFrame(id);
-		if (RelatedFramePtr->getRelatedFrame()->MapID == referencePtr->MapID)
+		auto RelatedFramePtr = current->getRelatedFrame(id);
+		if (RelatedFramePtr->getRelatedFrame()->MapID == current->MapID)
 		{
 			auto FramePtr = RelatedFramePtr->getRelatedFrame();
 			auto FramePose = FramePtr->getGlobalPose();
 			FramePtr->setGlobalPose(PoseTrans * FramePose);
-			FramePtr->MapID = current->MapID;
+			FramePtr->MapID = referencePtr->MapID;
 		}
 	}
-	referencePtr->setGlobalPose(pose);
-	referencePtr->MapID = current->MapID;
+	current->setGlobalPose(pose);
+	current->MapID = referencePtr->MapID;
 	/**路点的合并************************/
 	for (auto& [OldMappoint, NewMappoint] : MapPointMatch)
 	{
@@ -202,7 +208,7 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 Sophus::SE3d ReflectiveReconstructor::SolvePNP(std::vector<cv::Point3d>& WorldPoints, std::vector<cv::Point2d>& CameraPoints, cv::Mat1d& Intrinsic)
 {
 	cv::Mat1d rvec, R, t, T;
-	cv::solvePnP(WorldPoints, CameraPoints, Intrinsic, cv::noArray(), R, t);
+	cv::solvePnP(WorldPoints, CameraPoints, Intrinsic, cv::noArray(), rvec, t,false,cv::SOLVEPNP_EPNP);
 	R = cv::Mat1d::zeros(3, 3);
 	cv::Rodrigues(rvec, R);
 	T = DataFlowObject::Rt2T(R, t);

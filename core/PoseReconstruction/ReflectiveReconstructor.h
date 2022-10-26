@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PoseReconstructor.h"
 #include <QObject>
 
@@ -22,4 +22,10 @@ private:
 	void GenNewMappoint(FrameObject::Ptr frame, FrameObject::RelatedFrameInfo::Ptr related, GlobalMapObject::Ptr GlobalMap);
 	bool MergeMap(FrameObject::Ptr frame, FrameObject::RelatedFrameInfo::Ptr related, GlobalMapObject::Ptr GlobalMap);
 	Sophus::SE3d SolvePNP(std::vector<cv::Point3d>& WorldPoints, std::vector<cv::Point2d>& CameraPoints, cv::Mat1d& Intrinsic);
+	
+	FrameObject::Ptr FirstFrame;
+	FrameObject::Ptr LastFrame;
+	//这没用DBoW回环检测了，就简单使用帧序号来判断是否闭环了
+	int TotalFrameNumber;
+	int CurrentFrameIndex;
 };

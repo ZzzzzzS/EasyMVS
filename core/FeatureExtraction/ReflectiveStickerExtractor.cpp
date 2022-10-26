@@ -107,40 +107,41 @@ void ReflectiveStickerExtractor::ComputeReflectiveSticker(cv::Mat& img,std::vect
     cv::Mat show2 = labels.clone();
     for (auto& item : PotentialPoints2)
     {
+        cv::circle(img, cv::Point(centroids2(item, 0), centroids2(item, 1)), 10, cv::Scalar(128), 3);
         cv::circle(show2, cv::Point(centroids2(item, 0), centroids2(item, 1)), 10, cv::Scalar(128), 3);
     }
 
-    std::vector<int> PotentialPoints3;
-    for (auto& item2 : PotentialPoints2)
-    {
-        double MinDistance = DBL_MAX;
-        int index = -1;
-        for (auto& item1 : PotentialPoints1)
-        {
-            double distance = std::pow(centroids(item1, 0) - centroids2(item2, 0), 2) +
-                std::pow(centroids(item1, 1) - centroids2(item2, 1), 2);
+    //std::vector<int> PotentialPoints3;
+    //for (auto& item2 : PotentialPoints2)
+    //{
+    //    double MinDistance = DBL_MAX;
+    //    int index = -1;
+    //    for (auto& item1 : PotentialPoints1)
+    //    {
+    //        double distance = std::pow(centroids(item1, 0) - centroids2(item2, 0), 2) +
+    //            std::pow(centroids(item1, 1) - centroids2(item2, 1), 2);
 
-            if (distance < MinDistance)
-            {
-                MinDistance = distance;
-                index = item2;
-            }
-                
-        }
+    //        if (distance < MinDistance)
+    //        {
+    //            MinDistance = distance;
+    //            index = item2;
+    //        }
+    //            
+    //    }
 
-        //std::cout << item2 << "mindist" << MinDistance<<std::endl;
-        if (MinDistance < 100)
-            PotentialPoints3.push_back(item2);
-    }
+    //    //std::cout << item2 << "mindist" << MinDistance<<std::endl;
+    //    if (MinDistance < 100)
+    //        PotentialPoints3.push_back(item2);
+    //}
 
-    cv::Mat show = gray.clone();
-    for (auto& item : PotentialPoints3)
-    {
-        cv::circle(show, cv::Point(centroids2(item, 0), centroids2(item, 1)), 10, cv::Scalar(128), 3);
-    }
+    //cv::Mat show = gray.clone();
+    //for (auto& item : PotentialPoints3)
+    //{
+    //    cv::circle(show, cv::Point(centroids2(item, 0), centroids2(item, 1)), 10, cv::Scalar(128), 3);
+    //}
 
-    KeyPoints.reserve(PotentialPoints3.size()+KeyPoints.size());
-    for (auto& item : PotentialPoints3)
+    KeyPoints.reserve(PotentialPoints2.size()+KeyPoints.size());
+    for (auto& item : PotentialPoints2)
     {
         KeyPoints.emplace_back(centroids2(item, 0), centroids2(item, 1), stats2(item, cv::CC_STAT_AREA), -1, 0, 0, MarkerPointType);
     }
