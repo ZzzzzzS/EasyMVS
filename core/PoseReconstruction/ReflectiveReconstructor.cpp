@@ -78,11 +78,11 @@ void ReflectiveReconstructor::GenNewMappoint(FrameObject::Ptr frame, FrameObject
 	auto PinholeFrame2 = std::dynamic_pointer_cast<PinholeFrameObject>(related->getRelatedFrame());
 	
 	cv::Mat1d T1, T2;
-	DataFlowObject::Sophus2cvMat(PinholeFrame1->getGlobalPose().inverse(), T1);
-	DataFlowObject::Sophus2cvMat(PinholeFrame2->getGlobalPose().inverse(), T2);
+	DataFlowObject::Sophus2cvMat(PinholeFrame1->getGlobalPose(), T1);
+	DataFlowObject::Sophus2cvMat(PinholeFrame2->getGlobalPose(), T2);
 	
-	cv::Mat1d projMatr1 = DataFlowObject::CameraMatrix3x4(PinholeFrame1->CameraMatrix) * T1;
-	cv::Mat1d projMatr2 = DataFlowObject::CameraMatrix3x4(PinholeFrame2->CameraMatrix) * T2;
+	cv::Mat1d projMatr1 = DataFlowObject::CameraMatrix3x4(PinholeFrame1->CameraMatrix) * T1.inv();
+	cv::Mat1d projMatr2 = DataFlowObject::CameraMatrix3x4(PinholeFrame2->CameraMatrix) * T2.inv();
 	cv::Mat1d projPoints1(2, related->KeyPointMatch.size());
 	cv::Mat1d projPoints2(2, related->KeyPointMatch.size());
 	cv::Mat1d projPoints3D;

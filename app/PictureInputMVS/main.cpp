@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	auto DenseReconstructor1 = DualFrameReconstructor::Create(GlobalMap1);
 	
 	//load settings
-	std::ifstream settings("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/data/gxrdata/DTUDense.json");
+	std::ifstream settings("C:/Users/ZhouZishun/Documents/Workspace/CASIA_PROJECT/EasyMVS/data/gxrdata/test.json");
 	JsonNode Json = JsonNode::parse(settings);
 	//std::cout << Json;
 	settings.close();

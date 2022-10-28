@@ -108,7 +108,7 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
           tmp.push_back(item.pt);
       }
       cv::Mat lines;
-      cv::computeCorrespondEpilines(tmp, 2, F, lines);
+      cv::computeCorrespondEpilines(tmp, 1, F, lines);
       //draw lines
       cv::Mat img1 = frame->RGBMat.clone();
       cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
@@ -153,7 +153,7 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
           tmp.push_back(item.pt);
       }
       cv::Mat lines;
-      cv::computeCorrespondEpilines(tmp, 2, F, lines);
+      cv::computeCorrespondEpilines(tmp, 1, F, lines);
       //draw lines
       cv::Mat img1 = frame->RGBMat.clone();
       cv::Mat img2 = RelatedPtr->getRelatedFrame()->RGBMat.clone();
@@ -209,8 +209,8 @@ void ReflectiveStickerMatcher::ComputeWithF(const std::vector<cv::KeyPoint>& Key
     }
 
     cv::Mat Line1, Line2;
-    cv::computeCorrespondEpilines(tmp1, 2, F, Line1);
-    cv::computeCorrespondEpilines(tmp2, 1, F, Line2);
+    cv::computeCorrespondEpilines(tmp1, 1, F, Line1);
+    cv::computeCorrespondEpilines(tmp2, 2, F, Line2);
 	
     int index = 0;
 	int count1 = -1; //因为在continue之前++了，所以是-1
@@ -341,7 +341,7 @@ bool ReflectiveStickerMatcher::MatchAndFindF(FrameObject::Ptr frame1, FrameObjec
 		MatchedPoint2.push_back(frame2->KeyPoints[item.trainIdx].pt);
 	}
 	
-    auto F_Matrix = cv::findFundamentalMat(MatchedPoint2, MatchedPoint1); //使用ransac方法+默认参数
+    auto F_Matrix = cv::findFundamentalMat(MatchedPoint1, MatchedPoint2); //使用ransac方法+默认参数
 	
 	if (F_Matrix.empty())
 		return false;

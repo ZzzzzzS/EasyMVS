@@ -57,12 +57,12 @@ void MainWindow::InitSystem(std::string path)
 
 	
 	//config Object
-    if (JsonNode CameraNode = Json["CameraRight"]; !Camera2->load(CameraNode))
+    if (JsonNode CameraNode = Json["CameraRight"]; !Camera1->load(CameraNode))
     {
         std::cerr << "failed to load camera settings" << std::endl;
     }
 	
-    if (JsonNode CameraNode = Json["CameraLeft"]; !Camera1->load(CameraNode))
+    if (JsonNode CameraNode = Json["CameraLeft"]; !Camera2->load(CameraNode))
     {
         std::cerr << "failed to load camera settings" << std::endl;
     }
