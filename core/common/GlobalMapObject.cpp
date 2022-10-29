@@ -29,7 +29,7 @@ bool GlobalMapObject::save(JsonNode& fs)
 
 		//save frame info
 		JsonNode FramesNode = JsonNode::array();
-		for (auto&& item : this, Frames)
+		for (auto&& item : this->Frames)
 		{
 			JsonNode tmp = JsonNode::object();
 			if (!item.second->save(tmp))

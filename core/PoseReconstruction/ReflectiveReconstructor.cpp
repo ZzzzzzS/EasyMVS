@@ -97,7 +97,7 @@ void ReflectiveReconstructor::GenNewMappoint(FrameObject::Ptr frame, FrameObject
 		count++;
 	}
 
-	cv::triangulatePoints(projMatr1, projMatr2, projPoints1, projPoints2, projPoints3D);
+	cv::triangulatePoints(projMatr2, projMatr1, projPoints2, projPoints1, projPoints3D);
 	for (size_t i = 0; i < projPoints3D.cols; i++)
 	{
 		cv::Mat1d point3D = projPoints3D.col(i);
@@ -160,8 +160,10 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 
 	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(current)->CameraMatrix;
 	auto pose = this->SolvePNP(cvMapPoint, cvKeyPoint, K);
+	std::cout << "Pose\n" << pose.matrix() << std::endl;
 	
 	auto CurrentFrameCurrentPose = current->getGlobalPose();
+	std::cout << "current pose\n" << CurrentFrameCurrentPose.matrix()<<std::endl;
 	auto PoseTrans = pose * (CurrentFrameCurrentPose.inverse());
 	
 
@@ -175,6 +177,7 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 		{
 			auto FramePtr = RelatedFramePtr->getRelatedFrame();
 			auto FramePose = FramePtr->getGlobalPose();
+			std::cout << "FrameID:" << FramePtr->getID() << "Pose\n" << FramePose.matrix() << std::endl;
 			FramePtr->setGlobalPose(PoseTrans * FramePose);
 			FramePtr->MapID = referencePtr->MapID;
 		}
@@ -182,6 +185,17 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 	current->setGlobalPose(pose);
 	current->MapID = referencePtr->MapID;
 	/**路点的合并************************/
+	std::set<int> MapPointID;
+	current->getAllMappointID(MapPointID);
+	for (auto& id : MapPointID)
+	{
+		auto MapPointPtr = current->getMapPoint(id);
+		auto MapPointPose = MapPointPtr->Position;
+		auto NewPose = PoseTrans * MapPointPose;
+		MapPointPtr->Position = NewPose;
+	}
+
+	
 	for (auto& [OldMappoint, NewMappoint] : MapPointMatch)
 	{
 		std::set<int> frameID;
@@ -213,6 +227,6 @@ Sophus::SE3d ReflectiveReconstructor::SolvePNP(std::vector<cv::Point3d>& WorldPo
 	cv::Rodrigues(rvec, R);
 	T = DataFlowObject::Rt2T(R, t);
 	Sophus::SE3d pose;
-	DataFlowObject::cvMat2Sophus(T, pose);
+	DataFlowObject::cvMat2Sophus(T.inv(), pose);
 	return pose;
 }

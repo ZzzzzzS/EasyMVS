@@ -185,6 +185,7 @@ bool VocTreeMatcher::MatchKeyPoints(FrameObject::Ptr queryFrames, FrameObject::P
 	{
 		matches.clear();
 		std::vector<cv::DMatch> PremaryMatch;
+		this->m_Matcher->clear();
 		this->m_Matcher->match(queryFrames->KeyPointsDescriptors, trainFrames->KeyPointsDescriptors, PremaryMatch);
 		if (PremaryMatch.empty())
 			return false;

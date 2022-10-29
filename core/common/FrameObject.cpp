@@ -767,7 +767,7 @@ std::ostream& operator<<(std::ostream& os, FrameObject& frame)
     os << "Relate Frame List:" << std::endl;
     for (auto& [key,value] : frame.RelatedFrame)
     {
-        os << value << std::endl<<std::endl;
+        os << *value << std::endl<<std::endl;
     }
 	
     return os;
@@ -778,6 +778,6 @@ std::ostream& operator<<(std::ostream& os, FrameObject::RelatedFrameInfo& info)
     os << "Matched Frame ID: " << info.RelatedFramePtr.lock()->getID() << std::endl;
 	os << "Sigma: " << info.sigma << std::endl;
 	os << "Key Point Match: " << info.KeyPointMatch.size() << std::endl;
-	os << "Extrinsic Matrix: " << info.Pose->matrix() << std::endl;
+	//os << "Extrinsic Matrix: " << info.Pose->matrix() << std::endl;
 	return os;
 }
