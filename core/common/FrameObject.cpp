@@ -443,8 +443,8 @@ bool FrameObject::save(JsonNode& fs)
 
         fs["global-pose"] = this->m_GlobalPose;
         fs["is-pose-known"]=this->KnownPose;
-        fs["key-points"] = this->KeyPoints;
-        fs["key-points-descriptors"] = this->KeyPointsDescriptors;
+        //fs["key-points"] = this->KeyPoints; //TODO: 找一个新方法保存特征点
+        //fs["key-points-descriptors"] = this->KeyPointsDescriptors;
         fs["map-id"] = this->MapID;
 
         //save related frame
@@ -683,7 +683,10 @@ bool FrameObject::RelatedFrameInfo::save(JsonNode& fs)
     {
         fs["sigma"] = this->sigma;
         fs["keypoint-match"] = this->KeyPointMatch;
-        fs["extrinsic-matrix"] = *this->Pose;
+		if (this->Pose != nullptr)
+            fs["extrinsic-matrix"] = *this->Pose;
+        else
+			fs["extrinsic-matrix"] = JsonNode::value_t::null;
 
         auto FramePtr = this->RelatedFramePtr.lock();
         if (FramePtr == nullptr)

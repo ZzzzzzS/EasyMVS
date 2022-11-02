@@ -25,6 +25,8 @@ bool MVSObject::mkdir(std::string path)
         return true;
     else
     {
-        return create_directories(path);
+        auto returnvalue = create_directory(path);
+        //std::cout << returnvalue;
+        return returnvalue;
     }
 }

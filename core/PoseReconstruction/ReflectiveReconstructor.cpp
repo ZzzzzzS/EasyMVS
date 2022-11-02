@@ -155,16 +155,17 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 	cv::Mat look;
 	cv::drawMatches(current->RGBMat, current->KeyPoints, referencePtr->RGBMat, referencePtr->KeyPoints, MappointMatch, look);
 	
-	if (cvMapPoint.size() < 4) //PNP最低点数要求
+	if (cvMapPoint.size() < 6) //PNP最低点数要求
 		return false;
 
 	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(current)->CameraMatrix;
 	auto pose = this->SolvePNP(cvMapPoint, cvKeyPoint, K);
-	std::cout << "Pose\n" << pose.matrix() << std::endl;
+	//std::cout << "Pose\n" << pose.matrix() << std::endl;
 	
 	auto CurrentFrameCurrentPose = current->getGlobalPose();
-	std::cout << "current pose\n" << CurrentFrameCurrentPose.matrix()<<std::endl;
+	//std::cout << "current pose\n" << CurrentFrameCurrentPose.matrix()<<std::endl;
 	auto PoseTrans = pose * (CurrentFrameCurrentPose.inverse());
+	//std::cout << "Pose Trans" << PoseTrans.matrix() << std::endl;
 	
 
 	/**ID的合并********/
@@ -177,7 +178,7 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 		{
 			auto FramePtr = RelatedFramePtr->getRelatedFrame();
 			auto FramePose = FramePtr->getGlobalPose();
-			std::cout << "FrameID:" << FramePtr->getID() << "Pose\n" << FramePose.matrix() << std::endl;
+			//std::cout << "FrameID:" << FramePtr->getID() << "Pose\n" << FramePose.matrix() << std::endl;
 			FramePtr->setGlobalPose(PoseTrans * FramePose);
 			FramePtr->MapID = referencePtr->MapID;
 		}
@@ -200,6 +201,8 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 	{
 		std::set<int> frameID;
 		NewMappoint->getAllObservation(frameID);
+		//std::cout << "OLD MAPPOINT\n" << *OldMappoint << std::endl << "NEW MAPPOINT\n" << *NewMappoint << std::endl;
+		OldMappoint->Position = NewMappoint->Position; //把新的路点的位置赋值给老的路点，算新相机姿态的时候会准一点，暂时忽略累计误差。等BA优化的时候再解决
 		for (auto&& id : frameID)
 		{
 			FrameObject::Ptr framePtr;
@@ -208,13 +211,13 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 			
 			NewMappoint->removeObservation(framePtr);
 			OldMappoint->addObservation(framePtr, keypointID);
-			
+	
 			framePtr->updateMapPoint(keypointID, OldMappoint,
 				framePtr->getGlobalPose().inverse() * OldMappoint->Position);
 		}
 		GlobalMap->removeMapPoint(NewMappoint->getID());
-		std::cout << "NEW POINT" << NewMappoint.use_count() << std::endl;
-		std::cout << "OLD POINT" << OldMappoint.use_count() << std::endl;
+		//std::cout << "NEW POINT" << NewMappoint.use_count() << std::endl;
+		//std::cout << "OLD POINT" << OldMappoint.use_count() << std::endl;
 	}
 	return true;
 }
@@ -222,7 +225,11 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 Sophus::SE3d ReflectiveReconstructor::SolvePNP(std::vector<cv::Point3d>& WorldPoints, std::vector<cv::Point2d>& CameraPoints, cv::Mat1d& Intrinsic)
 {
 	cv::Mat1d rvec, R, t, T;
-	cv::solvePnP(WorldPoints, CameraPoints, Intrinsic, cv::noArray(), rvec, t,false,cv::SOLVEPNP_EPNP);
+	cv::solvePnP(WorldPoints, CameraPoints, Intrinsic, cv::noArray(), rvec, t, false, cv::SOLVEPNP_EPNP);
+	if (WorldPoints.size() > 6)
+		cv::solvePnPRansac(WorldPoints, CameraPoints, Intrinsic, cv::noArray(), rvec, t, true, 100, 8.0, 0.875);
+		
+		//置信度0.875， 认为8个点里存在一个错误的点
 	R = cv::Mat1d::zeros(3, 3);
 	cv::Rodrigues(rvec, R);
 	T = DataFlowObject::Rt2T(R, t);

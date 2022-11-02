@@ -269,7 +269,7 @@ namespace nlohmann {
 				json DataNode;
 				for (size_t i = 0; i < matrix.rows(); i++)
 				{
-					for (size_t j = 0; j < matrix.rows(); j++)
+					for (size_t j = 0; j < matrix.cols(); j++)
 					{
 						DataNode.push_back(matrix(i, j));
 					}

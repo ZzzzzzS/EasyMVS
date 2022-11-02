@@ -143,29 +143,30 @@ bool CVFeatureExtractor::save(JsonNode& fs)
 	try
 	{
 		JsonNode parameters;
-		if (typeid(this->detector) == typeid(cv::Ptr<cv::ORB>))
+		
+		if (this->detector->getDefaultName() == std::string("Feature2D.ORB"))
 		{
-			fs.at("algorithm-name") = std::string("opencv-orb");
+			fs["algorithm-name"] = std::string("opencv-orb");
 			auto ptr = this->detector.staticCast<cv::ORB>();
 
-			parameters.at("nfeatures") = ptr->getMaxFeatures();
-			parameters.at("scale-factor") = ptr->getScaleFactor();
-			parameters.at("nlevel") = ptr->getNLevels();
-			parameters.at("edge-threshold") = ptr->getEdgeThreshold();
-			parameters.at("first-level") = ptr->getFirstLevel();
-			parameters.at("wta-k") = ptr->getWTA_K();
-			parameters.at("score-type") = static_cast<int>(ptr->getScoreType()); //TODO: fix with enum type
-			parameters.at("patch-size") = ptr->getPatchSize();
-			parameters.at("fast-threshold") = ptr->getFastThreshold();
+			parameters["nfeatures"]= ptr->getMaxFeatures();
+			parameters["scale-factor"] = ptr->getScaleFactor();
+			parameters["nlevel"] = ptr->getNLevels();
+			parameters["edge-threshold"] = ptr->getEdgeThreshold();
+			parameters["first-level"] = ptr->getFirstLevel();
+			parameters["wta-k"] = ptr->getWTA_K();
+			parameters["score-type"] = static_cast<int>(ptr->getScoreType()); //TODO: fix with enum type
+			parameters["patch-size"] = ptr->getPatchSize();
+			parameters["fast-threshold"] = ptr->getFastThreshold();
 
 			fs.at("parameters") = parameters;
 		}
-		else if (typeid(this->detector) == typeid(cv::Ptr<cv::SIFT>))
+		else if (this->detector->getDefaultName() == std::string("Feature2D.SIFT"))
 		{
-			fs.at("algorithm-name") = std::string("opencv-sift");
+			fs["algorithm-name"] = std::string("opencv-sift");
 
 			//auto ptr = this->detector.staticCast<cv::SIFT>();
-			fs.at("paramers") = JsonNode::value_t::null;
+			fs["paramers"] = JsonNode::value_t::null;
 			std::cout << "save SIFT parameters is not supported currently!" << std::endl;
 			//TODO: fix sift save
 		}

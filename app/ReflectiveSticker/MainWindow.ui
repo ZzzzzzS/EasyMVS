@@ -209,6 +209,7 @@
     <addaction name="actionLoad_Config"/>
     <addaction name="actionSave_Config"/>
     <addaction name="actionSave_Data"/>
+    <addaction name="actionSave_Frame_Pose"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -238,6 +239,11 @@
   <action name="actionSave_Data">
    <property name="text">
     <string>Save Data</string>
+   </property>
+  </action>
+  <action name="actionSave_Frame_Pose">
+   <property name="text">
+    <string>Save Frame Pose</string>
    </property>
   </action>
  </widget>

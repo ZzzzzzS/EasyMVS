@@ -10,6 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/eigen.hpp>
 #include <pcl/common/transforms.h>
+#include "common/JsonSaver.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 	QObject::connect(this->ui->actionLoad_Config, &QAction::triggered, this, &MainWindow::LoadConfigSlot);
     QObject::connect(this->ui->actionSave_Config, &QAction::triggered, this, &MainWindow::SaveConfigSlot);
     QObject::connect(this->ui->actionSave_Data, &QAction::triggered, this, &MainWindow::SaveDataSlot);
+    QObject::connect(this->ui->actionSave_Frame_Pose, &QAction::triggered, this, &MainWindow::SavePoseSlot);
 	
     QObject::connect(this->ui->pushButton_ComputeNext, &QPushButton::clicked, this, &MainWindow::ComputeOnceSlot);
     QObject::connect(this->ui->comboBox_CurrentMatch, &QComboBox::currentTextChanged, this, &MainWindow::RelatedFrameChangedSlot);
@@ -363,4 +365,45 @@ void MainWindow::DrawPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr PointClou
     Eigen::Affine3d EigenMat(EigenPose);
     pcl::transformPointCloud(*axis_cloud, *axis_cloud, EigenMat);
     PointCloud->insert(PointCloud->end(), axis_cloud->begin(), axis_cloud->end());
+}
+
+//单独加一个保存位姿的函数，使用json的保存方法太长了没法看
+void MainWindow::SavePoseSlot()
+{
+    std::set<int> FrameID;
+    this->GlobalMap->getAllFrameObjectID(FrameID);
+    if (FrameID.empty())
+    {
+        QMessageBox::information(this, "failed to save", "Current Map has no frame", QMessageBox::Ok);
+        return;
+    }
+	
+    auto path = QFileDialog::getSaveFileName(this, "Save Pose", "", "Pose File(*.json)");
+	if (path.isEmpty())
+	{
+		return;
+	}
+	
+    try
+    {
+        std::ofstream out(path.toStdString());
+        JsonNode root;
+        for (auto& item : FrameID)
+        {
+            auto FramePtr = this->GlobalMap->getFrameObject(item);
+            JsonNode FrameNode;
+            FrameNode["ID"] = item;
+            FrameNode["Pose"] = FramePtr->getGlobalPose();
+            root.push_back(FrameNode);
+        }
+
+        out << std::setw(4) << root;
+        out.close();
+        QMessageBox::information(this, "save success", "save success", QMessageBox::Ok);
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "MainWindow: Failed to save" << e.what() << std::endl;
+        QMessageBox::critical(this, "Failed to save pose", "see more info in CMD line", QMessageBox::Ok);
+    }
 }

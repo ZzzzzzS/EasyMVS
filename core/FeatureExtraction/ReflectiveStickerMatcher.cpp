@@ -32,7 +32,7 @@ bool ReflectiveStickerMatcher::clear()
 bool ReflectiveStickerMatcher::save(JsonNode& fs)
 {
     auto result = VocTreeMatcher::save(fs);
-    fs.at("total-frame-number") = this->TotalFrameNumber;
+    fs["total-frame-number"] = this->TotalFrameNumber;
     return result;
 }
 
@@ -136,6 +136,7 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
             RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
     }
 
+    bool matched = false;
     for (auto& RelatedPtr : FranePtrWithoutPos)
     {
         cv::Mat CameraMat1, CameraMat2;
@@ -178,11 +179,21 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
         cv::Mat look;
         cv::drawMatches(frame->RGBMat, frame->KeyPoints, RelatedPtr->getRelatedFrame()->RGBMat,
             RelatedPtr->getRelatedFrame()->KeyPoints, RelatedPtr->KeyPointMatch, look);
+        
+        if (RelatedPtr->KeyPointMatch.size() > 6)
+            matched = true;
     }
+	
 
-    this->LastFrame = frame;
+	
+    if (matched) //解决匹配错误的情况
+        this->LastFrame = frame;
+		
     if (this->CurrentFrameIndex == 0)
-        this->FirstFrame = frame;
+    {
+		this->FirstFrame = frame;
+		this->LastFrame = frame;
+    }
 	
 	this->CurrentFrameIndex++;
 
@@ -341,7 +352,7 @@ bool ReflectiveStickerMatcher::MatchAndFindF(FrameObject::Ptr frame1, FrameObjec
 		MatchedPoint2.push_back(frame2->KeyPoints[item.trainIdx].pt);
 	}
 	
-    auto F_Matrix = cv::findFundamentalMat(MatchedPoint1, MatchedPoint2); //使用ransac方法+默认参数
+    auto F_Matrix = cv::findFundamentalMat(MatchedPoint1, MatchedPoint2, cv::FM_RANSAC, 3, 0.9); //使用ransac方法+默认参数
 	
 	if (F_Matrix.empty())
 		return false;

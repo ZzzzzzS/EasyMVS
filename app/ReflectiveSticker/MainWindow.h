@@ -39,6 +39,7 @@ private: //slot
 	void LoadConfigSlot();
 	void SaveDataSlot();
 	void SaveConfigSlot();
+	void SavePoseSlot();
 
 	void ComputeOnceSlot();
 	void RelatedFrameChangedSlot(QString index);
