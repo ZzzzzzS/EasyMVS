@@ -7,12 +7,14 @@ set(SOURCE_FILES Photographer.cpp
                 CVHikCamera.cpp
                 DualPhotographer.cpp
                 ImageReaderCamera.cpp
+				MemImgReaderCamera.cpp
 )
 
 set(HEADER_FILES Photographer.h
                 CVHikCamera.h
                 DualPhotographer.h
                 ImageReaderCamera.h
+                MemImgReaderCamera.h
 )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})

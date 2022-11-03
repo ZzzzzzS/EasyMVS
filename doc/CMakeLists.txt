@@ -14,6 +14,7 @@ if (DOXYGEN_FOUND)
         ${PROJECT_NAME}
         ${CMAKE_SOURCE_DIR}/core
         ${CMAKE_CURRENT_SOURCE_DIR}
+		${CMAKE_SOURCE_DIR}/app
         )
     endif(BUILD_DOC)
     

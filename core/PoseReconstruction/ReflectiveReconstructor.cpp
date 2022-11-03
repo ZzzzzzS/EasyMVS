@@ -160,7 +160,7 @@ bool ReflectiveReconstructor::MergeMap(FrameObject::Ptr current, FrameObject::Re
 
 	auto K = std::dynamic_pointer_cast<PinholeFrameObject>(current)->CameraMatrix;
 	auto pose = this->SolvePNP(cvMapPoint, cvKeyPoint, K);
-	//std::cout << "Pose\n" << pose.matrix() << std::endl;
+	std::cout << "Pose\n" << pose.matrix() << std::endl;
 	
 	auto CurrentFrameCurrentPose = current->getGlobalPose();
 	//std::cout << "current pose\n" << CurrentFrameCurrentPose.matrix()<<std::endl;

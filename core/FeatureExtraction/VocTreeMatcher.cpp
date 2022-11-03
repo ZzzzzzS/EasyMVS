@@ -208,7 +208,7 @@ bool VocTreeMatcher::save(JsonNode& fs)
 	try
 	{
 		fs["keypoint-type"] = this->m_KeyPointType;
-		fs["voc-tree-path"] = this->VocPath;
+		//fs["voc-tree-path"] = this->VocPath;
 		fs["matcher-type"] = this->m_MatcherType;
 		
 		if (!this->VocPath.empty())
@@ -249,10 +249,10 @@ bool VocTreeMatcher::load(JsonNode& fs)
 {
 	try
 	{
-		this->m_KeyPointType = fs.at("keypoint-type");
-		this->VocPath = fs.at("voc-tree-path");
+		//this->m_KeyPointType = fs.at("keypoint-type");
+		//this->VocPath = fs.at("voc-tree-path");
 		this->m_MatcherType = fs.at("matcher-type");
-		switch (this->m_KeyPointType)
+		/*switch (this->m_KeyPointType)
 		{
 		case KeyPointType_e::ORB:
 			this->m_Orbdb = std::make_unique<OrbDatabase>(this->VocPath);
@@ -262,7 +262,7 @@ bool VocTreeMatcher::load(JsonNode& fs)
 			break;
 		default:
 			break;
-		}
+		}*/
 
 		this->m_Matcher = cv::DescriptorMatcher::create(static_cast<cv::DescriptorMatcher::MatcherType>(this->m_MatcherType));
 
@@ -305,12 +305,12 @@ bool VocTreeMatcher::clear()
 
 bool VocTreeMatcher::isInit()
 {
-	if (this->VocPath.empty())
-		return false;
+	//if (this->VocPath.empty())
+	//	return false;
 	if (this->m_Matcher == nullptr)
 		return false;
 	
-	switch (this->m_KeyPointType)
+	/*switch (this->m_KeyPointType)
 	{
 	case KeyPointType_e::ORB:
 		if (this->m_Orbdb == nullptr)
@@ -324,7 +324,7 @@ bool VocTreeMatcher::isInit()
 		std::cout << this->type_name() << ": unknown matcher type" << std::endl;
 		return false;
 		break;
-	}
+	}*/
 	
 	return true;
 }

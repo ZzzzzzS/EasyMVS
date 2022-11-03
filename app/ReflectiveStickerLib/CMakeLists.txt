@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.2)
+
+set(NAME_POSTFIX ReflectiveStickerLib)
+project(${CMAKE_PROJECT_NAME}_${NAME_POSTFIX})
+
+set(SOURCE_FILES 
+	EasyMVSWarpper.h
+	EasyMVSWarpper.cpp
+)
+
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+						DenseReconstruction_common 
+						DenseReconstruction_CameraModule
+						DenseReconstruction_FeatureExtraction
+						DenseReconstruction_PoseReconstruction
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENCV_LIBS} Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE Sophus::Sophus)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PCL_LIBRARIES})
+
+
+install(TARGETS ${PROJECT_NAME} DESTINATION ${DIVISIBLE_INSTALL_BIN_DIR})

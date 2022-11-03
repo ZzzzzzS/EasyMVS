@@ -69,11 +69,11 @@ bool ReflectiveStickerMatcher::Compute(FrameObject::Ptr frame, GlobalMapObject::
         frame->addRelatedFrame(RelatedPtr);
     }
 	
-    if (this->CurrentFrameIndex == this->TotalFrameNumber)
-    {
-		auto RelatedPtr = FrameObject::RelatedFrameInfo::Create(FirstFrame);
-		frame->addRelatedFrame(RelatedPtr);
-    }
+  //  if (this->CurrentFrameIndex == this->TotalFrameNumber)
+  //  {
+		//auto RelatedPtr = FrameObject::RelatedFrameInfo::Create(FirstFrame);
+		//frame->addRelatedFrame(RelatedPtr);
+  //  }
 		
 	
     frame->getAllRelatedFrames(RelatedFramesID);

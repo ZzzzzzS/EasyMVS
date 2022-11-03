@@ -28,7 +28,7 @@ public:
 private:
 	void ComputeWithF(const std::vector<cv::KeyPoint>& Points1, const std::vector<cv::KeyPoint>& Points2, const cv::Mat1d& F, std::vector<cv::DMatch>& Matches);
 	bool MatchAndFindF(FrameObject::Ptr frame1, FrameObject::Ptr frame2, cv::Mat1d& F);
-private:
+public:
 	FrameObject::Ptr FirstFrame;
 	FrameObject::Ptr LastFrame;
 	//这没用DBoW回环检测了，就简单使用帧序号来判断是否闭环了

@@ -103,9 +103,14 @@ bool PinholeCamera::undistort(const cv::Mat& src, cv::Mat& dst)
 
 	if(this->UndistortMap1.empty()||this->UndistortMap2.empty())
 	{
-		return false;
+		//backup undistort method
+		if(this->CameraMatrix.empty() || this->DistCoeff.empty())
+		{
+			return false;
+		}
+		this->ImageSize = src.size();
+		this->initParameters();
 	}
-
 	cv::remap(src, dst, this->UndistortMap1, this->UndistortMap2, cv::INTER_LINEAR);
 
 	return true;

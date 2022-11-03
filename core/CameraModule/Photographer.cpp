@@ -13,6 +13,17 @@ Photographer::Ptr Photographer::Create(GlobalMapObject::Ptr Map, std::initialize
 	return ptr;
 }
 
+Photographer::Ptr Photographer::Create(GlobalMapObject::Ptr Map, std::initializer_list<std::tuple<CameraObject::Ptr, Sophus::SE3d>> Cameras)
+{
+	auto ptr = std::make_shared<Photographer>();
+	ptr->GlobalMap = Map;
+	for (auto& [Camera,Extrinsic] : Cameras)
+	{
+		ptr->AppendCamera(Camera, Extrinsic);
+	}
+	return ptr;
+}
+
 Photographer::Photographer()
 {
 }
@@ -33,6 +44,15 @@ Photographer::Photographer(std::initializer_list<CameraObject::Ptr> Cameras)
 
 Photographer::~Photographer()
 {
+}
+
+bool Photographer::AppendCamera(CameraObject::Ptr Camera, const Sophus::SE3d& Extrinsic)
+{
+	if (Camera == nullptr)
+		return false;
+	
+	this->CamerasMap.emplace_back(Camera, Extrinsic);
+	return true;
 }
 
 std::string Photographer::type_name()
@@ -210,6 +230,18 @@ PinholePhotographer::Ptr PinholePhotographer::Create(GlobalMapObject::Ptr Map, s
 	ptr->GlobalMap = Map;
 	return ptr;
 }
+
+PinholePhotographer::Ptr PinholePhotographer::Create(GlobalMapObject::Ptr Map, std::initializer_list<std::tuple<CameraObject::Ptr, Sophus::SE3d>> Cameras)
+{
+	auto ptr = std::make_shared<PinholePhotographer>();
+	ptr->GlobalMap = Map;
+	for (auto& [Camera,Extrinsic] : Cameras)
+	{
+		ptr->AppendCamera(Camera, Extrinsic);
+	}
+	return ptr;
+}
+
 
 PinholePhotographer::PinholePhotographer()
 {

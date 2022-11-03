@@ -30,6 +30,14 @@ public:
 	 * @return Photographer::Ptr 
 	 */
 	static Photographer::Ptr Create(GlobalMapObject::Ptr Map, std::initializer_list<CameraObject::Ptr> Cameras);
+
+	/**
+	 * @brief create shared pointer of Photographer
+	 *
+	 * @param Camera camera, extrinsic
+	 * @return Photographer::Ptr
+	 */
+	static Photographer::Ptr Create(GlobalMapObject::Ptr Map, std::initializer_list<std::tuple<CameraObject::Ptr, Sophus::SE3d>> Cameras);
 public:
 /**
  * @brief Construct a new Photographer object
@@ -56,6 +64,13 @@ public:
 	 * 
 	 */
 	virtual ~Photographer();
+
+	/**
+	 * @brief append new cameras to the camera list
+	 * @param Cameras camera pointer
+	 * @param Extrinsics extrinsic matrix of the camera
+	 */
+	bool AppendCamera(CameraObject::Ptr Camera, const Sophus::SE3d& Extrinsic);
 	
 public:
 /**
@@ -105,7 +120,7 @@ class PinholePhotographer : public Photographer
 public:
 	using Ptr = std::shared_ptr<PinholePhotographer>;
 	static PinholePhotographer::Ptr Create(GlobalMapObject::Ptr Map,std::initializer_list<CameraObject::Ptr> Cameras);
-	
+	static PinholePhotographer::Ptr Create(GlobalMapObject::Ptr Map, std::initializer_list<std::tuple<CameraObject::Ptr, Sophus::SE3d>> Cameras);
 public:
 	PinholePhotographer();
 	PinholePhotographer(std::initializer_list<CameraObject::Ptr> Cameras);
