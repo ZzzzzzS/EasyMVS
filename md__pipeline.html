@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EasyMVS: 简述：</title>
+<title>EasyMVS: Workflow and Pipeline</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,168 +64,148 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">简述： </div></div>
+  <div class="headertitle"><div class="title">Workflow and Pipeline </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="el" href="md__class_definition_draft.html">test</a> <img src="./aaa.png" alt="t2" class="inline"/></p>
-<p >EasyMVS是一个sfm+mvs三维重建框架，为了学习三维重建流程而生，希望使用现有的组件来快速简洁的实现三维重建任务。该框架是一个静态物体重建框架，没有考虑动态物体重建的问题。</p>
-<h1><a class="anchor" id="autotoc_md24"></a>
-任务：</h1>
-<p >使用双目相机，RGBD相机(结构光相机/纹理双目相机)，单目相机，结合外部数据(里程计/机械臂/先验信息等)来完成三维重建任务，最终生成点云。</p>
-<h1><a class="anchor" id="autotoc_md25"></a>
-特性：</h1>
-<p >支持双目相机，RGBD相机，单目相机</p>
-<p >模块化设计，支持文件形式保存中间结果</p>
-<p >支持外部输入的位姿数据</p>
-<h1><a class="anchor" id="autotoc_md26"></a>
-依赖：</h1>
-<p >OpenCV 4.5.5 图像处理</p>
-<p >PCL 1.12 3D点云处理</p>
-<p >Ceres 非线性优化</p>
-<p >dbow2 词袋模型</p>
-<p >Eigen3 矩阵计算</p>
-<p >Sophus 李群与李代数</p>
-<p >qt 5.15 数据框架</p>
-<p >nlohmann-json 数据读写支持</p>
-<h1><a class="anchor" id="autotoc_md27"></a>
-模块功能：</h1>
-<h2><a class="anchor" id="autotoc_md28"></a>
-相机初始化：</h2>
-<p >导入内参</p>
-<p >导入</p>
-<p >初始化传感器/初始化文件系统</p>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md24"></a>
+Module function:</h1>
+<h2><a class="anchor" id="autotoc_md25"></a>
+Camera initialization:</h2>
+<p >Import internal reference</p>
+<p >import</p>
+<p >Initialize Sensors/Initialize Filesystem</p>
+<h3><a class="anchor" id="autotoc_md26"></a>
+Enter:</h3>
+<p >File Address/Sensor Device ID</p>
+<h3><a class="anchor" id="autotoc_md27"></a>
+Output:</h3>
+<p >none</p>
+<h3><a class="anchor" id="autotoc_md28"></a>
+Signal:</h3>
+<p >Device opened successfully/failed to open</p>
 <h3><a class="anchor" id="autotoc_md29"></a>
-输入：</h3>
-<p >文件地址/传感器设备ID</p>
-<h3><a class="anchor" id="autotoc_md30"></a>
-输出：</h3>
-<p >无</p>
+illustrate:</h3>
+<p >Model the multi-eye camera as a camera group composed of multiple monocular cameras, so that it is convenient to unify the monocular model and the binocular model</p>
+<p >The camera here needs to distinguish between the slave camera and the main camera, and distinguish between the matching feature point camera and the unmatchable feature point camera</p>
+<h2><a class="anchor" id="autotoc_md30"></a>
+Load image:</h2>
+<p >The main function is to take pictures</p>
+<p >Binocular camera: take pictures (synchronous exposure, lighting) and remove distortion</p>
+<p >RGBD camera: Take multiple photos, get a depth map, and remove distortion</p>
+<p >Monocular camera/picture: take pictures/read pictures</p>
 <h3><a class="anchor" id="autotoc_md31"></a>
-信号：</h3>
-<p >设备开启成功/开启失败</p>
+Enter:</h3>
+<p >Files/Camera/Projector</p>
 <h3><a class="anchor" id="autotoc_md32"></a>
-说明：</h3>
-<p >将多目相机建模为多个单目相机构成的相机组，这样方便将单目模型和双目模型统一</p>
-<p >这里的相机需要区分从相机和主相机，区分可匹配特征点相机和不可匹配特征点相机</p>
-<h2><a class="anchor" id="autotoc_md33"></a>
-加载图片：</h2>
-<p >主要功能为拍摄图片</p>
-<p >双目相机：拍摄图片(同步曝光，打光)并去畸变</p>
-<p >RGBD相机：拍摄多张照片，并得到深度图，去畸变</p>
-<p >单目相机/图片：拍摄图片/读取图片</p>
+Output:</h3>
+<p >De-distort image/depth map/shooting time stamp</p>
+<h3><a class="anchor" id="autotoc_md33"></a>
+Signal:</h3>
+<p >A frame shooting completion signal</p>
 <h3><a class="anchor" id="autotoc_md34"></a>
-输入：</h3>
-<p >文件/相机/投影仪</p>
-<h3><a class="anchor" id="autotoc_md35"></a>
-输出：</h3>
-<p >去畸变图片/深度图/拍摄时间戳</p>
+illustrate:</h3>
+<p >The binocular camera is triggered synchronously, and the RGBD camera needs to take multiple sets of pictures, and the output here is to obtain the depth map and RGB map (the process can be subdivided into threads to realize the pipeline).</p>
+<h2><a class="anchor" id="autotoc_md35"></a>
+Feature extraction:</h2>
+<p >Extract image features</p>
+<p >SURF/SIFT/ORB features</p>
+<p >custom mark point</p>
 <h3><a class="anchor" id="autotoc_md36"></a>
-信号：</h3>
-<p >一帧拍摄完成信号</p>
+Enter:</h3>
+<p >Images to be matched</p>
+<p >matching parameters</p>
 <h3><a class="anchor" id="autotoc_md37"></a>
-说明：</h3>
-<p >双目相机同步触发，RGBD相机需要拍摄多组图片，并在这里的输出得到深度图和RGB图(该流程内部可再细分线程实现流水线)。</p>
-<h2><a class="anchor" id="autotoc_md38"></a>
-特征提取：</h2>
-<p >提取图像特征</p>
-<p >SURF/SIFT/ORB特征</p>
-<p >自定义mark点</p>
-<h3><a class="anchor" id="autotoc_md39"></a>
-输入：</h3>
-<p >待匹配的图片</p>
-<p >匹配参数</p>
+Output:</h3>
+<p >feature point set</p>
+<h3><a class="anchor" id="autotoc_md38"></a>
+illustrate:</h3>
+<p >You can use OpenCV's feature descriptor to process, pay attention to agreeing with your own mark point descriptor and OpenCV's descriptor</p>
+<p >Pay attention to the situation where no feature points can be found</p>
+<h2><a class="anchor" id="autotoc_md39"></a>
+Feature matching:</h2>
+<p >Match image features</p>
 <h3><a class="anchor" id="autotoc_md40"></a>
-输出：</h3>
-<p >特征点集</p>
+Enter:</h3>
+<p >Feature point set, codebook (optional) (may be required for bag-of-words model)</p>
 <h3><a class="anchor" id="autotoc_md41"></a>
-说明：</h3>
-<p >可以使用OpenCV的特征描述子来处理，注意同意自己的mark点描述子和OpenCV的描述子</p>
-<p >注意处理找不到特征点的情况</p>
-<h2><a class="anchor" id="autotoc_md42"></a>
-特征匹配：</h2>
-<p >匹配图像特征</p>
-<h3><a class="anchor" id="autotoc_md43"></a>
-输入：</h3>
-<p >特征点集，码书(可选)(词袋模型可能需要)</p>
+Output:</h3>
+<p >Feature vector/matching result (successful matching result/no matching result)</p>
+<p >Codebook (for subsequent loopback detection, etc.)</p>
+<h3><a class="anchor" id="autotoc_md42"></a>
+illustrate:</h3>
+<p >Matching methods include brute force matching, preselected camera pair + word bag tree, sequential matching</p>
+<h2><a class="anchor" id="autotoc_md43"></a>
+Posture recovery:</h2>
+<p >Restoring the posture according to the feature point matching relationship,</p>
+<p >Restoring the attitude according to the preset camera position (binocular extrinsic parameters)</p>
+<p >Restoring pose based on external input (high-precision robotic arm)</p>
+<p >Restoring posture based on external input and image relationship (car/low-precision robotic arm/VIO)</p>
 <h3><a class="anchor" id="autotoc_md44"></a>
-输出：</h3>
-<p >特征向量/匹配结果(成功匹配的结果/没匹配的结果)</p>
-<p >码书(为后续回环检测等使用)</p>
+Enter:</h3>
+<p >Feature point matching result</p>
+<p >prior pose information</p>
+<p >preset camera pair</p>
 <h3><a class="anchor" id="autotoc_md45"></a>
-说明：</h3>
-<p >匹配方式包括暴力匹配，预选相机对+词袋树，顺序匹配</p>
-<h2><a class="anchor" id="autotoc_md46"></a>
-姿态恢复：</h2>
-<p >根据特征点匹配关系恢复姿态，</p>
-<p >根据预设相机位置(双目外参)恢复姿态</p>
-<p >根据外部输入恢复位姿(高精度机械臂)</p>
-<p >根据外部输入和图像关系恢复姿态(小车/低精度机械臂/VIO)</p>
-<h3><a class="anchor" id="autotoc_md47"></a>
-输入：</h3>
-<p >特征点匹配结果</p>
-<p >先验姿态信息</p>
-<p >预设相机对</p>
+Output:</h3>
+<p >attitude</p>
+<h3><a class="anchor" id="autotoc_md46"></a>
+illustrate:</h3>
+<p >There should be a small map class here</p>
+<p >Find initial camera pair -&gt; calculate initial sparse 3D points -&gt; select next camera (sequential input/best match) -&gt; pnp and calculate relative pose -&gt; calculate new sparse 3D points based on matching -&gt; local BA optimization (with motion equation fusion)</p>
+<h2><a class="anchor" id="autotoc_md47"></a>
+Loop detection/posture optimization:</h2>
+<p >Calculate loop closure based on feature points and preset dictionary (optional)</p>
+<p >Perform closed-loop optimization/graph optimization/BA optimization</p>
 <h3><a class="anchor" id="autotoc_md48"></a>
-输出：</h3>
-<p >姿态</p>
+Enter:</h3>
+<p >feature point set/pose</p>
 <h3><a class="anchor" id="autotoc_md49"></a>
-说明：</h3>
-<p >这里应该搞一个小地图类</p>
-<p >寻找初始相机对-&gt;计算初始稀疏3D点-&gt;选择下一个相机(顺序输入/最优匹配)-&gt;pnp并计算相对姿态-&gt;根据匹配情况计算新稀疏3D点-&gt;局部BA优化(与运动方程融合)</p>
-<h2><a class="anchor" id="autotoc_md50"></a>
-回环检测/姿态优化：</h2>
-<p >根据特征点和预设词典(可选)计算回环</p>
-<p >进行闭环优化/图优化/BA优化</p>
-<h3><a class="anchor" id="autotoc_md51"></a>
-输入：</h3>
-<p >特征点集/姿态</p>
+Output:</h3>
+<p >attitude</p>
+<h3><a class="anchor" id="autotoc_md50"></a>
+illustrate:</h3>
+<p >Here is a big map class</p>
+<p >(How to do global optimization is to be determined)</p>
+<h2><a class="anchor" id="autotoc_md51"></a>
+Dense Mapping:</h2>
+<p >Generate dense point clouds, using methods such as SGM, SSD, SAD or self-developed methods</p>
+<p >Binocular Camera: Binocular Dense Reconstruction</p>
+<p >Structured light camera: directly output dense results/output filtered results</p>
+<p >Monocular camera: select the appropriate camera pair, and binocular dense reconstruction</p>
 <h3><a class="anchor" id="autotoc_md52"></a>
-输出：</h3>
-<p >姿态</p>
+Enter:</h3>
+<p >Feature points/feature point matching/camera pose/optimal camera pair (optional)</p>
+<p >Image Pair/Depth Map</p>
 <h3><a class="anchor" id="autotoc_md53"></a>
-说明：</h3>
-<p >这里搞一个大地图类</p>
-<p >(全局优化怎么搞待定)</p>
-<h2><a class="anchor" id="autotoc_md54"></a>
-稠密建图：</h2>
-<p >产生稠密点云，使用SGM，SSD，SAD等方法或自研方法</p>
-<p >双目相机：双目稠密重建</p>
-<p >结构光相机：直接输出稠密结果/输出滤波后结果</p>
-<p >单目相机：选择合适相机对，并双目稠密重建</p>
-<h3><a class="anchor" id="autotoc_md55"></a>
-输入：</h3>
-<p >特征点/特征点匹配/相机姿态/最优相机对(可选)</p>
-<p >图片对/深度图</p>
+Output:</h3>
+<p >Depth map/point cloud</p>
+<h3><a class="anchor" id="autotoc_md54"></a>
+illustrate:</h3>
+<p >Match the optimal camera pair -&gt; binocular/multi-eye vision to generate a depth map (use a depth map instead of a point cloud to facilitate subsequent fusion)</p>
+<p >The dense matching algorithm can use existing algorithms or use self-developed algorithms</p>
+<h2><a class="anchor" id="autotoc_md55"></a>
+Global optimization:</h2>
+<p >Multi-piece point cloud splicing and fusion</p>
+<p >ICP/SDF/TSDF/Poisson sampling/NeRF(ML)</p>
 <h3><a class="anchor" id="autotoc_md56"></a>
-输出：</h3>
-<p >深度图/点云</p>
+Enter:</h3>
+<p >Depth map/point cloud</p>
+<p >attitude</p>
 <h3><a class="anchor" id="autotoc_md57"></a>
-说明：</h3>
-<p >匹配最优相机对-&gt;双目/多目视觉产生深度图(使用深度图而非点云方便后续融合)</p>
-<p >稠密匹配算法可以使用现有算法或者使用自研算法</p>
-<h2><a class="anchor" id="autotoc_md58"></a>
-全局优化：</h2>
-<p >多片点云拼接融合</p>
-<p >ICP/SDF/TSDF/泊松采样/NeRF(ML)</p>
-<h3><a class="anchor" id="autotoc_md59"></a>
-输入：</h3>
-<p >深度图/点云</p>
-<p >姿态</p>
+Output:</h3>
+<p >Filtered point cloud/voxel/octree/implicit expression</p>
+<h3><a class="anchor" id="autotoc_md58"></a>
+illustrate:</h3>
+<p >If you use NeRF, you can skip the dense mapping part</p>
+<h2><a class="anchor" id="autotoc_md59"></a>
+Point cloud processing:</h2>
+<p >filtering</p>
 <h3><a class="anchor" id="autotoc_md60"></a>
-输出：</h3>
-<p >滤波后点云/体素/八叉树/隐式表达</p>
+Enter:</h3>
 <h3><a class="anchor" id="autotoc_md61"></a>
-说明：</h3>
-<p >如果使用NeRF的话可以跳过稠密建图部分</p>
-<h2><a class="anchor" id="autotoc_md62"></a>
-点云处理：</h2>
-<p >滤波</p>
-<h3><a class="anchor" id="autotoc_md63"></a>
-输入：</h3>
-<h3><a class="anchor" id="autotoc_md64"></a>
-输出：</h3>
-<h3><a class="anchor" id="autotoc_md65"></a>
-信号：</h3>
+Output:</h3>
+<h3><a class="anchor" id="autotoc_md62"></a>
+Signal:</h3>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EasyMVS: 类型说明简介</title>
+<title>EasyMVS: Data Structure</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -64,110 +64,101 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">类型说明简介 </div></div>
+  <div class="headertitle"><div class="title">Data Structure </div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="autotoc_md1"></a>
-数据类型</h1>
+type of data</h1>
 <h2><a class="anchor" id="autotoc_md2"></a>
-相机类型</h2>
-<p >相机ID</p>
-<p >相机内参和畸变</p>
-<p >拍摄图像/读取图片</p>
-<p >配置主相机/从相机</p>
-<p >关联的相机</p>
-<p >与关联相机的外参</p>
-<p >去畸变</p>
+Camera Type</h2>
+<p >camera ID</p>
+<p >Camera Intrinsics and Distortion</p>
+<p >capture image/read image</p>
+<p >Configure master camera/slave camera</p>
+<p >associated camera</p>
+<p >The extrinsics associated with the camera</p>
+<p >to distort</p>
 <h2><a class="anchor" id="autotoc_md3"></a>
-姿态类型</h2>
-<p >与四元数，欧拉角，se(3)的转换 (这个类型是否用Eigen等替代？)</p>
-<p >姿态可信度(方差等)</p>
+Posture Type</h2>
+<p >Conversion with quaternion, Euler angle, se(3) (Is this type replaced by Eigen, etc.?)</p>
+<p >Pose confidence (variance, etc.)</p>
 <h2><a class="anchor" id="autotoc_md4"></a>
-帧类型</h2>
-<p >帧ID</p>
-<p >帧图像</p>
-<p >帧特征点</p>
-<p >帧特征向量</p>
-<p >帧词袋向量</p>
-<p >帧深度图</p>
-<p >关联帧</p>
-<p >帧全局位姿</p>
-<p >帧观测路点ID(路点与特征点需要匹配)</p>
-<p >帧优选相机对(最佳关联帧)</p>
-<p >相机对 外参与立体校正参数</p>
+Frame type</h2>
+<p >frame ID</p>
+<p >frame image</p>
+<p >frame feature points</p>
+<p >frame feature vector</p>
+<p >Frame bag-of-words vectors</p>
+<p >frame depth map</p>
+<p >association frame</p>
+<p >frame global pose</p>
+<p >Frame observation waypoint ID (waypoints and feature points need to match)</p>
+<p >Frame-optimized camera pair (best associated frame)</p>
+<p >The camera externally participates in stereo correction parameters</p>
 <h2><a class="anchor" id="autotoc_md5"></a>
-路点类型</h2>
-<p >路点ID</p>
-<p >特征点对应描述子</p>
-<p >路点坐标</p>
-<p >与该路点关联的帧ID</p>
-<p >路点被观测次数</p>
-<p >路点质量</p>
-<p >路点方向</p>
+Waypoint Type</h2>
+<p >Waypoint ID</p>
+<p >Descriptors corresponding to feature points</p>
+<p >waypoint coordinates</p>
+<p >Frame ID associated with this waypoint</p>
+<p >The number of waypoints observed</p>
+<p >waypoint quality</p>
+<p >waypoint direction</p>
 <h2><a class="anchor" id="autotoc_md6"></a>
-稠密地图类型</h2>
-<p >存放稠密点云信息</p>
+Dense map type</h2>
+<p >Store dense point cloud information</p>
 <h2><a class="anchor" id="autotoc_md7"></a>
-地图类型</h2>
-<p >存放路点类型</p>
-<p >存放帧类型</p>
-<p >存放表面类型</p>
+Map Type</h2>
+<p >store waypoint type</p>
+<p >storage frame type</p>
+<p >storage surface type</p>
 <h1><a class="anchor" id="autotoc_md8"></a>
-流程类型</h1>
+Process type</h1>
 <h2><a class="anchor" id="autotoc_md9"></a>
-Photographer类型</h2>
-<p >初始化相机方法</p>
-<p >控制拍照方法</p>
-<p >RGBD相机控制重建方法</p>
+Photographer type</h2>
+<p >Initialize the camera method</p>
+<p >Control how to take pictures</p>
+<p >RGBD camera control reconstruction method</p>
 <h2><a class="anchor" id="autotoc_md10"></a>
-FeatureExtractor类型</h2>
-<p >特征点计算方法</p>
-<p >特征描述子计算方法</p>
+FeatureExtractor type</h2>
+<p >Feature Point Calculation Method</p>
+<p >Feature Descriptor Calculation Method</p>
 <h2><a class="anchor" id="autotoc_md11"></a>
-FeatureMatcher类型</h2>
+FeatureMatcher type</h2>
 <h2><a class="anchor" id="autotoc_md12"></a>
-PoseReconstructor类型</h2>
+PoseReconstructorType</h2>
 <h2><a class="anchor" id="autotoc_md13"></a>
-PoseOptimizer类型</h2>
+PoseOptimizer type</h2>
 <h2><a class="anchor" id="autotoc_md14"></a>
-DenseReconstructor类型</h2>
+DenseReconstructor type</h2>
 <h2><a class="anchor" id="autotoc_md15"></a>
-DenseOptimizer类型</h2>
+DenseOptimizer type</h2>
 <h2><a class="anchor" id="autotoc_md16"></a>
-DenseFilter类型</h2>
+DenseFilter type</h2>
 <h1><a class="anchor" id="autotoc_md17"></a>
-配置类型</h1>
+configuration type</h1>
 <h2><a class="anchor" id="autotoc_md18"></a>
-MVSObject类型</h2>
-<p >重建框架的基本类型</p>
+MVSObjectType</h2>
+<p >Basic Types of Reconstruction Frameworks</p>
 <h2><a class="anchor" id="autotoc_md19"></a>
-WorkFlowObject类型</h2>
-<p >流程基础类型</p>
-<p >流程名称</p>
-<p >流程完成信号</p>
-<p >流程开始信号</p>
-<p >写入文件</p>
-<p >读取文件</p>
+WorkFlowObject type</h2>
+<p >Process base type</p>
+<p >process name</p>
+<p >process completion signal</p>
+<p >process start signal</p>
+<p >write to file</p>
+<p >read file</p>
 <h2><a class="anchor" id="autotoc_md20"></a>
-DataFlowObject类型</h2>
-<p >数据基础类型</p>
-<p >数据名称</p>
-<p >数据锁</p>
-<p >数据读写(读写成字符流，读写到文件)</p>
+DataFlowObjectType</h2>
+<p >Data Foundation Type</p>
+<p >data name</p>
+<p >data lock</p>
+<p >Data reading and writing (reading and writing into character streams, reading and writing to files)</p>
 <h2><a class="anchor" id="autotoc_md21"></a>
-ConfigurationObject类型</h2>
-<p >读写配置</p>
+ConfigurationObject type</h2>
+<p >Read and write configuration</p>
 <h1><a class="anchor" id="autotoc_md22"></a>
-杂乱</h1>
-<p >数据流怎么搞</p>
-<p >全部传递地图类数据？</p>
-<p >地图是全局的，传递帧数据，是否需要多个小地图？</p>
-<p >循环引用？</p>
-<p >使用ID，不用指针，顶多索引炸了，不会循环引用</p>
-<p >保存数据不用像meshroom那样分开存放，像流水线那样存放中间半成品</p>
-<p >两个帧就可以形成路点，路点和帧的相对关系与路点在全局坐标系中的坐标无关</p>
-<p >是否使用inputoutputarray</p>
-<p ><strike>用opencv的filestorage好像不太好写数据</strike></p>
+clutter</h1>
 <div class="image">
 <img src="bodybg.png" alt=""/>
 </div>
