@@ -1,0 +1,5 @@
+<map id="MapPointObject" name="MapPointObject">
+<area shape="rect" id="node1" title="this is the map point class, this class store sparse 3D point." alt="" coords="5,155,120,181"/>
+<area shape="rect" id="node2" href="$class_data_flow_object.html" title="this is the base class for all data storage types." alt="" coords="5,80,120,107"/>
+<area shape="rect" id="node3" href="$class_m_v_s_object.html" title="the base class of all MVS objects" alt="" coords="18,5,107,32"/>
+</map>

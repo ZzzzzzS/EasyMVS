@@ -1,0 +1,7 @@
+<map id="PinholeCamera" name="PinholeCamera">
+<area shape="rect" id="node1" title="this is the base class of all pinhole cameras, which is the common camera type. this class implement ..." alt="" coords="78,229,189,256"/>
+<area shape="rect" id="node2" href="$class_camera_object.html" title="this is the base class of all types of cameras, the customized camera type should inherit this class,..." alt="" coords="81,155,186,181"/>
+<area shape="rect" id="node3" href="$class_data_flow_object.html" title="this is the base class for all data storage types." alt="" coords="5,80,120,107"/>
+<area shape="rect" id="node4" href="$class_m_v_s_object.html" title="the base class of all MVS objects" alt="" coords="18,5,107,32"/>
+<area shape="rect" id="node5" title=" " alt="" coords="144,80,264,107"/>
+</map>

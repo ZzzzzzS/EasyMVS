@@ -1,0 +1,5 @@
+<map id="FrameObject::RelatedFrameInfo" name="FrameObject::RelatedFrameInfo">
+<area shape="rect" id="node1" title="the related frame info class, related frame can be defined as the frames that have common field of vi..." alt="" coords="5,155,212,181"/>
+<area shape="rect" id="node2" href="$class_data_flow_object.html" title="this is the base class for all data storage types." alt="" coords="51,80,166,107"/>
+<area shape="rect" id="node3" href="$class_m_v_s_object.html" title="the base class of all MVS objects" alt="" coords="64,5,153,32"/>
+</map>

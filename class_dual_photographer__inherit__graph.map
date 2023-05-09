@@ -1,0 +1,8 @@
+<map id="DualPhotographer" name="DualPhotographer">
+<area shape="rect" id="node1" title="DualCamera Photographer class." alt="" coords="30,304,155,331"/>
+<area shape="rect" id="node2" href="$class_pinhole_photographer.html" title=" " alt="" coords="21,229,164,256"/>
+<area shape="rect" id="node3" href="$class_photographer.html" title="the photographer class, generate frame with given cameras." alt="" coords="43,155,142,181"/>
+<area shape="rect" id="node4" href="$class_work_flow_object.html" title="this is the base class of all workflow class," alt="" coords="33,80,152,107"/>
+<area shape="rect" id="node5" title=" " alt="" coords="5,5,76,32"/>
+<area shape="rect" id="node6" href="$class_m_v_s_object.html" title="the base class of all MVS objects" alt="" coords="100,5,189,32"/>
+</map>

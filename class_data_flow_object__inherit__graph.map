@@ -1,0 +1,14 @@
+<map id="DataFlowObject" name="DataFlowObject">
+<area shape="rect" id="node1" title="this is the base class for all data storage types." alt="" coords="143,157,257,184"/>
+<area shape="rect" id="node3" href="$class_camera_object.html" title="this is the base class of all types of cameras, the customized camera type should inherit this class,..." alt="" coords="356,31,461,57"/>
+<area shape="rect" id="node7" href="$class_dense_map_object.html" title=" " alt="" coords="347,81,470,108"/>
+<area shape="rect" id="node8" href="$class_frame_object.html" title=" " alt="" coords="360,132,457,159"/>
+<area shape="rect" id="node10" href="$class_frame_object_1_1_related_frame_info.html" title="the related frame info class, related frame can be defined as the frames that have common field of vi..." alt="" coords="305,183,512,209"/>
+<area shape="rect" id="node11" href="$class_global_map_object.html" title=" " alt="" coords="347,233,470,260"/>
+<area shape="rect" id="node12" href="$class_map_point_object.html" title="this is the map point class, this class store sparse 3D point." alt="" coords="351,284,466,311"/>
+<area shape="rect" id="node2" href="$class_m_v_s_object.html" title="the base class of all MVS objects" alt="" coords="5,157,95,184"/>
+<area shape="rect" id="node4" href="$class_pinhole_camera.html" title="this is the base class of all pinhole cameras, which is the common camera type. this class implement ..." alt="" coords="575,31,685,57"/>
+<area shape="rect" id="node5" href="$class_c_v_hik_camera.html" title=" " alt="" coords="767,5,871,32"/>
+<area shape="rect" id="node6" href="$class_pinhole_image_reader.html" title="read images from folder." alt="" coords="748,56,889,83"/>
+<area shape="rect" id="node9" href="$class_pinhole_frame_object.html" title=" " alt="" coords="560,132,700,159"/>
+</map>

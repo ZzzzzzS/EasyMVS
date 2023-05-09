@@ -1,0 +1,4 @@
+<map id="CostComputer" name="CostComputer">
+<area shape="rect" id="node1" title="代价计算器基类" alt="" coords="20,5,125,32"/>
+<area shape="rect" id="node2" href="$class_cost_computer_p_m_s.html" title="代价计算器：PatchMatchStero原文代价计算器" alt="" coords="5,80,140,107"/>
+</map>

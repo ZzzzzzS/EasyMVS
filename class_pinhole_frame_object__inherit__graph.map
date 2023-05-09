@@ -1,0 +1,6 @@
+<map id="PinholeFrameObject" name="PinholeFrameObject">
+<area shape="rect" id="node1" title=" " alt="" coords="5,229,145,256"/>
+<area shape="rect" id="node2" href="$class_frame_object.html" title=" " alt="" coords="27,155,124,181"/>
+<area shape="rect" id="node3" href="$class_data_flow_object.html" title="this is the base class for all data storage types." alt="" coords="18,80,133,107"/>
+<area shape="rect" id="node4" href="$class_m_v_s_object.html" title="the base class of all MVS objects" alt="" coords="31,5,120,32"/>
+</map>
