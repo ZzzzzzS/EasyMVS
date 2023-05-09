@@ -9,14 +9,16 @@ if (DOXYGEN_FOUND)
 
     set(DOXYGEN_PROJECT_NAME "EasyMVS")
     set(DOXYGEN_PROJECT_BRIEF "simple 3D reconstruction framework")
+    set(DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+    set(DOXYGEN_HTML_EXTRA_STYLESHEET ${CMAKE_CURRENT_SOURCE_DIR}/stylesheet.css)
     if(BUILD_DOC)
         doxygen_add_docs(
         ${PROJECT_NAME}
         ${CMAKE_SOURCE_DIR}/core
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ../README.md
         )
     endif(BUILD_DOC)
-    
 
 else (DOXYGEN_FOUND)
   message("Doxygen need to be installed to generate the doxygen documentation")

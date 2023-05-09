@@ -1,3 +1,4 @@
+
 # 类型说明简介
 
 ## 数据类型
@@ -157,3 +158,5 @@ RGBD相机控制重建方法
 是否使用inputoutputarray
 
 ~~用opencv的filestorage好像不太好写数据~~
+
+![](./bodybg.png)
