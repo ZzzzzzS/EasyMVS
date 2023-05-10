@@ -68,101 +68,71 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="autotoc_md1"></a>
-type of data</h1>
+Data Structure</h1>
+<p >To leverage the 3D reconstruction tasks, we designed a series of data types. The data types are divided into three categories: object types, workflow types, and configuration types. The object types are the basic data types used to store data (e.g. camera pose, maps) in the reconstruction framework. Each object type is ending with "Object" (e.g. <a class="el" href="class_camera_object.html" title="this is the base class of all types of cameras, the customized camera type should inherit this class,...">CameraObject</a>) The workflow types are the basic process types that perform sub-tasks. The configuration types are used for load/unload settings and managing the pipeline in the reconstruction framework. The data types are shown in the figure below. Details of each data structure can be found in its corresponding pages.</p>
 <h2><a class="anchor" id="autotoc_md2"></a>
-Camera Type</h2>
-<p >camera ID</p>
-<p >Camera Intrinsics and Distortion</p>
-<p >capture image/read image</p>
-<p >Configure master camera/slave camera</p>
-<p >associated camera</p>
-<p >The extrinsics associated with the camera</p>
-<p >to distort</p>
+Object Types</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadLeft">Class Name   </th><th class="markdownTableHeadLeft">Class Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_data_flow_object.html" title="this is the base class for all data storage types.">DataFlowObject</a>   </td><td class="markdownTableBodyLeft">Data Foundation Type    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><a class="el" href="class_camera_object.html" title="this is the base class of all types of cameras, the customized camera type should inherit this class,...">CameraObject</a>   </td><td class="markdownTableBodyLeft">Camera type to save camera information like intrinsic parameters    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_map_point_object.html" title="this is the map point class, this class store sparse 3D point.">MapPointObject</a>   </td><td class="markdownTableBodyLeft">Map point type to save map point information like 3D coordinates, descriptors, and observations    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><a class="el" href="class_frame_object.html">FrameObject</a>   </td><td class="markdownTableBodyLeft">Frame type to save frame information like image, feature points, and pose    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">EdgeObject   </td><td class="markdownTableBodyLeft">Edge type to save edge information between different <a class="el" href="class_frame_object.html">FrameObject</a> or <a class="el" href="class_map_point_object.html" title="this is the map point class, this class store sparse 3D point.">MapPointObject</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><a class="el" href="class_global_map_object.html">GlobalMapObject</a>   </td><td class="markdownTableBodyLeft">Map type to save global map information    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_dense_map_object.html">DenseMapObject</a>   </td><td class="markdownTableBodyLeft">map type to save dense point cloud information   </td></tr>
+</table>
 <h2><a class="anchor" id="autotoc_md3"></a>
-Posture Type</h2>
-<p >Conversion with quaternion, Euler angle, se(3) (Is this type replaced by Eigen, etc.?)</p>
-<p >Pose confidence (variance, etc.)</p>
+Workflow Types</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadLeft">Class Name   </th><th class="markdownTableHeadLeft">Class Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_work_flow_object.html" title="this is the base class of all workflow class,">WorkFlowObject</a>   </td><td class="markdownTableBodyLeft">Workflow Foundation type    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><a class="el" href="class_photographer.html" title="the photographer class, generate frame with given cameras.">Photographer</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_photographer.html" title="the photographer class, generate frame with given cameras.">Photographer</a> type to control the <a class="el" href="class_camera_object.html" title="this is the base class of all types of cameras, the customized camera type should inherit this class,...">CameraObject</a> types for providing image input    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_feature_extractor.html">FeatureExtractor</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_feature_extractor.html">FeatureExtractor</a> type to extract feature points and descriptors from <a class="el" href="class_frame_object.html">FrameObject</a> types    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><a class="el" href="class_feature_matcher.html">FeatureMatcher</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_feature_matcher.html">FeatureMatcher</a> type to match feature points between <a class="el" href="class_frame_object.html">FrameObject</a> types    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_pose_reconstructor.html">PoseReconstructor</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_pose_reconstructor.html">PoseReconstructor</a> type to reconstruct camera poses and <a class="el" href="class_map_point_object.html" title="this is the map point class, this class store sparse 3D point.">MapPointObject</a> from <a class="el" href="class_frame_object.html">FrameObject</a> types    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">PoseOptimizer   </td><td class="markdownTableBodyLeft">PoseOptimizer type to optimize camera poses and <a class="el" href="class_map_point_object.html" title="this is the map point class, this class store sparse 3D point.">MapPointObject</a> types    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_dense_reconstructor.html">DenseReconstructor</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_dense_reconstructor.html">DenseReconstructor</a> type to reconstruct dense point cloud from <a class="el" href="class_frame_object.html">FrameObject</a> types    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft"><a class="el" href="class_dense_optimizer.html">DenseOptimizer</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_dense_optimizer.html">DenseOptimizer</a> type to optimize dense point cloud    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">DenseFilter   </td><td class="markdownTableBodyLeft">DenseFilter type to filter dense point cloud   </td></tr>
+</table>
 <h2><a class="anchor" id="autotoc_md4"></a>
-Frame type</h2>
-<p >frame ID</p>
-<p >frame image</p>
-<p >frame feature points</p>
-<p >frame feature vector</p>
-<p >Frame bag-of-words vectors</p>
-<p >frame depth map</p>
-<p >association frame</p>
-<p >frame global pose</p>
-<p >Frame observation waypoint ID (waypoints and feature points need to match)</p>
-<p >Frame-optimized camera pair (best associated frame)</p>
-<p >The camera externally participates in stereo correction parameters</p>
-<h2><a class="anchor" id="autotoc_md5"></a>
-Waypoint Type</h2>
-<p >Waypoint ID</p>
-<p >Descriptors corresponding to feature points</p>
-<p >waypoint coordinates</p>
-<p >Frame ID associated with this waypoint</p>
-<p >The number of waypoints observed</p>
-<p >waypoint quality</p>
-<p >waypoint direction</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
-Dense map type</h2>
-<p >Store dense point cloud information</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
-Map Type</h2>
-<p >store waypoint type</p>
-<p >storage frame type</p>
-<p >storage surface type</p>
-<h1><a class="anchor" id="autotoc_md8"></a>
-Process type</h1>
-<h2><a class="anchor" id="autotoc_md9"></a>
-Photographer type</h2>
-<p >Initialize the camera method</p>
-<p >Control how to take pictures</p>
-<p >RGBD camera control reconstruction method</p>
-<h2><a class="anchor" id="autotoc_md10"></a>
-FeatureExtractor type</h2>
-<p >Feature Point Calculation Method</p>
-<p >Feature Descriptor Calculation Method</p>
-<h2><a class="anchor" id="autotoc_md11"></a>
-FeatureMatcher type</h2>
-<h2><a class="anchor" id="autotoc_md12"></a>
-PoseReconstructorType</h2>
-<h2><a class="anchor" id="autotoc_md13"></a>
-PoseOptimizer type</h2>
-<h2><a class="anchor" id="autotoc_md14"></a>
-DenseReconstructor type</h2>
-<h2><a class="anchor" id="autotoc_md15"></a>
-DenseOptimizer type</h2>
-<h2><a class="anchor" id="autotoc_md16"></a>
-DenseFilter type</h2>
-<h1><a class="anchor" id="autotoc_md17"></a>
-configuration type</h1>
-<h2><a class="anchor" id="autotoc_md18"></a>
-MVSObjectType</h2>
-<p >Basic Types of Reconstruction Frameworks</p>
-<h2><a class="anchor" id="autotoc_md19"></a>
-WorkFlowObject type</h2>
-<p >Process base type</p>
-<p >process name</p>
-<p >process completion signal</p>
-<p >process start signal</p>
-<p >write to file</p>
-<p >read file</p>
-<h2><a class="anchor" id="autotoc_md20"></a>
-DataFlowObjectType</h2>
-<p >Data Foundation Type</p>
-<p >data name</p>
-<p >data lock</p>
-<p >Data reading and writing (reading and writing into character streams, reading and writing to files)</p>
-<h2><a class="anchor" id="autotoc_md21"></a>
-ConfigurationObject type</h2>
-<p >Read and write configuration</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
-clutter</h1>
-<div class="image">
+Configuration &amp; Other Types</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadLeft">Class Name   </th><th class="markdownTableHeadLeft">Class Description    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft"><a class="el" href="class_m_v_s_object.html" title="the base class of all MVS objects">MVSObject</a>   </td><td class="markdownTableBodyLeft"><a class="el" href="class_m_v_s_object.html" title="the base class of all MVS objects">MVSObject</a> type is the root class of this reconstruction framework    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyLeft">ConfigurationObject   </td><td class="markdownTableBodyLeft">ConfigurationObject type to load/unload settings and managing the pipeline in the reconstruction framework    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyLeft">JsonSaver   </td><td class="markdownTableBodyLeft">JsonSaver type to read/write data into json file   </td></tr>
+</table>
+<h1><a class="anchor" id="autotoc_md5"></a>
+Inheritance Diagram</h1>
+<p ><img src="./class_m_v_s_object__inherit__graph.png" alt="" class="inline"/></p>
+<center> Overview of all classes' inheritance relationships /<center></center></center><center><center><img src="class_work_flow_object__inherit__graph.png" alt="" class="inline"/></center></center><center><center><center> Overview of workflow classes' inheritance relationships </center></center></center><center><center>This is the overview of workflow classes' inheritance relationships. The workflow classes are the basic process types that perform sub-tasks, to better use the signal-slot architecture, the workflow classes are inherited from the <a href="https://doc.qt.io/qt-5/qobject.html">QObject</a> class as well.</center></center><center><center><div class="image">
 <img src="bodybg.png" alt=""/>
 </div>
-     </div></div><!-- contents -->
+     </center></center></div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
