@@ -11,6 +11,9 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_PROJECT_BRIEF "simple 3D reconstruction framework")
     set(DOXYGEN_IMAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
     set(DOXYGEN_HTML_EXTRA_STYLESHEET ${CMAKE_CURRENT_SOURCE_DIR}/stylesheet.css)
+    set(DOXYGEN_HAVE_DOT YES)
+    set(DOXYGEN_INHERIT_GRAPH YES)
+    
     if(BUILD_DOC)
         doxygen_add_docs(
         ${PROJECT_NAME}

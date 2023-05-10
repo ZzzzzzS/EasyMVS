@@ -1,6 +1,9 @@
 @mainpage
-# EasyMVS: Simple Multi-View Stereo lib
+# EasyMVS: A Simple Multi-View Stereo lib
 EasyMVS is a simple SFM(Structure From Motion) and MVS(Multi-View Stereo) project, which aims to perform 3D reconstruction tasks quickly and concisely with existing algorithms for Monocular, Stereo, RGBD cameras. This project currently supports OpenCV pinhole cameras but can be easily extended to other types of cameras, such as fish-eye cameras. 
+
+![](./PipelineSimple.svg)
+<center> overview of the EasyMVS 3D reconstruction pipeline </center>
 
 ***
 # THIS PROJECT IS NOT FINISHED YET, CANNOT ACHIEVE DESIRED TASKS AT CURRENT STAGE!
@@ -45,7 +48,7 @@ Some demos are listed in the app folder, including training your own BoW databas
 this project designed a series of data structures including ``Frames``, ``Mappoints``, ``Maps`` to leverage the 3D reconstruction process. The details of how each data structure works are shown in the [Data Structure](./doc/ClassDefinitionDraft.md) document. More information could also be obtained from each class's pages.
 
 # Workflow and Pipeline
-Similar to many existing SFM projects, this project uses pipeline-based workflow as well. We designed at most 11 sub-tasks from image acquisition to 3D mesh texturing (not all sub-tasks are required for different applications) in the pipeline. This pipeline is implemented based on Qt's signal-slot framework, each sub-tasks has a "Triggered" slot and a "finished" signal. Sub-tasks will run in each sub-tasks "Triggered" slot when this sub-task is triggered with input, and when the tasks are accomplished the "finished" signal will emit with output. This "finished" signal and output can be used as a call and input data for another  sub-task. Thanks to the simple and flexible signal slot connection and disconnection method provided by Qt, the whole pipeline can be easily rearranged for different applications. Plus, the "MovetoThreads" method introduced by Qt Thread gives us a chance to allocate sub-tasks to different threads flexibly, thereby achieving parallel computing for the pipeline. More information on workflow is shown in the [Pipeline and Workflow](./doc/Pipeline.md) document. Detailed information could also be obtained from each class's pages.
+Similar to many existing SFM projects, this project uses pipeline-based workflow as well. We designed at most 11 sub-tasks from image acquisition to 3D mesh texturing (not all sub-tasks are required for different applications) in the pipeline. This pipeline is implemented based on Qt's signal-slot framework, each sub-tasks has a "Triggered" slot and a "finished" signal. Sub-tasks will run in each sub-tasks "Triggered" slot when this sub-task is triggered with input, and when the tasks are accomplished the "finished" signal will emit with output. This "finished" signal and output can be used as a call and input data for another sub-task. Thanks to the simple and flexible signal slot connection and disconnection method provided by Qt, the whole pipeline can be easily rearranged for different applications. Plus, the "MovetoThreads" method introduced by Qt Thread gives us a chance to allocate sub-tasks to different threads flexibly, thereby achieving parallel computing for the pipeline. More information on workflow is shown in the [Pipeline and Workflow](./doc/Pipeline.md) document. Detailed information could also be obtained from each class's pages.
 
 
 

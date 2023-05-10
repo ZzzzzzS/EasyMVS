@@ -1,162 +1,52 @@
+# Data Structure
+# Data Structure
+To leverage the 3D reconstruction tasks, we designed a series of data types. The data types are divided into three categories: object types, workflow types, and configuration types. The object types are the basic data types used to store data (e.g. camera pose, maps) in the reconstruction framework. Each object type is ending with "Object" (e.g. CameraObject) The workflow types are the basic process types that perform sub-tasks. The configuration types are used for load/unload settings and managing the pipeline in the reconstruction framework. The data types are shown in the figure below. Details of each data structure can be found in its corresponding pages.
 
-# 类型说明简介
+## Object Types
+| Class Name | Class Description |
+| :--- | :--- |
+|DataFlowObject|Data Foundation Type|
+|CameraObject|Camera type to save camera information like intrinsic parameters |
+|MapPointObject|Map point type to save map point information like 3D coordinates, descriptors, and observations|
+|FrameObject|Frame type to save frame information like image, feature points, and pose|
+|EdgeObject|Edge type to save edge information between different FrameObject or MapPointObject|
+|GlobalMapObject|Map type to save global map information|
+|DenseMapObject| map type to save dense point cloud information|
 
-## 数据类型
 
-### 相机类型
+## Workflow Types
+| Class Name | Class Description |
+| :--- | :--- |
+|WorkFlowObject|Workflow Foundation type|
+|Photographer|Photographer type to control the CameraObject types for providing image input|
+|FeatureExtractor|FeatureExtractor type to extract feature points and descriptors from FrameObject types|
+|FeatureMatcher|FeatureMatcher type to match feature points between FrameObject types|
+|PoseReconstructor|PoseReconstructor type to reconstruct camera poses and MapPointObject from FrameObject types|
+|PoseOptimizer|PoseOptimizer type to optimize camera poses and MapPointObject types|
+|DenseReconstructor|DenseReconstructor type to reconstruct dense point cloud from FrameObject types|
+|DenseOptimizer|DenseOptimizer type to optimize dense point cloud|
+|DenseFilter|DenseFilter type to filter dense point cloud|
 
-相机ID
+## Configuration & Other Types
+| Class Name | Class Description |
+| :--- | :--- |
+|MVSObject|MVSObject type is the root class of this reconstruction framework|
+|ConfigurationObject|ConfigurationObject type to load/unload settings and managing the pipeline in the reconstruction framework|
+|JsonSaver|JsonSaver type to read/write data into json file|
 
-相机内参和畸变
+# Inheritance Diagram
 
-拍摄图像/读取图片
+![](./class_m_v_s_object__inherit__graph.png)
 
-配置主相机/从相机
+<center> Overview of all classes' inheritance relationships /<center>
 
-关联的相机
 
-与关联相机的外参
+![](class_work_flow_object__inherit__graph.png)
 
-去畸变
+<center> Overview of workflow classes' inheritance relationships </center>
 
-### 姿态类型
+This is the overview of workflow classes' inheritance relationships. The workflow classes are the basic process types that perform sub-tasks, to better use the signal-slot architecture, the workflow classes are inherited from the [QObject](https://doc.qt.io/qt-5/qobject.html) class as well.
 
-与四元数，欧拉角，se(3)的转换 (这个类型是否用Eigen等替代？)
 
-姿态可信度(方差等)
-
-### 帧类型
-
-帧ID
-
-帧图像
-
-帧特征点
-
-帧特征向量
-
-帧词袋向量
-
-帧深度图
-
-关联帧
-
-帧全局位姿
-
-帧观测路点ID(路点与特征点需要匹配)
-
-帧优选相机对(最佳关联帧)
-
-相机对 外参与立体校正参数
-
-### 路点类型
-
-路点ID
-
-特征点对应描述子
-
-路点坐标
-
-与该路点关联的帧ID
-
-路点被观测次数
-
-路点质量
-
-路点方向
-
-### 稠密地图类型
-
-存放稠密点云信息
-
-### 地图类型
-
-存放路点类型
-
-存放帧类型
-
-存放表面类型
-
-## 流程类型
-
-### Photographer类型
-
-初始化相机方法
-
-控制拍照方法
-
-RGBD相机控制重建方法
-
-### FeatureExtractor类型
-
-特征点计算方法
-
-特征描述子计算方法
-
-### FeatureMatcher类型
-
-### PoseReconstructor类型
-
-### PoseOptimizer类型
-
-### DenseReconstructor类型
-
-### DenseOptimizer类型
-
-### DenseFilter类型
-
-## 配置类型
-
-### MVSObject类型
-
-重建框架的基本类型
-
-### WorkFlowObject类型
-
-流程基础类型
-
-流程名称
-
-流程完成信号
-
-流程开始信号
-
-写入文件
-
-读取文件
-
-### DataFlowObject类型
-
-数据基础类型
-
-数据名称
-
-数据锁
-
-数据读写(读写成字符流，读写到文件)
-
-### ConfigurationObject类型
-
-读写配置
-
-# 杂乱
-
-数据流怎么搞
-
-全部传递地图类数据？
-
-地图是全局的，传递帧数据，是否需要多个小地图？
-
-循环引用？
-
-使用ID，不用指针，顶多索引炸了，不会循环引用
-
-保存数据不用像meshroom那样分开存放，像流水线那样存放中间半成品
-
-两个帧就可以形成路点，路点和帧的相对关系与路点在全局坐标系中的坐标无关
-
-是否使用inputoutputarray
-
-~~用opencv的filestorage好像不太好写数据~~
 
 ![](./bodybg.png)
